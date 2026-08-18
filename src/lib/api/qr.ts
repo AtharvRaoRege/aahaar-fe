@@ -18,4 +18,8 @@ export const qrApi = {
     )
     return data
   },
+  async review(restaurantId: string): Promise<QrCode> {
+    const { data } = await api.get<QrCode>(`/restaurants/${restaurantId}/qr/review`)
+    return data
+  },
 }

@@ -9,13 +9,14 @@ export const Mark = styled.span<{ $veg: boolean; $size: number }>`
   width: ${({ $size }) => $size}px;
   height: ${({ $size }) => $size}px;
   border: 2px solid ${({ $veg }) => ($veg ? palette.chutney : palette.chili)};
-  border-radius: 0;
+  border-radius: 2px;
   flex-shrink: 0;
+  background: ${palette.white};
 `
 
 export const Dot = styled.span<{ $veg: boolean }>`
-  width: 45%;
-  height: 45%;
+  width: 48%;
+  height: 48%;
   border-radius: 9999px;
   background: ${({ $veg }) => ($veg ? palette.chutney : palette.chili)};
 `

@@ -18,6 +18,10 @@ export const palette = {
   inkSoft: '#5C564E',
   line: '#E4D9C8',
   chutneyWash: '#E7F0E8',
+  vegWash: 'rgba(47, 107, 56, 0.06)',
+  chiliWash: 'rgba(196, 51, 42, 0.06)',
+  creamFog: 'rgba(251, 248, 242, 0.88)',
+  mangoWash: 'rgba(231, 178, 48, 0.14)',
 } as const
 
 export const semantic = {
@@ -29,6 +33,11 @@ export const semantic = {
   danger: palette.chili,
   surface: palette.white,
   decoration: palette.violet,
+} as const
+
+export const colors = {
+  primary: palette.tomato,
+  primaryDark: palette.tomatoDark,
 } as const
 
 export const fontFamily = {
@@ -84,6 +93,7 @@ export const radii = {
 
 export const shadows = {
   sm: `0 1px 2px rgba(28, 25, 22, 0.06)`,
+  card: `0 4px 6px -1px rgba(28, 25, 22, 0.1), 0 2px 4px -1px rgba(28, 25, 22, 0.06)`,
   mangoRing: `0 0 0 3px rgba(231, 178, 48, 0.28)`,
   md: `0 8px 24px rgba(28, 25, 22, 0.08)`,
   lg: `0 16px 40px rgba(28, 25, 22, 0.1)`,
@@ -120,12 +130,14 @@ export const zIndex = {
   header: 300,
   overlay: 900,
   sheet: 1000,
+  modal: 1050,
   toast: 1100,
 } as const
 
 export const theme = {
   palette,
   semantic,
+  colors,
   fontFamily,
   fontWeights,
   fontSizes,

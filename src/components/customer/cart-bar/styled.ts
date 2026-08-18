@@ -1,65 +1,88 @@
 import styled from 'styled-components'
 
 import { fadeIn } from '@/styles/mixins'
-import { palette, shadows } from '@/styles/theme'
+import { fontSizes, palette, radii, shadows, spacing, transitions } from '@/styles/theme'
 
 export const Bar = styled.button`
   position: fixed;
-  left: 12px;
-  right: 12px;
-  bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+  left: ${spacing.md};
+  right: ${spacing.md};
+  bottom: calc(${spacing.md} + env(safe-area-inset-bottom, 0px));
   z-index: ${({ theme }) => theme.zIndex.cartBar};
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
+  gap: ${spacing.md};
   min-width: 0;
-  padding: 14px 16px;
+  padding: ${spacing.md} ${spacing.lg};
   background: ${palette.tomato};
   color: ${palette.white};
-  border: 4px solid ${palette.ink};
-  box-shadow: ${shadows.md};
+  border: none;
+  border-radius: ${radii.md};
+  box-shadow: ${shadows.lg};
   animation: ${fadeIn} 160ms ease-out;
-  transition: transform 100ms ease-out;
+  transition: transform ${transitions.fast}, background ${transitions.fast};
+
+  &:hover {
+    background: ${palette.tomatoDark};
+  }
 
   &:active {
-    transform: translate(2px, 2px);
-    box-shadow: ${shadows.sm};
+    transform: scale(0.98);
   }
 
   ${({ theme }) => theme.media.sm} {
-    left: 16px;
-    right: 16px;
-    padding: 16px 20px;
-    gap: 16px;
+    left: ${spacing.lg};
+    right: ${spacing.lg};
+    padding: ${spacing.lg} ${spacing.xl};
+    gap: ${spacing.lg};
+  }
+
+  ${({ theme }) => theme.media.md} {
+    left: ${spacing.xl};
+    right: ${spacing.xl};
   }
 
   ${({ theme }) => theme.media.lg} {
     left: auto;
-    right: 32px;
+    right: ${spacing['3xl']};
     min-width: 360px;
+  }
+
+  ${({ theme }) => theme.media.xl} {
+    right: ${spacing['4xl']};
+    min-width: 380px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+    transition: background ${transitions.fast};
+
+    &:active {
+      transform: none;
+    }
   }
 `
 
 export const Left = styled.span`
   display: flex;
   align-items: center;
-  gap: 10px;
-  font-weight: 900;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
+  gap: ${spacing.sm};
+  font-weight: 700;
+  font-size: ${fontSizes.label};
+  letter-spacing: 0.02em;
 
   svg {
     width: 20px;
     height: 20px;
-    stroke-width: 3;
+    stroke-width: 2;
   }
 `
 
 export const Right = styled.span`
   display: flex;
   align-items: center;
-  gap: 10px;
-  font-weight: 900;
-  font-size: 1.125rem;
+  gap: ${spacing.sm};
+  font-weight: 800;
+  font-size: ${fontSizes.body};
 `

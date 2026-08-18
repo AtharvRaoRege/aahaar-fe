@@ -2,19 +2,23 @@ import { createPortal } from 'react-dom'
 import { Plus } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 
+import { InstallApp } from '@/components/dashboard/install-app'
+import { RatingSummary } from '@/components/dashboard/rating-summary'
 import { VenueSwitcher } from '@/components/dashboard/venue-switcher'
 import { Button } from '@/components/global/button'
 import { FormField, TextArea, TextField } from '@/components/global/field'
 import { IconButton } from '@/components/global/icon-button'
+import { Select } from '@/components/global/select'
+import { Skeleton } from '@/components/global/skeleton'
 import { useDashboardContext } from '@/hooks/dashboard/context'
 import type { Restaurant } from '@/types/restaurant'
 
-import { Select } from '../menu/styled'
 import { useSettingsPage } from './helper'
 import {
   Banner,
   DesktopAdd,
   Form,
+  FormColumn,
   Hint,
   Modal,
   ModalActions,
@@ -46,6 +50,11 @@ function SettingsBody({ restaurant }: { restaurant: Restaurant }) {
       <Title>{t('settings.title')}</Title>
       <Hint>{t('settings.hint')}</Hint>
 
+      <InstallApp restaurantId={restaurant.id} />
+
+      <SectionLabel>{t('settings.ratings')}</SectionLabel>
+      {page.ratingsLoading ? <Skeleton height="160px" /> : <RatingSummary summary={page.ratings} />}
+
       <SectionLabel>{t('settings.switchVenue')}</SectionLabel>
       <SwitchRow>
         <VenueSwitcher
@@ -75,15 +84,20 @@ function SettingsBody({ restaurant }: { restaurant: Restaurant }) {
         {page.copied ? t('settings.copied') : t('settings.copyLink')}
       </Button>
       {page.copyFailed && <Hint>{t('settings.copyFailed')}</Hint>}
+      <FormColumn>
       <Form onSubmit={page.onSubmit}>
         {page.saved && <Banner $tone="ok">{t('settings.saved')}</Banner>}
         {page.failed && <Banner $tone="err">{page.failMessage || t('settings.saveFailed')}</Banner>}
         <FormField label={t('settings.kind')}>
-          <Select {...page.form.register('venueKind', { required: true })}>
-            <option value="RESTAURANT">{t('setup.restaurant')}</option>
-            <option value="HOTEL">{t('setup.hotel')}</option>
-            <option value="CAFE">{t('setup.cafe')}</option>
-          </Select>
+          <Select
+            value={page.venueKind}
+            options={[
+              { value: 'RESTAURANT', label: t('setup.restaurant') },
+              { value: 'HOTEL', label: t('setup.hotel') },
+              { value: 'CAFE', label: t('setup.cafe') },
+            ]}
+            onChange={page.setVenueKind}
+          />
         </FormField>
         <TextField
           label={t('settings.name')}
@@ -96,6 +110,7 @@ function SettingsBody({ restaurant }: { restaurant: Restaurant }) {
           {t('common:actions.save')}
         </Button>
       </Form>
+      </FormColumn>
 
       {page.addOpen &&
         createPortal(
@@ -110,11 +125,15 @@ function SettingsBody({ restaurant }: { restaurant: Restaurant }) {
               <ModalForm onSubmit={page.onAddVenue}>
                 {page.addError && <Hint>{page.addError || t('setup.error')}</Hint>}
                 <FormField label={t('setup.kind')}>
-                  <Select {...page.addForm.register('venueKind', { required: true })}>
-                    <option value="RESTAURANT">{t('setup.restaurant')}</option>
-                    <option value="HOTEL">{t('setup.hotel')}</option>
-                    <option value="CAFE">{t('setup.cafe')}</option>
-                  </Select>
+                  <Select
+                    value={page.addVenueKind}
+                    options={[
+                      { value: 'RESTAURANT', label: t('setup.restaurant') },
+                      { value: 'HOTEL', label: t('setup.hotel') },
+                      { value: 'CAFE', label: t('setup.cafe') },
+                    ]}
+                    onChange={page.setAddVenueKind}
+                  />
                 </FormField>
                 <TextField
                   label={t('setup.name')}

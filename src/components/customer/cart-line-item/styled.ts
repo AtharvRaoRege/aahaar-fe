@@ -1,19 +1,37 @@
 import styled from 'styled-components'
 
-import { palette } from '@/styles/theme'
+import { fontSizes, palette, radii, shadows, spacing } from '@/styles/theme'
 
 export const Row = styled.div`
   display: flex;
-  gap: 12px;
-  padding: 16px;
+  gap: ${spacing.md};
+  padding: ${spacing.lg};
   background: ${palette.white};
-  border: 4px solid ${palette.ink};
+  border: 1px solid ${palette.line};
+  border-radius: ${radii.md};
+  box-shadow: ${shadows.card};
+
+  ${({ theme }) => theme.media.sm} {
+    padding: ${spacing.lg} ${spacing.xl};
+  }
+
+  ${({ theme }) => theme.media.md} {
+    padding: ${spacing.xl};
+  }
+
+  ${({ theme }) => theme.media.lg} {
+    padding: ${spacing.xl};
+  }
+
+  ${({ theme }) => theme.media.xl} {
+    padding: ${spacing.xl} ${spacing['2xl']};
+  }
 `
 
 export const Main = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: ${spacing.xs};
   flex: 1;
   min-width: 0;
 `
@@ -21,42 +39,39 @@ export const Main = styled.div`
 export const TopLine = styled.div`
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: ${spacing.sm};
 `
 
 export const Name = styled.h3`
-  font-size: 1rem;
-  font-weight: 900;
+  margin: 0;
+  font-size: ${fontSizes.body};
+  font-weight: 800;
+  color: ${palette.ink};
 `
 
 export const Meta = styled.p`
-  font-size: 0.8125rem;
+  margin: 0;
+  font-size: ${fontSizes.label};
   font-weight: 500;
   color: ${palette.inkSoft};
-`
-
-export const Notes = styled.p`
-  font-size: 0.75rem;
-  font-weight: 700;
-  color: ${palette.tomato};
 `
 
 export const Controls = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
-  margin-top: 8px;
+  gap: ${spacing.md};
+  margin-top: ${spacing.sm};
 `
 
 export const Price = styled.span`
-  font-size: 1.125rem;
-  font-weight: 900;
+  font-size: ${fontSizes.bodyLg};
+  font-weight: 800;
 `
 
 export const Side = styled.div`
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-  gap: 8px;
+  gap: ${spacing.sm};
 `

@@ -14,8 +14,12 @@ export const queryKeys = {
   publicRestaurant: (slug: string) => ['public', 'restaurant', slug] as const,
   publicMenu: (slug: string) => ['public', 'menu', slug] as const,
   customerSession: (id: string) => ['customer-session', id] as const,
+  openOrder: (sessionId: string) => ['open-order', sessionId] as const,
   orders: (restaurantId: string, params: ListOrdersParams) =>
     ['orders', restaurantId, params] as const,
   order: (orderId: string) => ['order', orderId] as const,
   qr: (restaurantId: string) => ['qr', restaurantId] as const,
+  reviewQr: (restaurantId: string) => ['qr', 'review', restaurantId] as const,
+  reviews: (restaurantId: string, page: number) => ['reviews', restaurantId, page] as const,
+  reviewSummary: (restaurantId: string) => ['reviews', 'summary', restaurantId] as const,
 }

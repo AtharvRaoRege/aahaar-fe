@@ -8,6 +8,14 @@ export function formatMoney(amount: number, currency = 'INR'): string {
   })}`
 }
 
+export function formatDate(iso: string): string {
+  return new Date(iso).toLocaleDateString([], {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+  })
+}
+
 export function formatTime(iso: string): string {
   return new Date(iso).toLocaleTimeString([], {
     hour: '2-digit',

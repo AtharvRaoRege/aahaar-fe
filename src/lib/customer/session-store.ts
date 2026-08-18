@@ -1,8 +1,10 @@
 export interface StoredCustomerSession {
   id: string
   name: string
+  contactNumber?: string | null
   tableNumber: string | null
   expiresAt?: string
+  named?: boolean
 }
 
 const key = (restaurantId: string) => `aahaar.session.${restaurantId}`

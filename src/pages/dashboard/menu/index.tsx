@@ -1,12 +1,14 @@
-import { Download, Pencil, Plus, Trash2, Upload } from 'lucide-react'
+import { Download, EllipsisVertical, FolderPlus, Pencil, Plus, Trash2, Upload } from 'lucide-react'
 import { useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { Button } from '@/components/global/button'
 import { BottomSheet } from '@/components/global/bottom-sheet'
+import { ConfirmDialog } from '@/components/global/confirm-dialog'
 import { EmptyState } from '@/components/global/empty-state'
-import { TextField } from '@/components/global/field'
+import { FormField, TextField } from '@/components/global/field'
 import { IconButton } from '@/components/global/icon-button'
+import { Select } from '@/components/global/select'
 import { SearchInput } from '@/components/global/search-input'
 import { Skeleton } from '@/components/global/skeleton'
 import { VegMark } from '@/components/global/veg-mark'
@@ -16,14 +18,14 @@ import { formatMoney } from '@/utils/format'
 
 import { categoryIcon, sectionId, useMenuManager } from './helper'
 import {
+  ActionList,
   CategoryBtn,
   CategoryEmpty,
   CategoryRail,
   CheckRow,
+  EmptyActions,
   ErrorBanner,
   FileInput,
-  FooterBar,
-  FormLabel,
   GeneratingBanner,
   Header,
   HeaderActions,
@@ -36,11 +38,11 @@ import {
   ItemSide,
   Layout,
   List,
+  MobileMore,
   Page,
   SearchSlot,
   Section,
   SectionTitle,
-  Select,
   SheetError,
   SheetForm,
   Title,
@@ -88,13 +90,32 @@ function MenuBody({ restaurant }: { restaurant: Restaurant }) {
           </Button>
           <Button
             size="sm"
+            variant="outline"
+            leftIcon={<FolderPlus aria-hidden />}
+            aria-label={t('menu.addCategory')}
+            onClick={page.openCreateCategory}
+          >
+            {t('menu.addCategory')}
+          </Button>
+          <Button
+            size="sm"
             leftIcon={<Plus aria-hidden />}
             aria-label={t('menu.addItem')}
+            disabled={page.categoryOptions.length === 0}
             onClick={() => page.openCreate()}
           >
             {t('menu.addItem')}
           </Button>
         </HeaderActions>
+        <MobileMore>
+          <IconButton
+            type="button"
+            size="sm"
+            label={t('menu.more')}
+            icon={<EllipsisVertical aria-hidden />}
+            onClick={page.openActions}
+          />
+        </MobileMore>
       </Header>
 
       <FileInput
@@ -124,7 +145,7 @@ function MenuBody({ restaurant }: { restaurant: Restaurant }) {
           title={t('menu.empty')}
           hint={t('menu.emptyHint')}
           action={
-            <HeaderActions>
+            <EmptyActions>
               <Button
                 variant="outline"
                 leftIcon={<Upload aria-hidden />}
@@ -134,13 +155,13 @@ function MenuBody({ restaurant }: { restaurant: Restaurant }) {
                 {t('menu.uploadExcel')}
               </Button>
               <Button
-                leftIcon={<Plus aria-hidden />}
-                aria-label={t('menu.addItem')}
-                onClick={() => page.openCreate()}
+                leftIcon={<FolderPlus aria-hidden />}
+                aria-label={t('menu.addCategory')}
+                onClick={page.openCreateCategory}
               >
-                {t('menu.addItem')}
+                {t('menu.addCategory')}
               </Button>
-            </HeaderActions>
+            </EmptyActions>
           }
         />
       )}
@@ -229,11 +250,48 @@ function MenuBody({ restaurant }: { restaurant: Restaurant }) {
         </Layout>
       )}
 
-      {page.groups.length > 0 && (
-        <FooterBar>
-          <Button onClick={() => page.goToQr()}>{t('menu.nextQr')}</Button>
-        </FooterBar>
-      )}
+      <BottomSheet
+        open={page.actionsOpen}
+        onClose={page.closeActions}
+        title={t('menu.actionsTitle')}
+      >
+        <ActionList>
+          <Button
+            variant="outline"
+            fullWidth
+            leftIcon={<Download aria-hidden />}
+            loading={page.downloadingSample}
+            onClick={page.onActionsDownload}
+          >
+            {t('menu.downloadSample')}
+          </Button>
+          <Button
+            variant="outline"
+            fullWidth
+            leftIcon={<Upload aria-hidden />}
+            disabled={page.generating}
+            onClick={() => page.onActionsUpload(fileRef.current)}
+          >
+            {t('menu.uploadExcel')}
+          </Button>
+          <Button
+            variant="outline"
+            fullWidth
+            leftIcon={<FolderPlus aria-hidden />}
+            onClick={page.onActionsAddCategory}
+          >
+            {t('menu.addCategory')}
+          </Button>
+          <Button
+            fullWidth
+            leftIcon={<Plus aria-hidden />}
+            disabled={page.categoryOptions.length === 0}
+            onClick={page.onActionsAddItem}
+          >
+            {t('menu.addItem')}
+          </Button>
+        </ActionList>
+      </BottomSheet>
 
       <BottomSheet
         open={page.sheetOpen}
@@ -242,18 +300,13 @@ function MenuBody({ restaurant }: { restaurant: Restaurant }) {
       >
         <SheetForm onSubmit={page.onSaveItem}>
           {page.itemError && <SheetError>{page.itemError}</SheetError>}
-          <label>
-            <FormLabel>{t('menu.category')}</FormLabel>
-            <Select {...page.form.register('categoryId', { required: true })}>
-              {page.groups
-                .filter((group) => group.id)
-                .map((group) => (
-                  <option key={group.id} value={group.id ?? ''}>
-                    {group.name}
-                  </option>
-                ))}
-            </Select>
-          </label>
+          <FormField label={t('menu.category')}>
+            <Select
+              value={page.categoryId}
+              options={page.categoryOptions}
+              onChange={page.setCategoryId}
+            />
+          </FormField>
           <TextField
             label={t('menu.itemName')}
             placeholder={t('menu.itemNamePlaceholder')}
@@ -280,19 +333,45 @@ function MenuBody({ restaurant }: { restaurant: Restaurant }) {
           {page.editing && (
             <Button
               type="button"
-              variant={page.deleteConfirming ? 'danger' : 'outline'}
+              variant="outline"
               fullWidth
               leftIcon={<Trash2 aria-hidden />}
-              loading={page.deleting}
-              onClick={page.onDeleteClick}
+              onClick={page.askDelete}
             >
-              {page.deleteConfirming
-                ? t('common:actions.confirm')
-                : t('common:actions.delete')}
+              {t('common:actions.delete')}
             </Button>
           )}
         </SheetForm>
       </BottomSheet>
+
+      <BottomSheet
+        open={page.categorySheetOpen}
+        onClose={page.closeCategorySheet}
+        title={t('menu.addCategoryTitle')}
+      >
+        <SheetForm onSubmit={page.onSaveCategory}>
+          {page.categoryError && <SheetError>{page.categoryError}</SheetError>}
+          <TextField
+            label={t('menu.categoryName')}
+            placeholder={t('menu.categoryNamePlaceholder')}
+            autoFocus
+            {...page.categoryForm.register('name', { required: true, minLength: 1 })}
+          />
+          <Button type="submit" fullWidth loading={page.savingCategory}>
+            {t('menu.saveCategory')}
+          </Button>
+        </SheetForm>
+      </BottomSheet>
+
+      <ConfirmDialog
+        open={page.deleteOpen}
+        title={t('menu.deleteConfirmTitle')}
+        message={t('menu.deleteConfirm')}
+        confirmLabel={t('common:actions.delete')}
+        loading={page.deleting}
+        onClose={page.closeDelete}
+        onConfirm={page.confirmDelete}
+      />
     </Page>
   )
 }

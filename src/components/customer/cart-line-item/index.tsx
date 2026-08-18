@@ -3,12 +3,13 @@ import { useTranslation } from 'react-i18next'
 
 import { IconButton } from '@/components/global/icon-button'
 import { QuantityControl } from '@/components/global/quantity-control'
+import { TextField } from '@/components/global/field'
 import { VegMark } from '@/components/global/veg-mark'
 import type { CartLine } from '@/lib/cart/cart-context'
 import { formatMoney } from '@/utils/format'
 
 import { lineMeta } from './helper'
-import { Controls, Main, Meta, Name, Notes, Price, Row, Side, TopLine } from './styled'
+import { Controls, Main, Meta, Name, Price, Row, Side, TopLine } from './styled'
 
 export interface CartLineItemProps {
   line: CartLine
@@ -16,6 +17,7 @@ export interface CartLineItemProps {
   onIncrement: () => void
   onDecrement: () => void
   onRemove: () => void
+  onNotes: (notes: string) => void
 }
 
 export function CartLineItem({
@@ -24,8 +26,9 @@ export function CartLineItem({
   onIncrement,
   onDecrement,
   onRemove,
+  onNotes,
 }: CartLineItemProps) {
-  const { t } = useTranslation('common')
+  const { t } = useTranslation(['customer', 'common'])
   const meta = lineMeta(line)
 
   return (
@@ -36,7 +39,12 @@ export function CartLineItem({
           <Name>{line.item.name}</Name>
         </TopLine>
         {meta && <Meta>{meta}</Meta>}
-        {line.notes && <Notes>{line.notes}</Notes>}
+        <TextField
+          label={t('cart.itemNotes')}
+          placeholder={t('cart.itemNotesPlaceholder')}
+          value={line.notes ?? ''}
+          onChange={(event) => onNotes(event.target.value)}
+        />
         <Controls>
           <QuantityControl
             value={line.quantity}
@@ -49,7 +57,7 @@ export function CartLineItem({
       </Main>
       <Side>
         <IconButton
-          label={t('actions.remove')}
+          label={t('common:actions.remove')}
           icon={<Trash2 aria-hidden />}
           size="sm"
           tone="danger"

@@ -2,8 +2,10 @@ import { NavLink, Navigate, Outlet } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 
 import { ClerkUserButton } from '@/components/dashboard/clerk-user-button'
-import { BrandMark } from '@/components/global/brand-mark'
+import { KitchenAlert } from '@/components/dashboard/kitchen-alert'
+import { LogoutButton } from '@/components/dashboard/logout-confirm'
 import { VenueSwitcher } from '@/components/dashboard/venue-switcher'
+import { BrandMark } from '@/components/global/brand-mark'
 import { Button } from '@/components/global/button'
 import { Skeleton } from '@/components/global/skeleton'
 import type { DashboardOutlet } from '@/hooks/dashboard/context'
@@ -37,7 +39,6 @@ export function DashboardLayout() {
     isLoading,
     isError,
     refetch,
-    logout,
     exitImpersonation,
     restaurants,
     switchVenue,
@@ -65,9 +66,7 @@ export function DashboardLayout() {
                 {t('admin.backAdmin')}
               </Button>
             )}
-            <Button variant="outline" onClick={logout}>
-              {t('nav.logout')}
-            </Button>
+            <LogoutButton />
           </div>
         </Centered>
       </Shell>
@@ -139,13 +138,12 @@ export function DashboardLayout() {
             {user && <UserName>{user.fullName}</UserName>}
           </AccountRow>
           <LogoutWrap>
-            <Button variant="outline" size="sm" fullWidth onClick={logout}>
-              {t('nav.logout')}
-            </Button>
+            <LogoutButton size="sm" fullWidth />
           </LogoutWrap>
         </SidebarFoot>
       </Sidebar>
 
+      <KitchenAlert restaurantId={restaurant?.id} />
       <Main data-scroll-root>
         {impersonation && (
           <ViewingBanner>
@@ -161,7 +159,7 @@ export function DashboardLayout() {
         <Outlet context={context} />
       </Main>
 
-      <BottomNav $count={user?.isSuperAdmin ? 5 : 4}>
+      <BottomNav $count={user?.isSuperAdmin ? 6 : 5}>
         {NAV_ITEMS.map((item) => {
           const Icon = item.icon
           return (

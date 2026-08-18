@@ -26,6 +26,27 @@ export const Form = styled.form`
   }
 `
 
+export const Featured = styled.div`
+  margin-bottom: 24px;
+  max-width: 360px;
+
+  ${({ theme }) => theme.media.sm} {
+    max-width: 380px;
+  }
+
+  ${({ theme }) => theme.media.md} {
+    max-width: 400px;
+  }
+
+  ${({ theme }) => theme.media.lg} {
+    max-width: 420px;
+  }
+
+  ${({ theme }) => theme.media.xl} {
+    max-width: 440px;
+  }
+`
+
 export const Grid = styled.div`
   display: grid;
   gap: 16px;
@@ -35,7 +56,15 @@ export const Grid = styled.div`
     grid-template-columns: repeat(2, 1fr);
   }
 
+  ${({ theme }) => theme.media.md} {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
   ${({ theme }) => theme.media.lg} {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  ${({ theme }) => theme.media.xl} {
     grid-template-columns: repeat(3, 1fr);
   }
 `

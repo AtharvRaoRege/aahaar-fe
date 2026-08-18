@@ -1,8 +1,9 @@
 import { useEffect, useState, useSyncExternalStore } from 'react'
 import { useMutation, useQuery } from '@tanstack/react-query'
-import { useForm } from 'react-hook-form'
+import { useForm, useWatch } from 'react-hook-form'
 
 import { authApi } from '@/lib/api/auth'
+import { reviewsApi } from '@/lib/api/reviews'
 import { restaurantsApi } from '@/lib/api/restaurants'
 import { tokenStore } from '@/lib/auth/token-store'
 import { impersonationStore } from '@/lib/dashboard/impersonation-store'
@@ -48,6 +49,10 @@ export function useSettingsPage(restaurant: Restaurant) {
   const venuesQuery = useQuery({
     queryKey: queryKeys.restaurants,
     queryFn: () => restaurantsApi.list(),
+  })
+  const ratingsQuery = useQuery({
+    queryKey: queryKeys.reviewSummary(restaurant.id),
+    queryFn: () => reviewsApi.summary(restaurant.id),
   })
 
   useEffect(() => {
@@ -99,6 +104,8 @@ export function useSettingsPage(restaurant: Restaurant) {
     },
   })
 
+  const venueKind = useWatch({ control: form.control, name: 'venueKind' })
+  const addVenueKind = useWatch({ control: addForm.control, name: 'venueKind' })
   const publicUrl =
     typeof window === 'undefined'
       ? `/r/${restaurant.slug}`
@@ -131,6 +138,12 @@ export function useSettingsPage(restaurant: Restaurant) {
       impersonationStore.clear()
       restaurantStore.set(restaurantId)
     },
+    venueKind,
+    setVenueKind: (value: string) =>
+      form.setValue('venueKind', value as Restaurant['venueKind'], {
+        shouldDirty: true,
+        shouldValidate: true,
+      }),
     addOpen,
     openAdd: () => setAddOpen(true),
     closeAdd: () => {
@@ -138,8 +151,20 @@ export function useSettingsPage(restaurant: Restaurant) {
       addForm.reset({ name: '', venueKind: 'RESTAURANT' })
     },
     addForm,
+    addVenueKind,
+    setAddVenueKind: (value: string) =>
+      addForm.setValue('venueKind', value as Restaurant['venueKind'], {
+        shouldDirty: true,
+        shouldValidate: true,
+      }),
     onAddVenue: addForm.handleSubmit((values) => addVenue.mutate(values)),
     adding: addVenue.isPending,
     addError: addVenue.isError ? errorMessage(addVenue.error) : '',
+    ratings: ratingsQuery.data ?? {
+      average: 0,
+      count: 0,
+      distribution: { '1': 0, '2': 0, '3': 0, '4': 0, '5': 0 },
+    },
+    ratingsLoading: ratingsQuery.isLoading,
   }
 }

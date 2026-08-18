@@ -1,8 +1,7 @@
 import { useMemo, useState, type ChangeEvent } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { useForm } from 'react-hook-form'
+import { useForm, useWatch } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
-import { useNavigate } from 'react-router-dom'
 import {
   Cake,
   CupSoda,
@@ -16,10 +15,15 @@ import {
   type LucideIcon,
 } from 'lucide-react'
 
+import type { SelectOption } from '@/components/global/select'
 import { menuApi } from '@/lib/api/menu'
 import { queryKeys } from '@/lib/query/keys'
 import type { MenuCategoryGroup, MenuItem } from '@/types/menu'
 import { errorMessage } from '@/utils/error-message'
+
+export interface CategoryForm {
+  name: string
+}
 
 export interface ItemForm {
   name: string
@@ -27,6 +31,10 @@ export interface ItemForm {
   basePrice: number
   isVegetarian: boolean
   categoryId: string
+}
+
+const EMPTY_CATEGORY_FORM: CategoryForm = {
+  name: '',
 }
 
 const EMPTY_FORM: ItemForm = {
@@ -58,11 +66,12 @@ const MAX_IMPORT_BYTES = 5 * 1024 * 1024
 
 export function useMenuManager(restaurantId: string) {
   const { t } = useTranslation('dashboard')
-  const navigate = useNavigate()
   const queryClient = useQueryClient()
   const [sheetOpen, setSheetOpen] = useState(false)
   const [editing, setEditing] = useState<MenuItem | null>(null)
-  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null)
+  const [deleteOpen, setDeleteOpen] = useState(false)
+  const [categorySheetOpen, setCategorySheetOpen] = useState(false)
+  const [actionsOpen, setActionsOpen] = useState(false)
   const [activeId, setActiveId] = useState<string | null>(null)
   const [search, setSearch] = useState('')
   const [jobId, setJobId] = useState<string | null>(null)
@@ -77,9 +86,20 @@ export function useMenuManager(restaurantId: string) {
     queryClient.invalidateQueries({ queryKey: queryKeys.dashboardMenu(restaurantId) })
 
   const form = useForm<ItemForm>({ defaultValues: EMPTY_FORM })
+  const categoryForm = useForm<CategoryForm>({ defaultValues: EMPTY_CATEGORY_FORM })
   const groups = useMemo(() => query.data?.categories ?? [], [query.data])
   const firstCategoryId = groups.find((group) => group.id)?.id ?? ''
   const selectedId = activeId ?? firstCategoryId
+  const categoryId = useWatch({ control: form.control, name: 'categoryId' })
+  const categoryOptions = useMemo<SelectOption[]>(
+    () =>
+      groups
+        .filter((group): group is MenuCategoryGroup & { id: string } => Boolean(group.id))
+        .map((group) => ({ value: group.id, label: group.name })),
+    [groups],
+  )
+  const setCategoryId = (value: string) =>
+    form.setValue('categoryId', value, { shouldDirty: true, shouldValidate: true })
 
   const visibleGroups = useMemo(() => {
     const needle = search.trim().toLowerCase()
@@ -129,8 +149,18 @@ export function useMenuManager(restaurantId: string) {
   const deleteItem = useMutation({
     mutationFn: (itemId: string) => menuApi.deleteItem(itemId),
     onSuccess: () => {
-      setConfirmDeleteId(null)
+      setDeleteOpen(false)
       closeSheet()
+      void invalidate()
+    },
+  })
+
+  const addCategory = useMutation({
+    mutationFn: (values: CategoryForm) =>
+      menuApi.createCategory(restaurantId, { name: values.name.trim() }),
+    onSuccess: (category) => {
+      setActiveId(category.id)
+      closeCategorySheet()
       void invalidate()
     },
   })
@@ -176,8 +206,19 @@ export function useMenuManager(restaurantId: string) {
   const closeSheet = () => {
     setSheetOpen(false)
     setEditing(null)
-    setConfirmDeleteId(null)
+    setDeleteOpen(false)
     form.reset({ ...EMPTY_FORM, categoryId: firstCategoryId })
+  }
+
+  const closeCategorySheet = () => {
+    setCategorySheetOpen(false)
+    categoryForm.reset(EMPTY_CATEGORY_FORM)
+  }
+
+  const openCreateCategory = () => {
+    addCategory.reset()
+    categoryForm.reset(EMPTY_CATEGORY_FORM)
+    setCategorySheetOpen(true)
   }
 
   const openCreate = (categoryId?: string) => {
@@ -187,6 +228,13 @@ export function useMenuManager(restaurantId: string) {
       categoryId: categoryId || selectedId || firstCategoryId,
     })
     setSheetOpen(true)
+  }
+
+  const closeActions = () => setActionsOpen(false)
+
+  const runFromActions = (fn: () => void) => {
+    setActionsOpen(false)
+    fn()
   }
 
   const openEdit = (item: MenuItem) => {
@@ -236,7 +284,32 @@ export function useMenuManager(restaurantId: string) {
     openCreate,
     openEdit,
     closeSheet,
+    categorySheetOpen,
+    openCreateCategory,
+    closeCategorySheet,
+    actionsOpen,
+    openActions: () => setActionsOpen(true),
+    closeActions,
+    onActionsAddItem: () => runFromActions(() => openCreate()),
+    onActionsAddCategory: () => runFromActions(() => openCreateCategory()),
+    onActionsDownload: () => runFromActions(() => downloadSample.mutate()),
+    onActionsUpload: (input: HTMLInputElement | null) => {
+      setActionsOpen(false)
+      input?.click()
+    },
+    categoryForm,
+    onSaveCategory: categoryForm.handleSubmit((values) => {
+      if (!values.name.trim()) return
+      addCategory.mutate(values)
+    }),
+    savingCategory: addCategory.isPending,
+    categoryError: addCategory.isError
+      ? errorMessage(addCategory.error, t('menu.categoryExists'))
+      : '',
     form,
+    categoryId,
+    categoryOptions,
+    setCategoryId,
     onSaveItem: form.handleSubmit((values) => {
       if (!values.categoryId) return
       if (editing) editItem.mutate(values)
@@ -244,11 +317,18 @@ export function useMenuManager(restaurantId: string) {
     }),
     saving,
     itemError,
-    deleteConfirming: Boolean(editing && confirmDeleteId === editing.id),
-    onDeleteClick: () => {
+    deleteOpen,
+    askDelete: () => {
       if (!editing) return
-      if (confirmDeleteId === editing.id) deleteItem.mutate(editing.id)
-      else setConfirmDeleteId(editing.id)
+      setDeleteOpen(true)
+    },
+    closeDelete: () => {
+      if (deleteItem.isPending) return
+      setDeleteOpen(false)
+    },
+    confirmDelete: () => {
+      if (!editing) return
+      deleteItem.mutate(editing.id)
     },
     deleting: deleteItem.isPending,
     onFileChange: (event: ChangeEvent<HTMLInputElement>) => {
@@ -277,6 +357,5 @@ export function useMenuManager(restaurantId: string) {
       (importJob.data?.status === 'failed'
         ? importJob.data.error || t('menu.importFailed')
         : ''),
-    goToQr: () => navigate('/dashboard/qr'),
   }
 }

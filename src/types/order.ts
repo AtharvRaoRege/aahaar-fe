@@ -61,6 +61,7 @@ export interface Order {
   createdAt: string
   updatedAt: string
   customer: OrderCustomer | null
+  reviewed?: boolean
   items: OrderItem[]
   statusHistory: OrderStatusHistoryEntry[]
 }
@@ -90,4 +91,5 @@ export interface OrderEvent {
   tableNumber: string | null
   roomNumber: string | null
   updatedAt: string
+  itemsAdded?: boolean
 }

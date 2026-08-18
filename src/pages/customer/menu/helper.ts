@@ -2,6 +2,13 @@ import { useMemo, useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { useNavigate } from 'react-router-dom'
 
+import {
+  filterMenuGroups,
+  type DietFilter,
+  type PriceBand,
+  type PriceSort,
+} from '@/components/customer/menu-filters/helper'
+import { useOpenOrder } from '@/hooks/customer/use-open-order/helper'
 import { publicApi } from '@/lib/api/public'
 import { useCart } from '@/lib/cart/cart-context'
 import type { AddToCartInput } from '@/lib/cart/cart-context'
@@ -20,6 +27,7 @@ export function useMenuPage(slug: string, restaurantId: string, tableNumber: str
   const navigate = useNavigate()
   const cart = useCart()
   const session = sessionStore.get(restaurantId)
+  const openOrder = useOpenOrder(restaurantId)
 
   const menuQuery = useQuery({
     queryKey: queryKeys.publicMenu(slug),
@@ -29,8 +37,12 @@ export function useMenuPage(slug: string, restaurantId: string, tableNumber: str
 
   const [search, setSearch] = useState('')
   const [activeCategory, setActiveCategory] = useState<string>(ALL)
+  const [diet, setDiet] = useState<DietFilter>('all')
+  const [priceBand, setPriceBand] = useState<PriceBand>('all')
+  const [sort, setSort] = useState<PriceSort>('menu')
   const [selected, setSelected] = useState<MenuItem | null>(null)
   const [sheetOpen, setSheetOpen] = useState(false)
+  const [filterSheetOpen, setFilterSheetOpen] = useState(false)
 
   const groups = useMemo(
     () => menuQuery.data?.categories ?? [],
@@ -39,19 +51,26 @@ export function useMenuPage(slug: string, restaurantId: string, tableNumber: str
 
   const visibleGroups = useMemo<MenuCategoryGroup[]>(() => {
     const term = search.trim().toLowerCase()
-    if (term) {
-      const matched = groups
-        .flatMap((g) => g.items)
-        .filter(
-          (item) =>
-            item.name.toLowerCase().includes(term) ||
-            (item.description ?? '').toLowerCase().includes(term),
-        )
-      return [{ id: 'search', name: 'Results', sortOrder: 0, items: matched }]
-    }
-    if (activeCategory === ALL) return groups
-    return groups.filter((g) => (g.id ?? 'other') === activeCategory)
-  }, [groups, search, activeCategory])
+    const scoped = term
+      ? [
+          {
+            id: 'search',
+            name: 'Results',
+            sortOrder: 0,
+            items: groups
+              .flatMap((group) => group.items)
+              .filter(
+                (item) =>
+                  item.name.toLowerCase().includes(term) ||
+                  (item.description ?? '').toLowerCase().includes(term),
+              ),
+          },
+        ]
+      : activeCategory === ALL
+        ? groups
+        : groups.filter((group) => (group.id ?? 'other') === activeCategory)
+    return filterMenuGroups(scoped, diet, priceBand, sort)
+  }, [groups, search, activeCategory, diet, priceBand, sort])
 
   const openDetails = (item: MenuItem) => {
     setSelected(item)
@@ -69,8 +88,17 @@ export function useMenuPage(slug: string, restaurantId: string, tableNumber: str
     setSearch,
     activeCategory,
     setActiveCategory,
+    diet,
+    setDiet,
+    priceBand,
+    setPriceBand,
+    sort,
+    setSort,
+    filtersOn: diet !== 'all' || priceBand !== 'all' || sort !== 'menu',
+    priceFiltersOn: priceBand !== 'all' || sort !== 'menu',
     selected,
     sheetOpen,
+    filterSheetOpen,
     openDetails,
     closeSheet: () => setSheetOpen(false),
     addQuick: (item: MenuItem) => cart.addItem(item),
@@ -81,5 +109,16 @@ export function useMenuPage(slug: string, restaurantId: string, tableNumber: str
     cartCount: cart.count,
     cartSubtotal: cart.subtotal,
     goToCart: () => navigate(customerPath(slug, '/cart', table)),
+    openFilters: () => setFilterSheetOpen(true),
+    closeFilters: () => setFilterSheetOpen(false),
+    clearFilters: () => {
+      setPriceBand('all')
+      setSort('menu')
+    },
+    openOrder: openOrder.order,
+    goTrack: () => {
+      if (!openOrder.order) return
+      navigate(customerPath(slug, `/track/${openOrder.order.id}`, table))
+    },
   }
 }

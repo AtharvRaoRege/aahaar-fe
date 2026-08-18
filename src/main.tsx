@@ -16,6 +16,7 @@ import { clerkPublishableKey, clerkRedirectOrigins, isClerkEnabled } from '@/lib
 import { queryClient } from '@/lib/query/client'
 import { GlobalStyle } from '@/styles/global'
 import { theme } from '@/styles/theme'
+import { captureInstallPrompt } from '@/lib/pwa/install-store'
 
 export function Root() {
   return (
@@ -30,6 +31,8 @@ export function Root() {
     </QueryClientProvider>
   )
 }
+
+captureInstallPrompt()
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
@@ -53,6 +56,6 @@ createRoot(document.getElementById('root')!).render(
 
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    void navigator.serviceWorker.register('/sw.js')
+    void navigator.serviceWorker.register('/sw.js', { updateViaCache: 'none' })
   })
 }

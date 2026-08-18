@@ -16,10 +16,13 @@ import {
   Footer,
   FooterInner,
   Header,
+  Hint,
   List,
   NotesWrap,
   Page,
+  PayHint,
   Title,
+  TotalLine,
   Totals,
   TotalValue,
 } from './styled'
@@ -28,6 +31,7 @@ export function CartPage() {
   const { t } = useTranslation(['customer', 'common'])
   const { restaurant, slug, tableNumber } = useCustomerContext()
   const page = useCartPage(slug, restaurant.id, tableNumber)
+  const adding = Boolean(page.openOrder)
 
   if (page.count === 0) {
     return (
@@ -42,12 +46,10 @@ export function CartPage() {
         </Header>
         <EmptyWrap>
           <EmptyState
-            emoji="🛒"
+            emoji="🍽️"
             title={t('cart.empty')}
-            hint={t('cart.emptyHint')}
-            action={
-              <Button onClick={page.goMenu}>{t('cart.browse')}</Button>
-            }
+            hint={adding ? t('cart.emptyOpenHint') : t('cart.emptyHint')}
+            action={<Button onClick={page.goMenu}>{t('cart.browse')}</Button>}
           />
         </EmptyWrap>
       </Page>
@@ -65,6 +67,8 @@ export function CartPage() {
         <Title>{t('cart.title')}</Title>
       </Header>
 
+      {adding && <Hint>{t('cart.addToOpen', { number: page.openOrder?.orderNumber })}</Hint>}
+
       <List>
         {page.lines.map((line) => (
           <CartLineItem
@@ -74,6 +78,7 @@ export function CartPage() {
             onIncrement={() => page.increment(line.lineId)}
             onDecrement={() => page.decrement(line.lineId)}
             onRemove={() => page.removeLine(line.lineId)}
+            onNotes={(notes) => page.setLineNotes(line.lineId, notes)}
           />
         ))}
       </List>
@@ -91,20 +96,30 @@ export function CartPage() {
         <FooterInner>
           {page.failed && (
             <ErrorBanner>
-              {page.errorMessage === 'NO_SESSION' ? t('cart.noSession') : (page.errorMessage ?? t('cart.failed'))}
+              {page.errorMessage === 'NO_SESSION'
+                ? t('cart.noSession')
+                : (page.errorMessage ?? t('cart.failed'))}
             </ErrorBanner>
           )}
           <Totals>
-            <span>{t('common:labels.subtotal')}</span>
-            <TotalValue>{formatMoney(page.subtotal, restaurant.currency)}</TotalValue>
+            <TotalLine>
+              <span>{t('common:labels.subtotal')}</span>
+              <span>{formatMoney(page.subtotal, restaurant.currency)}</span>
+            </TotalLine>
+            <TotalLine $emphasis>
+              <span>{t('common:labels.total')}</span>
+              <TotalValue>{formatMoney(page.subtotal, restaurant.currency)}</TotalValue>
+            </TotalLine>
+            <PayHint>{t('cart.payHint')}</PayHint>
           </Totals>
-          <Button
-            size="lg"
-            fullWidth
-            loading={page.placing}
-            onClick={page.placeOrder}
-          >
-            {page.placing ? t('cart.placing') : t('common:actions.placeOrder')}
+          <Button size="lg" fullWidth loading={page.placing} onClick={page.placeOrder}>
+            {page.placing
+              ? adding
+                ? t('cart.adding')
+                : t('cart.placing')
+              : adding
+                ? t('common:actions.addToOrder')
+                : t('common:actions.placeOrder')}
           </Button>
         </FooterInner>
       </Footer>

@@ -6,12 +6,12 @@ import {
   QrCode,
   Settings,
   Shield,
+  Star,
   UtensilsCrossed,
   type LucideIcon,
 } from 'lucide-react'
 
 import { restaurantsApi } from '@/lib/api/restaurants'
-import { staffSignOut } from '@/lib/auth/staff-sign-out'
 import { useAuth } from '@/lib/auth/use-auth'
 import { impersonationStore } from '@/lib/dashboard/impersonation-store'
 import { restaurantStore } from '@/lib/dashboard/restaurant-store'
@@ -19,13 +19,14 @@ import { queryKeys } from '@/lib/query/keys'
 
 export const NAV_ITEMS: ReadonlyArray<{
   to: string
-  key: 'nav.orders' | 'nav.menu' | 'nav.qr' | 'nav.settings'
+  key: 'nav.orders' | 'nav.menu' | 'nav.qr' | 'nav.ratings' | 'nav.settings'
   end: boolean
   icon: LucideIcon
 }> = [
   { to: '/dashboard', key: 'nav.orders', end: true, icon: ClipboardList },
   { to: '/dashboard/menu', key: 'nav.menu', end: false, icon: UtensilsCrossed },
   { to: '/dashboard/qr', key: 'nav.qr', end: false, icon: QrCode },
+  { to: '/dashboard/ratings', key: 'nav.ratings', end: false, icon: Star },
   { to: '/dashboard/settings', key: 'nav.settings', end: false, icon: Settings },
 ]
 
@@ -74,12 +75,6 @@ export function useDashboardLayout() {
     if (restaurant && !impersonation) restaurantStore.set(restaurant.id)
   }, [restaurant, impersonation])
 
-  const logout = () => {
-    void staffSignOut().finally(() => {
-      navigate('/dashboard/login', { replace: true })
-    })
-  }
-
   const exitImpersonation = () => {
     impersonationStore.clear()
     navigate('/dashboard/admin')
@@ -96,7 +91,6 @@ export function useDashboardLayout() {
     isLoading: listLoading || viewLoading,
     isError: impersonation ? viewedQuery.isError : ownQuery.isError,
     refetch: impersonation ? viewedQuery.refetch : ownQuery.refetch,
-    logout,
     exitImpersonation,
     restaurants,
     switchVenue: (restaurantId: string) => {

@@ -16,6 +16,7 @@
   "dependencies": {
     "@clerk/react": "^6.14.3",
     "@fontsource/space-grotesk": "^5.1.0",
+    "@supabase/supabase-js": "^2.112.3",
     "@tanstack/react-query": "^5.62.0",
     "axios": "^1.7.9",
     "i18next": "^24.2.0",

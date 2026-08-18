@@ -23,6 +23,7 @@ export const SOCKET_EVENTS = {
   orderStatusUpdated: 'order:status_updated',
   orderAccepted: 'order:accepted',
   orderRejected: 'order:rejected',
+  reviewCreated: 'review:created',
   joinRestaurant: 'join_restaurant',
   joinOrder: 'join_order',
 } as const

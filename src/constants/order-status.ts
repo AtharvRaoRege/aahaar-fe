@@ -14,7 +14,7 @@ export const ORDER_STATUS_VISUAL: Record<OrderStatus, StatusVisual> = {
   PENDING: { bg: palette.mango, fg: palette.ink, icon: Clock },
   ACCEPTED: { bg: palette.chutney, fg: palette.white, icon: Check },
   PREPARING: { bg: palette.tomato, fg: palette.white, icon: Flame },
-  READY: { bg: palette.violet, fg: palette.ink, icon: Bell },
+  READY: { bg: palette.violet, fg: palette.white, icon: Bell },
   SERVED: { bg: palette.chutney, fg: palette.white, icon: Utensils },
   COMPLETED: { bg: palette.ink, fg: palette.white, icon: CheckCheck },
   REJECTED: { bg: palette.chili, fg: palette.white, icon: X },

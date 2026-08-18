@@ -1,7 +1,7 @@
 import styled from 'styled-components'
 
 import { dashboardHint, dashboardPage, dashboardTitle } from '@/pages/dashboard/shared'
-import { palette, shadows } from '@/styles/theme'
+import { palette, shadows, spacing } from '@/styles/theme'
 
 export const Page = styled.div`
   ${dashboardPage};
@@ -93,16 +93,24 @@ export const Grid = styled.div`
   display: grid;
   gap: 12px;
   grid-template-columns: minmax(0, 1fr);
+  padding-bottom: ${spacing.xl};
 
   ${({ theme }) => theme.media.sm} {
     gap: 16px;
+    padding-bottom: ${spacing['2xl']};
   }
 
   ${({ theme }) => theme.media.md} {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+    padding-bottom: ${spacing['2xl']};
+  }
+
+  ${({ theme }) => theme.media.lg} {
+    padding-bottom: ${spacing['3xl']};
   }
 
   ${({ theme }) => theme.media.xl} {
     grid-template-columns: repeat(3, minmax(0, 1fr));
+    padding-bottom: ${spacing['3xl']};
   }
 `

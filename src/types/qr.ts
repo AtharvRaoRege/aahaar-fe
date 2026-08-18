@@ -5,4 +5,5 @@ export interface QrCode {
   tableNumber: string | null
   targetUrl: string
   imageDataUrl: string
+  kind?: 'TABLE' | 'REVIEW'
 }

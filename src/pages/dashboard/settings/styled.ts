@@ -5,7 +5,7 @@ import { palette, radii } from '@/styles/theme'
 
 export const Page = styled.div`
   ${dashboardPage};
-  max-width: 640px;
+  max-width: none;
 `
 
 export const Title = styled.h1`
@@ -20,13 +20,22 @@ export const SectionLabel = styled.h2`
   font-size: 0.8125rem;
   font-weight: 600;
   color: ${palette.tomato};
-  margin-bottom: 8px;
+  margin: 24px 0 8px;
+
+  ${({ theme }) => theme.media.md} {
+    margin-top: 32px;
+  }
 `
 
 export const Form = styled.form`
   display: grid;
   gap: 16px;
   margin-top: 20px;
+`
+
+export const FormColumn = styled.div`
+  width: 100%;
+  max-width: 720px;
 `
 
 export const Banner = styled.p<{ $tone: 'ok' | 'err' }>`

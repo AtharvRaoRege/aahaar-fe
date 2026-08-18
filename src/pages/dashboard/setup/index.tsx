@@ -1,20 +1,20 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { useForm } from 'react-hook-form'
+import { useForm, useWatch } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 
+import { LogoutButton } from '@/components/dashboard/logout-confirm'
 import { Button } from '@/components/global/button'
 import { FormField, TextField } from '@/components/global/field'
+import { Select } from '@/components/global/select'
 import { authApi } from '@/lib/api/auth'
 import { restaurantsApi } from '@/lib/api/restaurants'
-import { staffSignOut } from '@/lib/auth/staff-sign-out'
 import { tokenStore } from '@/lib/auth/token-store'
 import { restaurantStore } from '@/lib/dashboard/restaurant-store'
 import { queryKeys } from '@/lib/query/keys'
 import type { Restaurant } from '@/types/restaurant'
 import { errorMessage } from '@/utils/error-message'
 
-import { Select } from '../menu/styled'
 import { Actions, ErrorText, Form, Inner, Page, Panel, Subtitle, Title } from '../access/styled'
 
 interface SetupForm {
@@ -29,6 +29,7 @@ export function SetupPage() {
   const form = useForm<SetupForm>({
     defaultValues: { name: '', venueKind: 'RESTAURANT' },
   })
+  const venueKind = useWatch({ control: form.control, name: 'venueKind' })
 
   const mutation = useMutation({
     mutationFn: (values: SetupForm) =>
@@ -55,11 +56,20 @@ export function SetupPage() {
               <ErrorText>{errorMessage(mutation.error) || t('setup.error')}</ErrorText>
             )}
             <FormField label={t('setup.kind')}>
-              <Select {...form.register('venueKind', { required: true })}>
-                <option value="RESTAURANT">{t('setup.restaurant')}</option>
-                <option value="HOTEL">{t('setup.hotel')}</option>
-                <option value="CAFE">{t('setup.cafe')}</option>
-              </Select>
+              <Select
+                value={venueKind}
+                options={[
+                  { value: 'RESTAURANT', label: t('setup.restaurant') },
+                  { value: 'HOTEL', label: t('setup.hotel') },
+                  { value: 'CAFE', label: t('setup.cafe') },
+                ]}
+                onChange={(value) =>
+                  form.setValue('venueKind', value as Restaurant['venueKind'], {
+                    shouldDirty: true,
+                    shouldValidate: true,
+                  })
+                }
+              />
             </FormField>
             <TextField
               label={t('setup.name')}
@@ -74,16 +84,7 @@ export function SetupPage() {
             </Button>
           </Form>
           <Actions>
-            <Button
-              variant="outline"
-              onClick={() => {
-                void staffSignOut().finally(() => {
-                  navigate('/dashboard/login', { replace: true })
-                })
-              }}
-            >
-              {t('nav.logout')}
-            </Button>
+            <LogoutButton />
           </Actions>
         </Panel>
       </Inner>

@@ -27,6 +27,7 @@ export interface MenuItem {
   isVegan: boolean
   spiceLevel: number
   sortOrder: number
+  isBestseller?: boolean
   variants: MenuVariant[]
   addons: MenuAddon[]
 }

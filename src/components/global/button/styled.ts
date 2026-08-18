@@ -36,9 +36,9 @@ export const Spinner = styled.span`
 
 const variantStyles: Record<ButtonVariant, ReturnType<typeof css>> = {
   primary: css`
-    background: ${palette.tomato};
-    color: ${palette.white};
-    border-color: ${palette.tomato};
+    background: ${({ theme }) => theme.colors.primary};
+    color: ${({ theme }) => theme.palette.white};
+    border-color: ${({ theme }) => theme.colors.primary};
   `,
   secondary: css`
     background: ${palette.mango};

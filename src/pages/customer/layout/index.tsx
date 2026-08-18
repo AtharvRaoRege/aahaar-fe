@@ -1,6 +1,8 @@
 import { useTranslation } from 'react-i18next'
 import { Navigate, Outlet } from 'react-router-dom'
 
+import { GuestOrderWatch } from '@/components/customer/guest-order-watch'
+import { GuestWelcome } from '@/components/customer/guest-welcome'
 import { EmptyState } from '@/components/global/empty-state'
 import { Skeleton } from '@/components/global/skeleton'
 import { CartProvider } from '@/lib/cart/cart-context'
@@ -12,8 +14,18 @@ import { Centered, LoadingGrid, Shell } from './styled'
 
 export function CustomerLayout() {
   const { t } = useTranslation(['customer', 'common'])
-  const { slug, query, tableNumber, onTrack, onIndex, needsTableInUrl, restPath, sessionQuery } =
-    useCustomerLayout()
+  const {
+    slug,
+    query,
+    tableNumber,
+    onTrack,
+    onReview,
+    onIndex,
+    needsTableInUrl,
+    needsIdentity,
+    markIdentified,
+    restPath,
+  } = useCustomerLayout()
 
   if (query.isLoading) {
     return (
@@ -43,7 +55,7 @@ export function CustomerLayout() {
     return <Navigate to={customerPath(slug, restPath === '/' ? '/menu' : restPath, tableNumber)} replace />
   }
 
-  if (!tableNumber && !onTrack) {
+  if (!tableNumber && !onTrack && !onReview) {
     return (
       <Shell>
         <Centered>
@@ -57,30 +69,16 @@ export function CustomerLayout() {
     )
   }
 
-  if (tableNumber && sessionQuery.isLoading) {
+  if (needsIdentity && tableNumber) {
     return (
       <Shell>
-        <Centered>
-          <LoadingGrid>
-            <Skeleton height="120px" />
-            <Skeleton height="24px" width="60%" />
-            <Skeleton height="220px" />
-          </LoadingGrid>
-        </Centered>
-      </Shell>
-    )
-  }
-
-  if (tableNumber && sessionQuery.isError) {
-    return (
-      <Shell>
-        <Centered>
-          <EmptyState
-            emoji="📱"
-            title={t('welcome.scanTitle')}
-            hint={t('welcome.scanFailed')}
-          />
-        </Centered>
+        <GuestWelcome
+          restaurantName={query.data.name}
+          restaurantId={query.data.id}
+          slug={slug}
+          tableNumber={tableNumber}
+          onReady={markIdentified}
+        />
       </Shell>
     )
   }
@@ -98,9 +96,13 @@ export function CustomerLayout() {
   return (
     <Shell>
       <CartProvider key={`${query.data.id}:${tableNumber ?? 'none'}`} restaurantId={query.data.id}>
+        <GuestOrderWatch
+          restaurantId={query.data.id}
+          slug={slug}
+          tableNumber={tableNumber}
+        />
         <Outlet context={context} />
       </CartProvider>
     </Shell>
   )
 }
-

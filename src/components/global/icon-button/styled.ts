@@ -17,8 +17,8 @@ const tones: Record<IconButtonTone, ReturnType<typeof css>> = {
     color: ${palette.ink};
   `,
   primary: css`
-    background: ${palette.tomato};
-    color: ${palette.white};
+    background: ${({ theme }) => theme.colors.primary};
+    color: ${({ theme }) => theme.palette.white};
   `,
   secondary: css`
     background: ${palette.mango};
@@ -32,6 +32,7 @@ const tones: Record<IconButtonTone, ReturnType<typeof css>> = {
 
 export const StyledIconButton = styled.button<Props>`
   display: inline-flex;
+  flex-shrink: 0;
   align-items: center;
   justify-content: center;
   width: ${({ $size }) => ($size === 'sm' ? '40px' : '48px')};

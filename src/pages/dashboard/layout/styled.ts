@@ -6,9 +6,12 @@ export const Shell = styled.div`
   flex: 1;
   display: flex;
   height: 100vh;
+  height: 100dvh;
   max-height: 100vh;
+  max-height: 100dvh;
   overflow: hidden;
   background: ${palette.canvas};
+  overscroll-behavior: none;
 `
 
 export const Sidebar = styled.aside`
@@ -76,12 +79,13 @@ export const NavLinkItem = styled.span<{ $active: boolean }>`
   font-weight: 600;
   border-radius: ${radii.md};
   background: ${({ $active }) => ($active ? palette.mango : 'transparent')};
-  color: ${palette.ink};
+  color: ${({ $active }) => ($active ? palette.white : palette.ink)};
 
   svg {
     width: 18px;
     height: 18px;
     flex-shrink: 0;
+    color: ${({ $active }) => ($active ? palette.white : palette.ink)};
     stroke-width: ${({ $active }) => ($active ? 1.75 : 1.5)};
   }
 `
@@ -165,7 +169,7 @@ export const Main = styled.main`
   overflow-y: auto;
   display: flex;
   flex-direction: column;
-  padding-bottom: 88px;
+  padding-bottom: calc(88px + env(safe-area-inset-bottom, 0px));
   -webkit-overflow-scrolling: touch;
 
   ${({ theme }) => theme.media.md} {
@@ -210,13 +214,14 @@ export const BottomLink = styled.span<{ $active: boolean }>`
   width: 100%;
   min-height: 56px;
   padding: 10px 4px;
-  color: ${({ $active }) => ($active ? palette.ink : palette.inkSoft)};
+  color: ${({ $active }) => ($active ? palette.white : palette.inkSoft)};
   background: ${({ $active }) => ($active ? palette.mango : 'transparent')};
   transition: transform 100ms ease-out, background 100ms ease-out, color 100ms ease-out;
 
   svg {
     width: 24px;
     height: 24px;
+    color: ${({ $active }) => ($active ? palette.white : 'currentColor')};
     stroke-width: ${({ $active }) => ($active ? 1.75 : 1.5)};
   }
 

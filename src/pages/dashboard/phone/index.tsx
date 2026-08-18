@@ -5,9 +5,9 @@ import { useNavigate } from 'react-router-dom'
 
 import { Button } from '@/components/global/button'
 import { TextField } from '@/components/global/field'
+import { LogoutButton } from '@/components/dashboard/logout-confirm'
 import { authApi } from '@/lib/api/auth'
 import { staffHomePath } from '@/lib/auth/staff-home'
-import { staffSignOut } from '@/lib/auth/staff-sign-out'
 import { tokenStore } from '@/lib/auth/token-store'
 import { errorMessage } from '@/utils/error-message'
 
@@ -51,16 +51,7 @@ export function PhonePage() {
             </Button>
           </Form>
           <Actions>
-            <Button
-              variant="outline"
-              onClick={() => {
-                void staffSignOut().finally(() => {
-                  navigate('/dashboard/login', { replace: true })
-                })
-              }}
-            >
-              {t('nav.logout')}
-            </Button>
+            <LogoutButton />
           </Actions>
         </Panel>
       </Inner>

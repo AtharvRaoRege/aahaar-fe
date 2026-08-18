@@ -110,6 +110,21 @@ export function useOrdersPage(restaurantId: string) {
     const onUpdated = (event: OrderEvent) => {
       applyEvent(queryClient, restaurantId, event)
       refreshList()
+      if (!event.itemsAdded) return
+      setFreshIds((prev) => {
+        const next = new Set(prev)
+        next.add(event.orderId)
+        return next
+      })
+      timers.push(
+        window.setTimeout(() => {
+          setFreshIds((prev) => {
+            const next = new Set(prev)
+            next.delete(event.orderId)
+            return next
+          })
+        }, 1600),
+      )
     }
     socket.io.on('reconnect_attempt', applyAuth)
     socket.on('connect', join)

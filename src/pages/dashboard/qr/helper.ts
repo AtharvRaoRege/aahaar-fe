@@ -28,6 +28,10 @@ export function useQrPage(restaurantId: string) {
     queryKey: queryKeys.qr(restaurantId),
     queryFn: () => qrApi.list(restaurantId),
   })
+  const reviewQuery = useQuery({
+    queryKey: queryKeys.reviewQr(restaurantId),
+    queryFn: () => qrApi.review(restaurantId),
+  })
 
   const create = useMutation({
     mutationFn: () =>
@@ -44,6 +48,9 @@ export function useQrPage(restaurantId: string) {
 
   return {
     query,
+    reviewQr: reviewQuery.data,
+    reviewLoading: reviewQuery.isLoading,
+    tableCodes: (query.data ?? []).filter((qr) => qr.kind !== 'REVIEW'),
     label,
     setLabel,
     tableNumber,

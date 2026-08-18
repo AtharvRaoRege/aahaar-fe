@@ -12,13 +12,17 @@ export function nextStatus(status: OrderStatus): OrderStatus | null {
   return NEXT_ACTION[status] ?? null
 }
 
-export function itemLines(order: Order): string[] {
+export function orderCardItems(order: Order) {
   return order.items.map((item) => {
     const extras = [
       item.variantSnapshot?.name,
       ...(item.addonSnapshot ?? []).map((addon) => addon.name),
     ].filter(Boolean)
-    const suffix = extras.length ? ` (${extras.join(', ')})` : ''
-    return `${item.quantity} × ${item.nameSnapshot}${suffix}`
+    return {
+      id: item.id,
+      label: `${item.quantity} × ${item.nameSnapshot}`,
+      extras: extras.length ? extras.join(', ') : null,
+      notes: item.notes?.trim() || null,
+    }
   })
 }

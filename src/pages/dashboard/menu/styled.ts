@@ -56,7 +56,7 @@ export const Hint = styled.p`
 
 export const Header = styled.header`
   display: flex;
-  flex-direction: row;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
   gap: ${spacing.sm};
@@ -67,37 +67,37 @@ export const Header = styled.header`
     margin-bottom: 0;
   }
 
+  ${({ theme }) => theme.media.sm} {
+    gap: ${spacing.sm};
+  }
+
   ${({ theme }) => theme.media.md} {
-    flex-wrap: wrap;
     align-items: flex-end;
+    gap: ${spacing.md};
+  }
+
+  ${({ theme }) => theme.media.lg} {
     gap: ${spacing.md} ${spacing.lg};
+  }
+
+  ${({ theme }) => theme.media.xl} {
+    gap: ${spacing.lg};
   }
 `
 
 export const HeaderActions = styled.div`
-  display: flex;
-  flex-shrink: 0;
-  align-items: center;
-  justify-content: flex-end;
-  gap: ${spacing.xs};
+  display: none;
 
-  button {
-    width: 40px;
-    min-width: 40px;
-    min-height: 40px;
-    padding: 0;
-  }
-
-  svg {
-    stroke-width: 1.75;
-  }
-
-  button span {
+  ${({ theme }) => theme.media.sm} {
     display: none;
   }
 
   ${({ theme }) => theme.media.md} {
+    display: flex;
+    flex: 1 1 100%;
     flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-end;
     gap: ${spacing.sm};
 
     button {
@@ -107,9 +107,85 @@ export const HeaderActions = styled.div`
       padding: 0 14px;
     }
 
-    button span {
-      display: inline;
+    svg {
+      stroke-width: 1.75;
     }
+  }
+
+  ${({ theme }) => theme.media.lg} {
+    flex: 1 1 auto;
+    gap: ${spacing.sm};
+  }
+
+  ${({ theme }) => theme.media.xl} {
+    gap: ${spacing.md};
+  }
+`
+
+export const MobileMore = styled.div`
+  display: flex;
+  flex-shrink: 0;
+
+  ${({ theme }) => theme.media.sm} {
+    display: flex;
+  }
+
+  ${({ theme }) => theme.media.md} {
+    display: none;
+  }
+
+  ${({ theme }) => theme.media.lg} {
+    display: none;
+  }
+
+  ${({ theme }) => theme.media.xl} {
+    display: none;
+  }
+`
+
+export const EmptyActions = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: ${spacing.sm};
+
+  ${({ theme }) => theme.media.sm} {
+    gap: ${spacing.sm};
+  }
+
+  ${({ theme }) => theme.media.md} {
+    gap: ${spacing.md};
+  }
+
+  ${({ theme }) => theme.media.lg} {
+    gap: ${spacing.md};
+  }
+
+  ${({ theme }) => theme.media.xl} {
+    gap: ${spacing.md};
+  }
+`
+
+export const ActionList = styled.div`
+  display: grid;
+  gap: ${spacing.sm};
+  padding-bottom: ${spacing.lg};
+
+  ${({ theme }) => theme.media.sm} {
+    gap: ${spacing.sm};
+  }
+
+  ${({ theme }) => theme.media.md} {
+    gap: ${spacing.md};
+  }
+
+  ${({ theme }) => theme.media.lg} {
+    gap: ${spacing.md};
+  }
+
+  ${({ theme }) => theme.media.xl} {
+    gap: ${spacing.md};
   }
 `
 
@@ -136,15 +212,14 @@ export const SearchSlot = styled.div`
 `
 
 export const Layout = styled.div`
-  flex: 1 1 80%;
+  flex: 1;
   display: grid;
   grid-template-columns: 1fr;
   grid-template-rows: auto minmax(0, 1fr);
   gap: ${spacing.sm};
   align-items: stretch;
   min-width: 0;
-  min-height: 80%;
-  height: 80%;
+  min-height: 0;
   overflow: hidden;
 
   ${({ theme }) => theme.media.sm} {
@@ -152,21 +227,18 @@ export const Layout = styled.div`
   }
 
   ${({ theme }) => theme.media.md} {
-    flex: 1;
-    min-height: 0;
-    height: auto;
-    grid-template-columns: 76px minmax(0, 1fr);
+    grid-template-columns: 128px minmax(0, 1fr);
     grid-template-rows: minmax(0, 1fr);
     gap: ${spacing.md};
   }
 
   ${({ theme }) => theme.media.lg} {
-    grid-template-columns: 80px minmax(0, 1fr);
+    grid-template-columns: 148px minmax(0, 1fr);
     gap: ${spacing.lg};
   }
 
   ${({ theme }) => theme.media.xl} {
-    grid-template-columns: 84px minmax(0, 1fr);
+    grid-template-columns: 164px minmax(0, 1fr);
     gap: ${spacing.xl};
   }
 `
@@ -175,15 +247,13 @@ export const CategoryRail = styled.nav`
   display: flex;
   align-items: stretch;
   gap: ${spacing.xs};
-  overflow-x: auto;
-  overflow-y: hidden;
+  overflow: hidden;
   flex-shrink: 0;
   padding: ${spacing.xs};
   background: ${palette.cream};
   border: 1px solid ${palette.line};
   border-radius: ${radii.lg};
   box-shadow: ${shadows.sm};
-  ${hideScrollbar};
 
   ${({ theme }) => theme.media.sm} {
     gap: ${spacing.xs};
@@ -198,6 +268,7 @@ export const CategoryRail = styled.nav`
     min-height: 0;
     padding: ${spacing.xs};
     gap: ${spacing.xs};
+    ${hideScrollbar};
   }
 
   ${({ theme }) => theme.media.lg} {
@@ -218,12 +289,12 @@ export const CategoryBtn = styled.button<{ $active: boolean }>`
   align-items: center;
   justify-content: center;
   gap: ${spacing.xs};
-  flex: 1 0 ${spacing['6xl']};
-  min-width: ${spacing['6xl']};
+  flex: 1 1 0;
+  min-width: 0;
   min-height: ${spacing['5xl']};
   padding: ${spacing.xs};
   border-radius: ${radii.md};
-  color: ${({ $active }) => ($active ? palette.ink : palette.inkSoft)};
+  color: ${({ $active }) => ($active ? palette.white : palette.inkSoft)};
   background: ${({ $active }) => ($active ? palette.mango : palette.white)};
   font-weight: ${({ $active }) => ($active ? 800 : 600)};
   box-shadow: ${({ $active }) => ($active ? shadows.sm : 'none')};
@@ -232,10 +303,15 @@ export const CategoryBtn = styled.button<{ $active: boolean }>`
   svg {
     width: 18px;
     height: 18px;
+    color: ${({ $active }) => ($active ? palette.white : palette.inkSoft)};
     stroke-width: ${({ $active }) => ($active ? 1.75 : 1.5)};
   }
 
   span {
+    max-width: 100%;
+    overflow: visible;
+    white-space: normal;
+    overflow-wrap: anywhere;
     font-size: ${fontSizes.labelSm};
     font-weight: inherit;
     letter-spacing: 0.01em;
@@ -246,11 +322,11 @@ export const CategoryBtn = styled.button<{ $active: boolean }>`
   @media (hover: hover) {
     &:hover {
       background: ${({ $active }) => ($active ? palette.mango : palette.canvas)};
+      color: ${({ $active }) => ($active ? palette.white : palette.ink)};
     }
   }
 
   ${({ theme }) => theme.media.sm} {
-    min-width: 72px;
     min-height: ${spacing['5xl']};
   }
 
@@ -450,14 +526,6 @@ export const ItemMeta = styled.p`
   }
 `
 
-export const FormLabel = styled.span`
-  display: block;
-  font-size: ${fontSizes.label};
-  font-weight: 600;
-  color: ${palette.inkSoft};
-  margin-bottom: ${spacing.xs};
-`
-
 export const SheetError = styled.p`
   color: ${palette.chili};
   font-size: ${fontSizes.label};
@@ -622,49 +690,6 @@ export const CheckRow = styled.label`
     width: 18px;
     height: 18px;
     accent-color: ${palette.chutney};
-  }
-`
-
-export const Select = styled.select`
-  width: 100%;
-  min-height: 48px;
-  padding: ${spacing.md} 14px;
-  background: ${palette.white};
-  border: 1.5px solid ${palette.line};
-  border-radius: ${radii.md};
-  font-size: ${fontSizes.body};
-  font-weight: 500;
-`
-
-export const FooterBar = styled.div`
-  display: none;
-  flex-shrink: 0;
-  justify-content: stretch;
-  padding-top: ${spacing.md};
-
-  && button {
-    width: 100%;
-    min-height: 44px;
-    padding: 0 ${spacing.xl};
-    background: ${palette.mango};
-    border-color: ${palette.mango};
-    color: ${palette.ink};
-    box-shadow: ${shadows.md};
-    font-weight: 700;
-  }
-
-  ${({ theme }) => theme.media.md} {
-    display: flex;
-    padding-top: ${spacing.xl};
-    justify-content: flex-end;
-
-    && button {
-      width: auto;
-    }
-  }
-
-  ${({ theme }) => theme.media.lg} {
-    padding-top: ${spacing['2xl']};
   }
 `
 

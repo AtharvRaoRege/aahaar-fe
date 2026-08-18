@@ -8,6 +8,7 @@ import { CustomerLayout } from '@/pages/customer/layout'
 import { CartPage } from '@/pages/customer/cart'
 import { MenuPage as CustomerMenuPage } from '@/pages/customer/menu'
 import { OrderTrackingPage } from '@/pages/customer/order-tracking'
+import { ReviewPage } from '@/pages/customer/review'
 import { WelcomePage } from '@/pages/customer/welcome'
 import { LandingPage } from '@/pages/landing'
 import { AdminPage } from '@/pages/dashboard/admin'
@@ -17,6 +18,7 @@ import { MenuManagerPage } from '@/pages/dashboard/menu'
 import { OrdersPage } from '@/pages/dashboard/orders'
 import { PhonePage } from '@/pages/dashboard/phone'
 import { QrPage } from '@/pages/dashboard/qr'
+import { RatingsPage } from '@/pages/dashboard/ratings'
 import { SettingsPage } from '@/pages/dashboard/settings'
 import { SetupPage } from '@/pages/dashboard/setup'
 import { SsoCallbackPage } from '@/pages/dashboard/sso-callback'
@@ -49,6 +51,7 @@ export function App() {
         <Route index element={<WelcomePage />} />
         <Route path="menu" element={<CustomerMenuPage />} />
         <Route path="cart" element={<CartPage />} />
+        <Route path="review" element={<ReviewPage />} />
         <Route path="track/:orderId" element={<OrderTrackingPage />} />
       </Route>
 
@@ -74,6 +77,7 @@ export function App() {
           <Route index element={<OrdersPage />} />
           <Route path="menu" element={<MenuManagerPage />} />
           <Route path="qr" element={<QrPage />} />
+          <Route path="ratings" element={<RatingsPage />} />
           <Route path="settings" element={<SettingsPage />} />
           <Route path="admin" element={<AdminPage />} />
         </Route>

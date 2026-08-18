@@ -1,33 +1,39 @@
 import { useEffect } from 'react'
-import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useNavigate, useParams } from 'react-router-dom'
 
 import { ordersApi } from '@/lib/api/orders'
+import { reviewsApi } from '@/lib/api/reviews'
 import { customerPath } from '@/lib/customer/paths'
 import { queryKeys } from '@/lib/query/keys'
 import { createSocket, SOCKET_EVENTS } from '@/lib/socket/socket'
+import { errorMessage } from '@/utils/error-message'
+import { ACTIVE_ORDER_STATUSES } from '@/types/order'
 import type { Order, OrderEvent, OrderStatus } from '@/types/order'
 
-export const TRACK_STEPS: OrderStatus[] = [
-  'PENDING',
-  'ACCEPTED',
-  'PREPARING',
-  'READY',
-  'SERVED',
-  'COMPLETED',
-]
+export const GUEST_STEPS = [
+  { id: 'placed', statuses: ['PENDING'] },
+  { id: 'cooking', statuses: ['ACCEPTED', 'PREPARING'] },
+  { id: 'ready', statuses: ['READY'] },
+  { id: 'served', statuses: ['SERVED', 'COMPLETED'] },
+] as const
 
-export function stepState(
+export type GuestStepId = (typeof GUEST_STEPS)[number]['id']
+
+export function guestStepState(
   status: OrderStatus,
-  step: OrderStatus,
+  stepId: GuestStepId,
 ): 'done' | 'current' | 'upcoming' {
+  if (status === 'COMPLETED') return 'done'
   if (status === 'REJECTED' || status === 'CANCELLED') {
-    return step === 'PENDING' ? 'done' : 'upcoming'
+    return stepId === 'placed' ? 'done' : 'upcoming'
   }
-  const current = TRACK_STEPS.indexOf(status)
-  const index = TRACK_STEPS.indexOf(step)
-  if (index < current) return 'done'
-  if (index === current) return 'current'
+  const currentIndex = GUEST_STEPS.findIndex((step) =>
+    (step.statuses as readonly OrderStatus[]).includes(status),
+  )
+  const index = GUEST_STEPS.findIndex((step) => step.id === stepId)
+  if (index < currentIndex) return 'done'
+  if (index === currentIndex) return 'current'
   return 'upcoming'
 }
 
@@ -79,9 +85,33 @@ export function useOrderTracking(slug: string, tableNumber: string | null) {
     }
   }, [orderId, queryClient])
 
+  const review = useMutation({
+    mutationFn: (values: { rating: number; comment: string; improvement: string }) =>
+      reviewsApi.createPublic(slug, {
+        rating: values.rating,
+        comment: values.comment || undefined,
+        improvement: values.improvement || undefined,
+        orderId,
+      }),
+    onSuccess: () => {
+      queryClient.setQueryData(queryKeys.order(orderId), (current: Order | undefined) => {
+        if (!current) return current
+        return { ...current, reviewed: true }
+      })
+    },
+  })
+
+  const order = query.data
+  const canAddMore = Boolean(order && ACTIVE_ORDER_STATUSES.includes(order.status))
+
   return {
     query,
     orderId,
+    canAddMore,
     goMenu: () => navigate(customerPath(slug, '/menu', tableNumber)),
+    submitReview: review.mutate,
+    reviewSubmitted: review.isSuccess || Boolean(query.data?.reviewed),
+    reviewLoading: review.isPending,
+    reviewError: review.isError ? errorMessage(review.error) : '',
   }
 }

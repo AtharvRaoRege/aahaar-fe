@@ -1,11 +1,10 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
-import { useNavigate } from 'react-router-dom'
 
 import { BrandMark } from '@/components/global/brand-mark'
 import { Button } from '@/components/global/button'
+import { LogoutButton } from '@/components/dashboard/logout-confirm'
 import { authApi } from '@/lib/api/auth'
-import { staffSignOut } from '@/lib/auth/staff-sign-out'
 import { useAuth } from '@/lib/auth/use-auth'
 import { queryKeys } from '@/lib/query/keys'
 
@@ -14,7 +13,6 @@ import { Actions, Inner, Page, Panel, Subtitle, Title } from '../access/styled'
 export function WaitlistPage() {
   const { t } = useTranslation('dashboard')
   const { user } = useAuth()
-  const navigate = useNavigate()
   const queryClient = useQueryClient()
   const me = useQuery({
     queryKey: queryKeys.me,
@@ -41,16 +39,7 @@ export function WaitlistPage() {
             >
               {me.isFetching ? t('waitlist.checking') : t('waitlist.check')}
             </Button>
-            <Button
-              variant="outline"
-              onClick={() => {
-                void staffSignOut().finally(() => {
-                  navigate('/dashboard/login', { replace: true })
-                })
-              }}
-            >
-              {t('nav.logout')}
-            </Button>
+            <LogoutButton />
           </Actions>
         </Panel>
       </Inner>

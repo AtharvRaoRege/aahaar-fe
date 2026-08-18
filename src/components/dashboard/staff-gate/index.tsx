@@ -1,12 +1,12 @@
 import { useEffect } from 'react'
 import { useQuery } from '@tanstack/react-query'
-import { Navigate, Outlet, useLocation, useNavigate } from 'react-router-dom'
+import { Navigate, Outlet, useLocation } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 
 import { Button } from '@/components/global/button'
 import { Skeleton } from '@/components/global/skeleton'
+import { LogoutButton } from '@/components/dashboard/logout-confirm'
 import { authApi } from '@/lib/api/auth'
-import { staffSignOut } from '@/lib/auth/staff-sign-out'
 import { tokenStore } from '@/lib/auth/token-store'
 import { useAuth } from '@/lib/auth/use-auth'
 import { impersonationStore } from '@/lib/dashboard/impersonation-store'
@@ -57,7 +57,6 @@ export function StaffGate() {
   const { t } = useTranslation(['dashboard', 'common'])
   const { isAuthenticated } = useAuth()
   const location = useLocation()
-  const navigate = useNavigate()
   const me = useQuery({
     queryKey: queryKeys.me,
     queryFn: authApi.me,
@@ -86,16 +85,7 @@ export function StaffGate() {
             <Title>{t('gate.loadFailed')}</Title>
             <Subtitle>{t('login.loadFailed')}</Subtitle>
             <Button onClick={() => void me.refetch()}>{t('gate.retry')}</Button>
-            <Button
-              variant="outline"
-              onClick={() => {
-                void staffSignOut().finally(() => {
-                  navigate('/dashboard/login', { replace: true })
-                })
-              }}
-            >
-              {t('nav.logout')}
-            </Button>
+            <LogoutButton />
           </Panel>
         </Inner>
       </Page>

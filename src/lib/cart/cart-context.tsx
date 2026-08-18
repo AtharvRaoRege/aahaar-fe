@@ -41,6 +41,7 @@ interface CartContextValue {
   decrementItem: (itemId: string) => void
   removeLine: (lineId: string) => void
   quantityForItem: (itemId: string) => number
+  setLineNotes: (lineId: string, notes: string) => void
   clear: () => void
   toOrderItems: () => CreateOrderItemPayload[]
 }
@@ -155,6 +156,12 @@ export function CartProvider({
     setLines((prev) => prev.filter((l) => l.lineId !== lineId))
   }, [])
 
+  const setLineNotes = useCallback((lineId: string, notes: string) => {
+    setLines((prev) =>
+      prev.map((line) => (line.lineId === lineId ? { ...line, notes: notes || null } : line)),
+    )
+  }, [])
+
   const clear = useCallback(() => {
     setLines([])
     setOrderNotes('')
@@ -175,7 +182,7 @@ export function CartProvider({
         quantity: l.quantity,
         variantId: l.variantId,
         addonIds: l.addonIds,
-        notes: l.notes,
+        notes: l.notes?.trim() || null,
       })),
     [lines],
   )
@@ -195,6 +202,7 @@ export function CartProvider({
       decrementItem,
       removeLine,
       quantityForItem,
+      setLineNotes,
       clear,
       toOrderItems,
     }
@@ -207,6 +215,7 @@ export function CartProvider({
     decrementItem,
     removeLine,
     quantityForItem,
+    setLineNotes,
     clear,
     toOrderItems,
   ])

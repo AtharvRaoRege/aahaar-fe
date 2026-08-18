@@ -1,4 +1,4 @@
-const CACHE = 'aahaar-shell-v6'
+const CACHE = 'aahaar-shell-v7'
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
@@ -28,4 +28,50 @@ self.addEventListener('fetch', (event) => {
       fetch(request).catch(() => caches.match('/') || caches.match('/index.html')),
     )
   }
+})
+
+self.addEventListener('push', (event) => {
+  let payload = {}
+  try {
+    payload = event.data ? event.data.json() : {}
+  } catch {
+    payload = { body: event.data ? event.data.text() : '' }
+  }
+
+  event.waitUntil(
+    self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clients) => {
+      const focused = clients.some((client) => client.focused && client.url.includes('/dashboard'))
+      if (focused) {
+        clients.forEach((client) => client.postMessage(payload))
+        return undefined
+      }
+      const title = payload.title || 'Aahaar'
+      return self.registration.showNotification(title, {
+        body: payload.body || '',
+        icon: '/icons/pwa-192.png',
+        badge: '/icons/pwa-192.png',
+        tag: payload.tag || 'aahaar',
+        renotify: true,
+        vibrate: [90, 40, 90, 40, 160],
+        data: { url: payload.url || '/dashboard' },
+      })
+    }),
+  )
+})
+
+self.addEventListener('notificationclick', (event) => {
+  event.notification.close()
+  const target = (event.notification.data && event.notification.data.url) || '/dashboard'
+  event.waitUntil(
+    self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clients) => {
+      const existing = clients.find((client) => 'focus' in client)
+      if (existing) {
+        return existing.focus().then((client) => {
+          if (client && 'navigate' in client) return client.navigate(target)
+          return client
+        })
+      }
+      return self.clients.openWindow(target)
+    }),
+  )
 })

@@ -1,6 +1,7 @@
 import { api } from '@/lib/api/client'
 import type { CreateCustomerSessionPayload, CustomerSession } from '@/types/customer'
 import type { Menu } from '@/types/menu'
+import type { Order } from '@/types/order'
 import type { PublicRestaurant } from '@/types/restaurant'
 
 export const publicApi = {
@@ -25,6 +26,13 @@ export const publicApi = {
     const { data } = await api.get<CustomerSession>(
       `/public/customer-sessions/${sessionId}`,
     )
+    return data
+  },
+  async getOpenOrder(sessionId: string): Promise<Order | null> {
+    const { data, status } = await api.get<Order | ''>(
+      `/public/customer-sessions/${sessionId}/open-order`,
+    )
+    if (status === 204 || !data) return null
     return data
   },
 }
