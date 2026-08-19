@@ -61,6 +61,7 @@ export function AdminPage() {
 
         <AdminOverview
           counts={page.overview}
+          loading={page.overviewLoading}
           tab={page.tab}
           venueView={page.venueView}
           onJump={page.setTab}

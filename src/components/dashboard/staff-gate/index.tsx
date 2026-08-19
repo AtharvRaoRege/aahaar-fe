@@ -4,7 +4,7 @@ import { Navigate, Outlet, useLocation } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 
 import { Button } from '@/components/global/button'
-import { Skeleton } from '@/components/global/skeleton'
+import { RouteLoading } from '@/components/global/route-loading'
 import { LogoutButton } from '@/components/dashboard/logout-confirm'
 import { authApi } from '@/lib/api/auth'
 import { tokenStore } from '@/lib/auth/token-store'
@@ -72,11 +72,7 @@ export function StaffGate() {
   }, [me.data])
 
   if (isAuthenticated && me.isLoading && !me.data) {
-    return (
-      <div style={{ flex: 1, display: 'grid', placeItems: 'center', minHeight: '100dvh' }}>
-        <Skeleton height="72px" width="240px" />
-      </div>
-    )
+    return <RouteLoading />
   }
 
   if (isAuthenticated && me.isError && !me.data) {

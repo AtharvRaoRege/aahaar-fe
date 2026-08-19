@@ -12,6 +12,7 @@ import { useTranslation } from 'react-i18next'
 
 import { OffersModal } from '@/components/dashboard/offers-modal'
 import { UpsellPicker } from '@/components/dashboard/upsell-picker'
+import { PageSkeleton } from '@/components/global/page-skeleton'
 import { Button } from '@/components/global/button'
 // Menu scanning (OCR) is switched off. The component still exists at
 // @/components/dashboard/menu-scan — uncomment this import, the two Scan
@@ -64,7 +65,7 @@ import {
 
 export function MenuManagerPage() {
   const { restaurant } = useDashboardContext()
-  if (!restaurant) return null
+  if (!restaurant) return <PageSkeleton cards={3} />
   return <MenuBody restaurant={restaurant} />
 }
 

@@ -3,6 +3,7 @@ import { useAuth as useClerkAuth } from '@clerk/react'
 import { useQueryClient } from '@tanstack/react-query'
 
 import { authApi } from '@/lib/api/auth'
+import { clerkSyncState } from '@/lib/auth/clerk-sync-state'
 import { isClerkSyncBlocked } from '@/lib/auth/session-guard'
 import { adoptSession } from '@/lib/auth/session-sync'
 import { tokenStore } from '@/lib/auth/token-store'
@@ -28,6 +29,14 @@ export function ClerkSessionBridge() {
       hadClerkSession.current = false
       tokenStore.clear()
     }
+  }, [isLoaded, isSignedIn, isAuthenticated])
+
+  // A Clerk session with no Aahaar session yet means a sign-in is mid-flight.
+  // Route guards watch this so they hold rather than redirect to login.
+  useEffect(() => {
+    const waiting = isLoaded && isSignedIn && !isAuthenticated && !isClerkSyncBlocked()
+    clerkSyncState.set(waiting)
+    return () => clerkSyncState.set(false)
   }, [isLoaded, isSignedIn, isAuthenticated])
 
   useEffect(() => {

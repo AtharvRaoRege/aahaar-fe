@@ -105,6 +105,17 @@ export function useSettingsPage(restaurant: Restaurant) {
   })
 
   const venueKind = useWatch({ control: form.control, name: 'venueKind' })
+  const logoUpload = useMutation({
+    mutationFn: (file: File) => restaurantsApi.uploadLogo(restaurant.id, file),
+    onSuccess: (updated) => {
+      // The sidebar, the venue switcher and the guest menu all read the logo, so
+      // refresh both keys rather than only the one this screen renders.
+      queryClient.setQueryData(queryKeys.restaurant(updated.id), updated)
+      void queryClient.invalidateQueries({ queryKey: queryKeys.restaurants })
+      void queryClient.invalidateQueries({ queryKey: queryKeys.restaurant(updated.id) })
+    },
+  })
+
   const addVenueKind = useWatch({ control: addForm.control, name: 'venueKind' })
   const publicUrl =
     typeof window === 'undefined'
@@ -131,6 +142,13 @@ export function useSettingsPage(restaurant: Restaurant) {
         setCopyFailed(true)
       }
     },
+    logoUrl: restaurant.logoUrl ?? null,
+    uploadLogo: (file: File | null | undefined) => {
+      if (file) logoUpload.mutate(file)
+    },
+    logoUploading: logoUpload.isPending,
+    logoError: logoUpload.isError ? errorMessage(logoUpload.error) : '',
+    venuesLoading: venuesQuery.isLoading,
     venues: venuesQuery.data ?? [restaurant],
     impersonating: Boolean(impersonation),
     switchVenue: (restaurantId: string) => {

@@ -2,7 +2,8 @@ export const common = {
   appName: 'Aahaar',
   tagline: 'Scan. Crave. Order.',
   landing: {
-    staffLogin: 'Restaurant Login',
+    login: 'Login',
+    enterKitchen: 'Enter your Kitchen',
     stickerQr: '★ QR Ordering',
     stickerNoApp: 'No app needed',
     headline1: 'Big Food.',

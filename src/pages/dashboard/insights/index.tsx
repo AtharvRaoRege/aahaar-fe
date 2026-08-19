@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 
 import { ReviewsPanel } from '@/components/dashboard/reviews-panel'
+import { PageSkeleton } from '@/components/global/page-skeleton'
 import { Button } from '@/components/global/button'
 import { EmptyState } from '@/components/global/empty-state'
 import { Skeleton } from '@/components/global/skeleton'
@@ -57,7 +58,7 @@ import {
 
 export function InsightsPage() {
   const { restaurant } = useDashboardContext()
-  if (!restaurant) return null
+  if (!restaurant) return <PageSkeleton cards={4} />
   return <InsightsBody restaurant={restaurant} />
 }
 

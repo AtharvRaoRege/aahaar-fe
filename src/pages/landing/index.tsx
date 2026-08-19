@@ -42,7 +42,7 @@ import {
 
 export function LandingPage() {
   const { t } = useTranslation('common')
-  const { goDemo, goLogin, goRegister } = useLandingPage()
+  const page = useLandingPage()
 
   return (
     <Page>
@@ -51,8 +51,12 @@ export function LandingPage() {
           <BrandMark size={40} />
           {t('appName')}
         </Brand>
-        <Button variant="outline" size="sm" onClick={goLogin}>
-          {t('landing.staffLogin')}
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={page.isAuthenticated ? page.goKitchen : page.goLogin}
+        >
+          {page.isAuthenticated ? t('landing.enterKitchen') : t('landing.login')}
         </Button>
       </TopBar>
 
@@ -75,12 +79,33 @@ export function LandingPage() {
           </Headline>
           <Lede>{t('landing.lede')}</Lede>
           <CtaRow>
-            <Button size="lg" rightIcon={<ArrowRight aria-hidden />} onClick={goDemo}>
-              {t('landing.tryDemo')}
-            </Button>
-            <Button variant="secondary" size="lg" onClick={goRegister}>
-              {t('landing.openKitchen')}
-            </Button>
+            {page.isAuthenticated ? (
+              <>
+                <Button
+                  size="lg"
+                  rightIcon={<ArrowRight aria-hidden />}
+                  onClick={page.goKitchen}
+                >
+                  {t('landing.enterKitchen')}
+                </Button>
+                <Button variant="secondary" size="lg" onClick={page.goDemo}>
+                  {t('landing.tryDemo')}
+                </Button>
+              </>
+            ) : (
+              <>
+                <Button
+                  size="lg"
+                  rightIcon={<ArrowRight aria-hidden />}
+                  onClick={page.goDemo}
+                >
+                  {t('landing.tryDemo')}
+                </Button>
+                <Button variant="secondary" size="lg" onClick={page.goRegister}>
+                  {t('landing.openKitchen')}
+                </Button>
+              </>
+            )}
           </CtaRow>
         </HeroInner>
         <HeroArt aria-hidden>🍛</HeroArt>
@@ -128,11 +153,15 @@ export function LandingPage() {
         <CtaTitle>{t('landing.ctaTitle')}</CtaTitle>
         <CtaBody>{t('landing.ctaBody')}</CtaBody>
         <CtaRow>
-          <Button size="lg" rightIcon={<ArrowRight aria-hidden />} onClick={goDemo}>
+          <Button size="lg" rightIcon={<ArrowRight aria-hidden />} onClick={page.goDemo}>
             {t('landing.tryDemo')}
           </Button>
-          <Button variant="secondary" size="lg" onClick={goLogin}>
-            {t('landing.staffDashboard')}
+          <Button
+            variant="secondary"
+            size="lg"
+            onClick={page.isAuthenticated ? page.goKitchen : page.goLogin}
+          >
+            {page.isAuthenticated ? t('landing.enterKitchen') : t('landing.staffDashboard')}
           </Button>
         </CtaRow>
       </CtaBand>

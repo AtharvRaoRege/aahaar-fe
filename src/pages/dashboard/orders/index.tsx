@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 
 import { OrderCard } from '@/components/dashboard/order-card'
 import { WaiterCalls } from '@/components/dashboard/waiter-calls'
+import { PageSkeleton } from '@/components/global/page-skeleton'
 import { Button } from '@/components/global/button'
 import { EmptyState } from '@/components/global/empty-state'
 import { FormField } from '@/components/global/field'
@@ -33,7 +34,7 @@ import {
 
 export function OrdersPage() {
   const { restaurant } = useDashboardContext()
-  if (!restaurant) return null
+  if (!restaurant) return <PageSkeleton cards={3} />
   return <OrdersBody restaurant={restaurant} />
 }
 

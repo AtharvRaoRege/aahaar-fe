@@ -1,3 +1,4 @@
+import { useRef } from 'react'
 import { createPortal } from 'react-dom'
 import { Link } from 'react-router-dom'
 import { Plus } from 'lucide-react'
@@ -6,6 +7,7 @@ import { useTranslation } from 'react-i18next'
 import { InstallApp } from '@/components/dashboard/install-app'
 import { PublishBar } from '@/components/dashboard/publish-bar'
 import { VenueSwitcher } from '@/components/dashboard/venue-switcher'
+import { PageSkeleton } from '@/components/global/page-skeleton'
 import { Button } from '@/components/global/button'
 import { FormField, TextArea, TextField } from '@/components/global/field'
 import { Select } from '@/components/global/select'
@@ -20,8 +22,12 @@ import {
   CardTitle,
   Column,
   Form,
+  HiddenFile,
   Hint,
   LinkRow,
+  LogoFrame,
+  LogoInitials,
+  LogoRow,
   Modal,
   ModalActions,
   ModalForm,
@@ -41,13 +47,14 @@ const VENUE_KIND_KEYS = ['RESTAURANT', 'HOTEL', 'CAFE'] as const
 
 export function SettingsPage() {
   const { restaurant } = useDashboardContext()
-  if (!restaurant) return null
+  if (!restaurant) return <PageSkeleton cards={2} />
   return <SettingsBody restaurant={restaurant} />
 }
 
 function SettingsBody({ restaurant }: { restaurant: Restaurant }) {
   const { t } = useTranslation(['dashboard', 'common'])
   const page = useSettingsPage(restaurant)
+  const logoRef = useRef<HTMLInputElement>(null)
   const venueOptions = page.venues.some((venue) => venue.id === restaurant.id)
     ? page.venues
     : [restaurant, ...page.venues]
@@ -156,6 +163,39 @@ function SettingsBody({ restaurant }: { restaurant: Restaurant }) {
               </Button>
             </LinkRow>
             {page.copyFailed && <CardHint>{t('settings.copyFailed')}</CardHint>}
+          </Card>
+
+          <Card>
+            <CardTitle>{t('settings.logoTitle')}</CardTitle>
+            <CardHint>{t('settings.logoHint')}</CardHint>
+            <LogoRow>
+              <LogoFrame>
+                {page.logoUrl ? (
+                  <img src={page.logoUrl} alt="" width={72} height={72} />
+                ) : (
+                  <LogoInitials aria-hidden>{restaurant.name.slice(0, 1)}</LogoInitials>
+                )}
+              </LogoFrame>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                loading={page.logoUploading}
+                onClick={() => logoRef.current?.click()}
+              >
+                {page.logoUrl ? t('settings.logoReplace') : t('settings.logoUpload')}
+              </Button>
+              <HiddenFile
+                ref={logoRef}
+                type="file"
+                accept="image/png,image/jpeg,image/webp"
+                onChange={(event) => {
+                  page.uploadLogo(event.target.files?.[0])
+                  event.target.value = ''
+                }}
+              />
+            </LogoRow>
+            {page.logoError && <Banner $tone="err">{page.logoError}</Banner>}
           </Card>
 
           <Card>

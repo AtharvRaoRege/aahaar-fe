@@ -17,6 +17,7 @@ import {
   BottomNav,
   Brand,
   Centered,
+  ErrorBlock,
   LogoutWrap,
   Main,
   NavLinkItem,
@@ -58,7 +59,7 @@ export function DashboardLayout() {
     return (
       <Shell>
         <Centered>
-          <div style={{ display: 'grid', gap: 12, justifyItems: 'start', maxWidth: 360 }}>
+          <ErrorBlock>
             <p>{t('gate.venueLoadFailed')}</p>
             <Button onClick={() => void refetch()}>{t('gate.retry')}</Button>
             {impersonation && (
@@ -67,7 +68,7 @@ export function DashboardLayout() {
               </Button>
             )}
             <LogoutButton />
-          </div>
+          </ErrorBlock>
         </Centered>
       </Shell>
     )

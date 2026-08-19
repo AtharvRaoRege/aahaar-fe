@@ -255,3 +255,10 @@ export const Centered = styled.div`
   justify-content: center;
   padding: 32px 20px;
 `
+
+export const ErrorBlock = styled.div`
+  display: grid;
+  justify-items: start;
+  gap: 12px;
+  max-width: 360px;
+`

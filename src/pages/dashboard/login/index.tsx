@@ -4,7 +4,9 @@ import { BrandMark } from '@/components/global/brand-mark'
 import { GoogleSignInButton } from '@/components/dashboard/google-sign-in'
 import { Button } from '@/components/global/button'
 import { TextField } from '@/components/global/field'
+import { RouteLoading } from '@/components/global/route-loading'
 import { isClerkEnabled } from '@/lib/auth/clerk'
+import { useClerkSyncPending } from '@/lib/auth/clerk-sync-state'
 
 import { useClerkEmailAuth } from './clerk-helper'
 import { useLoginPage } from './helper'
@@ -27,6 +29,10 @@ export function LoginPage() {
   const page = useLoginPage()
   const clerkOn = isClerkEnabled()
   const isRegister = page.isRegister
+  const syncing = useClerkSyncPending()
+
+  // Reached only if a guard bounced here while the sign-in was still completing.
+  if (syncing) return <RouteLoading label={t('login.googleRedirect')} />
 
   return (
     <Page>

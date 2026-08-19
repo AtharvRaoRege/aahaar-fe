@@ -1,7 +1,8 @@
 import styled from 'styled-components'
 
 import { dashboardHint, dashboardPage, dashboardTitle } from '@/pages/dashboard/shared'
-import { palette, radii, spacing } from '@/styles/theme'
+import { srOnly } from '@/styles/mixins'
+import { fontSizes, fontWeights, palette, radii, spacing } from '@/styles/theme'
 
 export const Page = styled.div`
   ${dashboardPage};
@@ -186,4 +187,39 @@ export const SwitchRow = styled.label`
   font-size: 0.875rem;
   font-weight: 600;
   cursor: pointer;
+`
+
+export const LogoRow = styled.div`
+  display: flex;
+  align-items: center;
+  gap: ${spacing.lg};
+  flex-wrap: wrap;
+`
+
+export const LogoFrame = styled.div`
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 72px;
+  height: 72px;
+  overflow: hidden;
+  background: ${palette.cream};
+  border: 1.5px solid ${palette.line};
+  border-radius: ${radii.md};
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+`
+
+export const LogoInitials = styled.span`
+  font-size: ${fontSizes.h3};
+  font-weight: ${fontWeights.black};
+  color: ${palette.inkSoft};
+`
+
+export const HiddenFile = styled.input`
+  ${srOnly};
 `

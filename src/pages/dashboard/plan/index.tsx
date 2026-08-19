@@ -2,6 +2,7 @@ import { createPortal } from 'react-dom'
 import { Check } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 
+import { PageSkeleton } from '@/components/global/page-skeleton'
 import { Button } from '@/components/global/button'
 import { TextArea } from '@/components/global/field'
 import { Skeleton } from '@/components/global/skeleton'
@@ -34,7 +35,7 @@ import {
 
 export function PlanPage() {
   const { restaurant } = useDashboardContext()
-  if (!restaurant) return null
+  if (!restaurant) return <PageSkeleton cards={2} />
   return <PlanBody restaurant={restaurant} />
 }
 

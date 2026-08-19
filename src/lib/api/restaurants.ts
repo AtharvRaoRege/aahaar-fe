@@ -27,6 +27,13 @@ export const restaurantsApi = {
     )
     return data
   },
+  /** Upload a venue logo. The server squares and re-encodes it, then stores it. */
+  async uploadLogo(restaurantId: string, file: File): Promise<Restaurant> {
+    const body = new FormData()
+    body.append('file', file)
+    const { data } = await api.post<Restaurant>(`/restaurants/${restaurantId}/logo`, body)
+    return data
+  },
   async publishReadiness(restaurantId: string): Promise<PublishReadiness> {
     const { data } = await api.get<PublishReadiness>(
       `/restaurants/${restaurantId}/publish-readiness`,

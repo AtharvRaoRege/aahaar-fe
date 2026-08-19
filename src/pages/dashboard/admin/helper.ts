@@ -265,6 +265,9 @@ export function useAdminPage() {
     pro: allVenues.filter((row) => row.plan === 'PRO').length,
   }
 
+  const overviewLoading =
+    waitlistQuery.isLoading || plansQuery.isLoading || venuesQuery.isLoading
+
   const setTab = (next: AdminTab, view?: VenueView | PeopleView) => {
     const params: Record<string, string> = {}
     if (next !== 'waitlist') params.tab = next
@@ -337,6 +340,7 @@ export function useAdminPage() {
       setPage(1)
     },
     overview,
+    overviewLoading,
     waitlistQuery,
     usersQuery,
     venuesQuery,

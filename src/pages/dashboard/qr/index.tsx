@@ -1,5 +1,6 @@
 import { useTranslation } from 'react-i18next'
 
+import { PageSkeleton } from '@/components/global/page-skeleton'
 import { Button } from '@/components/global/button'
 import { EmptyState } from '@/components/global/empty-state'
 import { TextField } from '@/components/global/field'
@@ -12,7 +13,7 @@ import { Card, Featured, Form, Grid, Hint, Label, Meta, Page, QrImage, Title } f
 
 export function QrPage() {
   const { restaurant } = useDashboardContext()
-  if (!restaurant) return null
+  if (!restaurant) return <PageSkeleton cards={3} />
   return <QrBody restaurant={restaurant} />
 }
 
