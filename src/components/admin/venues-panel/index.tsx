@@ -82,7 +82,7 @@ export function VenuesPanel({
                   <InlineActions>
                     <ActionMenu
                       items={venueActions(venue, copied, t)}
-                      disabled={pendingId === venue.id}
+                      loading={pendingId === venue.id}
                       onPick={(id) => runVenueAction(id, venue, handlers)}
                     />
                   </InlineActions>
@@ -99,7 +99,7 @@ export function VenuesPanel({
               <Strong>{venue.name}</Strong>
               <ActionMenu
                 items={venueActions(venue, copied, t)}
-                disabled={pendingId === venue.id}
+                loading={pendingId === venue.id}
                 onPick={(id) => runVenueAction(id, venue, handlers)}
               />
             </CardHead>

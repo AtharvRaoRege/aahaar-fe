@@ -167,6 +167,7 @@ export const dashboard = {
     actionFailed: 'That admin action did not go through. Try again.',
     emptyPeopleHint: 'Use the chips to show waitlist or blocked accounts.',
     more: 'More',
+    working: 'Working…',
   },
   orders: {
     title: 'Orders',

@@ -66,7 +66,7 @@ export function PlansPanel({
                   <InlineActions>
                     <ActionMenu
                       items={items}
-                      disabled={pendingId === entry.id}
+                      loading={pendingId === entry.id}
                       onPick={(id) => (id === 'approve' ? onApprove(entry.id) : onReject(entry.id))}
                     />
                   </InlineActions>
@@ -83,7 +83,7 @@ export function PlansPanel({
               <Strong>{entry.restaurantName}</Strong>
               <ActionMenu
                 items={items}
-                disabled={pendingId === entry.id}
+                loading={pendingId === entry.id}
                 onPick={(id) => (id === 'approve' ? onApprove(entry.id) : onReject(entry.id))}
               />
             </CardHead>

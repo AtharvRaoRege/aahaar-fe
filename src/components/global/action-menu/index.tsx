@@ -3,6 +3,7 @@ import { useCallback, useId, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { useTranslation } from 'react-i18next'
 
+import { Spinner } from '@/components/global/button/styled'
 import { IconButton } from '@/components/global/icon-button'
 
 import { useActionBox, useActionMenuLayer } from './helper'
@@ -13,11 +14,14 @@ export function ActionMenu({
   label,
   items,
   disabled,
+  loading,
   onPick,
 }: {
   label?: string
   items: ActionMenuItem[]
   disabled?: boolean
+  /** A picked action is still in flight — show it, don't just grey the trigger. */
+  loading?: boolean
   onPick: (id: string) => void
 }) {
   const { t } = useTranslation('dashboard')
@@ -27,21 +31,22 @@ export function ActionMenu({
   const [open, setOpen] = useState(false)
   const close = useCallback(() => setOpen(false), [])
   useActionMenuLayer(open, close, wrapRef, menuRef)
-  const box = useActionBox(open, wrapRef)
+  const box = useActionBox(open && !loading, wrapRef)
 
   return (
     <Wrap ref={wrapRef}>
       <IconButton
         type="button"
         size="sm"
-        disabled={disabled}
-        label={label ?? t('admin.more')}
-        icon={<EllipsisVertical aria-hidden />}
+        disabled={disabled || loading}
+        aria-busy={loading || undefined}
+        label={loading ? t('admin.working') : (label ?? t('admin.more'))}
+        icon={loading ? <Spinner aria-hidden /> : <EllipsisVertical aria-hidden />}
         aria-haspopup="menu"
         aria-expanded={open}
         aria-controls={listId}
         onClick={() => {
-          if (disabled) return
+          if (disabled || loading) return
           setOpen((current) => !current)
         }}
       />

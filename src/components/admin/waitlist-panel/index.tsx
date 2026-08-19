@@ -75,7 +75,7 @@ export function WaitlistPanel({
                   <InlineActions>
                     <ActionMenu
                       items={waitlistActions(entry, copied, t)}
-                      disabled={pendingId === entry.id}
+                      loading={pendingId === entry.id}
                       onPick={(id) => onPick(entry, id)}
                     />
                   </InlineActions>
@@ -92,7 +92,7 @@ export function WaitlistPanel({
               <Strong>{entry.fullName}</Strong>
               <ActionMenu
                 items={waitlistActions(entry, copied, t)}
-                disabled={pendingId === entry.id}
+                loading={pendingId === entry.id}
                 onPick={(id) => onPick(entry, id)}
               />
             </CardHead>

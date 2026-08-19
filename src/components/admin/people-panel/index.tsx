@@ -80,7 +80,7 @@ export function PeoplePanel({
                   <InlineActions>
                     <ActionMenu
                       items={peopleActions(entry, copied, entry.id !== currentUserId, t)}
-                      disabled={pendingId === entry.id}
+                      loading={pendingId === entry.id}
                       onPick={(id) => runPeopleAction(id, entry, handlers)}
                     />
                   </InlineActions>
@@ -97,7 +97,7 @@ export function PeoplePanel({
               <Strong>{entry.fullName}</Strong>
               <ActionMenu
                 items={peopleActions(entry, copied, entry.id !== currentUserId, t)}
-                disabled={pendingId === entry.id}
+                loading={pendingId === entry.id}
                 onPick={(id) => runPeopleAction(id, entry, handlers)}
               />
             </CardHead>
