@@ -9,7 +9,7 @@ import { FormField, TextField } from '@/components/global/field'
 import { Select } from '@/components/global/select'
 import { authApi } from '@/lib/api/auth'
 import { restaurantsApi } from '@/lib/api/restaurants'
-import { tokenStore } from '@/lib/auth/token-store'
+import { adoptUser } from '@/lib/auth/session-sync'
 import { restaurantStore } from '@/lib/dashboard/restaurant-store'
 import { queryKeys } from '@/lib/query/keys'
 import type { Restaurant } from '@/types/restaurant'
@@ -37,7 +37,7 @@ export function SetupPage() {
     onSuccess: async (restaurant) => {
       restaurantStore.set(restaurant.id)
       const me = await authApi.me()
-      tokenStore.setUser(me)
+      adoptUser(queryClient, me)
       await queryClient.invalidateQueries({ queryKey: queryKeys.restaurants })
       navigate('/dashboard/menu', { replace: true })
     },

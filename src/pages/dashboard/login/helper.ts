@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react'
-import { useMutation } from '@tanstack/react-query'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useForm } from 'react-hook-form'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 
 import { authApi } from '@/lib/api/auth'
 import { staffHomePath } from '@/lib/auth/staff-home'
 import { consumeSessionReplaced } from '@/lib/auth/local-session'
-import { tokenStore } from '@/lib/auth/token-store'
+import { adoptSession } from '@/lib/auth/session-sync'
 import { useAuth } from '@/lib/auth/use-auth'
 import { errorMessage } from '@/utils/error-message'
 
@@ -24,6 +24,7 @@ export interface RegisterForm {
 
 export function useLoginPage() {
   const navigate = useNavigate()
+  const queryClient = useQueryClient()
   const [searchParams] = useSearchParams()
   const { isAuthenticated, user } = useAuth()
   const [sessionReplaced] = useState(() => consumeSessionReplaced())
@@ -45,7 +46,7 @@ export function useLoginPage() {
   const loginMutation = useMutation({
     mutationFn: (values: LoginForm) => authApi.login(values),
     onSuccess: (result) => {
-      tokenStore.setSession(result.user, result.tokens)
+      adoptSession(queryClient, result.user, result.tokens)
       navigate(staffHomePath(result.user), { replace: true })
     },
   })
@@ -53,7 +54,7 @@ export function useLoginPage() {
   const registerMutation = useMutation({
     mutationFn: (values: RegisterForm) => authApi.register(values),
     onSuccess: (result) => {
-      tokenStore.setSession(result.user, result.tokens)
+      adoptSession(queryClient, result.user, result.tokens)
       navigate(staffHomePath(result.user), { replace: true })
     },
   })

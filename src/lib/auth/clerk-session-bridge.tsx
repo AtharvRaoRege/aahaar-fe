@@ -1,8 +1,10 @@
 import { useEffect, useRef, useState } from 'react'
 import { useAuth as useClerkAuth } from '@clerk/react'
+import { useQueryClient } from '@tanstack/react-query'
 
 import { authApi } from '@/lib/api/auth'
 import { isClerkSyncBlocked } from '@/lib/auth/session-guard'
+import { adoptSession } from '@/lib/auth/session-sync'
 import { tokenStore } from '@/lib/auth/token-store'
 import { useAuth } from '@/lib/auth/use-auth'
 
@@ -10,6 +12,7 @@ import { useAuth } from '@/lib/auth/use-auth'
 export function ClerkSessionBridge() {
   const { isLoaded, isSignedIn, getToken } = useClerkAuth()
   const { isAuthenticated } = useAuth()
+  const queryClient = useQueryClient()
   const inFlight = useRef(false)
   const hadClerkSession = useRef(false)
   const [retryTick, setRetryTick] = useState(0)
@@ -39,7 +42,7 @@ export function ClerkSessionBridge() {
           return
         }
         const result = await authApi.syncClerk(token)
-        tokenStore.setSession(result.user, result.tokens)
+        adoptSession(queryClient, result.user, result.tokens)
         retries.current = 0
       } catch {
         inFlight.current = false
@@ -48,7 +51,7 @@ export function ClerkSessionBridge() {
         window.setTimeout(() => setRetryTick((tick) => tick + 1), 800 * retries.current)
       }
     })()
-  }, [isSignedIn, isAuthenticated, getToken, retryTick])
+  }, [isSignedIn, isAuthenticated, getToken, retryTick, queryClient])
 
   return null
 }

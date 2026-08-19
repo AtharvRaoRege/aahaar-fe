@@ -1,14 +1,16 @@
 import { useState } from 'react'
+import { useQueryClient } from '@tanstack/react-query'
 import { useNavigate } from 'react-router-dom'
 import { useAuth as useClerkAuth, useSignIn, useSignUp } from '@clerk/react'
 
 import { authApi } from '@/lib/api/auth'
 import { clerkErrorCode } from '@/lib/auth/clerk-errors'
+import { adoptSession } from '@/lib/auth/session-sync'
 import { staffHomePath } from '@/lib/auth/staff-home'
-import { tokenStore } from '@/lib/auth/token-store'
 
 export function useGoogleSignIn(intent: 'sign-in' | 'sign-up' = 'sign-in') {
   const navigate = useNavigate()
+  const queryClient = useQueryClient()
   const { signIn, fetchStatus: signInFetch } = useSignIn()
   const { signUp, fetchStatus: signUpFetch } = useSignUp()
   const { isSignedIn, getToken } = useClerkAuth()
@@ -21,7 +23,7 @@ export function useGoogleSignIn(intent: 'sign-in' | 'sign-up' = 'sign-in') {
     const token = await getToken()
     if (!token) throw new Error('missing clerk token')
     const result = await authApi.syncClerk(token)
-    tokenStore.setSession(result.user, result.tokens)
+    adoptSession(queryClient, result.user, result.tokens)
     navigate(staffHomePath(result.user), { replace: true })
   }
 

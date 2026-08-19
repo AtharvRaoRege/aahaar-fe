@@ -1,4 +1,4 @@
-import { useMutation } from '@tanstack/react-query'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useForm } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
@@ -7,8 +7,8 @@ import { Button } from '@/components/global/button'
 import { TextField } from '@/components/global/field'
 import { LogoutButton } from '@/components/dashboard/logout-confirm'
 import { authApi } from '@/lib/api/auth'
+import { adoptUser } from '@/lib/auth/session-sync'
 import { staffHomePath } from '@/lib/auth/staff-home'
-import { tokenStore } from '@/lib/auth/token-store'
 import { errorMessage } from '@/utils/error-message'
 
 import { Actions, ErrorText, Form, Inner, Page, Panel, Subtitle, Title } from '../access/styled'
@@ -16,12 +16,13 @@ import { Actions, ErrorText, Form, Inner, Page, Panel, Subtitle, Title } from '.
 export function PhonePage() {
   const { t } = useTranslation('dashboard')
   const navigate = useNavigate()
+  const queryClient = useQueryClient()
   const form = useForm<{ phone: string }>({ defaultValues: { phone: '' } })
 
   const mutation = useMutation({
     mutationFn: (phone: string) => authApi.updateMe({ phone }),
     onSuccess: (user) => {
-      tokenStore.setUser(user)
+      adoptUser(queryClient, user)
       navigate(staffHomePath(user), { replace: true })
     },
   })

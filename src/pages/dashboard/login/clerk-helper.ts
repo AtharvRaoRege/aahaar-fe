@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useAuth as useClerkAuth, useClerk, useSignIn, useSignUp } from '@clerk/react'
+import { useQueryClient } from '@tanstack/react-query'
 import { useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router-dom'
 
@@ -10,8 +11,8 @@ import {
   isGmailAddress,
   splitOwnerName,
 } from '@/lib/auth/clerk-errors'
+import { adoptSession } from '@/lib/auth/session-sync'
 import { staffHomePath } from '@/lib/auth/staff-home'
-import { tokenStore } from '@/lib/auth/token-store'
 import { errorMessage } from '@/utils/error-message'
 
 import type { LoginForm, RegisterForm } from './helper'
@@ -20,6 +21,7 @@ export type ClerkAuthStep = 'form' | 'otp'
 
 export function useClerkEmailAuth(isRegister: boolean) {
   const navigate = useNavigate()
+  const queryClient = useQueryClient()
   const { signUp, fetchStatus: signUpFetch } = useSignUp()
   const { signIn, fetchStatus: signInFetch } = useSignIn()
   const { getToken } = useClerkAuth()
@@ -47,10 +49,10 @@ export function useClerkEmailAuth(isRegister: boolean) {
     const result = await authApi.syncClerk(token)
     if (phone?.trim()) {
       const user = await authApi.updateMe({ phone: phone.trim() })
-      tokenStore.setSession(user, result.tokens)
+      adoptSession(queryClient, user, result.tokens)
       navigate(staffHomePath(user), { replace: true })
     } else {
-      tokenStore.setSession(result.user, result.tokens)
+      adoptSession(queryClient, result.user, result.tokens)
       navigate(staffHomePath(result.user), { replace: true })
     }
   }
@@ -180,7 +182,7 @@ export function useClerkEmailAuth(isRegister: boolean) {
         email: values.email.trim(),
         password: values.password,
       })
-      tokenStore.setSession(result.user, result.tokens)
+      adoptSession(queryClient, result.user, result.tokens)
       navigate(staffHomePath(result.user), { replace: true })
     } catch (caught) {
       setError(errorMessage(caught) || 'login')
