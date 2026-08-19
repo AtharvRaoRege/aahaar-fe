@@ -1,35 +1,52 @@
+import { useCallback, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import { useAuth } from '@/lib/auth/use-auth'
 
 export const DEMO_SLUG = 'spice-garden'
 
-export const MARQUEE_KEYS = [
-  'landing.stepScan',
-  'landing.stepBrowse',
-  'landing.stepOrder',
-  'landing.stepTrack',
-] as const
+/** Anchor ids, so the chapters can link to one another and to the skip link. */
+export const CHAPTERS = {
+  hook: 'chapter-hook',
+  friction: 'chapter-friction',
+  engine: 'chapter-engine',
+  finale: 'chapter-finale',
+} as const
 
-export const MARQUEE_LOOP = [
-  ...MARQUEE_KEYS,
-  ...MARQUEE_KEYS,
-  ...MARQUEE_KEYS,
-  ...MARQUEE_KEYS,
-] as const
+function prefersReducedMotion(): boolean {
+  return (
+    typeof window !== 'undefined' &&
+    window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  )
+}
 
-export const FLOW = [
-  { titleKey: 'landing.stepScan', bodyKey: 'landing.flowScanBody', mark: '01' },
-  { titleKey: 'landing.stepBrowse', bodyKey: 'landing.flowBrowseBody', mark: '02' },
-  { titleKey: 'landing.stepOrder', bodyKey: 'landing.flowOrderBody', mark: '03' },
-  { titleKey: 'landing.stepTrack', bodyKey: 'landing.flowTrackBody', mark: '04' },
-] as const
-
-export function useLandingPage() {
+export function useStoryPage() {
   const navigate = useNavigate()
   const { isAuthenticated } = useAuth()
+  const [table, setTable] = useState('1')
+
+  const scrollToChapter = useCallback((id: string) => {
+    const target = document.getElementById(id)
+    if (!target) return
+    // Smoothness is a preference, not a default: honour the OS setting rather than
+    // animating a whole viewport for someone who asked us not to.
+    target.scrollIntoView({
+      behavior: prefersReducedMotion() ? 'auto' : 'smooth',
+      block: 'start',
+    })
+  }, [])
+
   return {
     isAuthenticated,
+    chapters: CHAPTERS,
+    table,
+    setTable,
+    enterStory: () => scrollToChapter(CHAPTERS.friction),
+    // A blank or zero table still opens a real table, so the demo never dead-ends.
+    openTable: () => {
+      const wanted = table.trim() || '1'
+      navigate(`/r/${DEMO_SLUG}/menu?table=${encodeURIComponent(wanted)}`)
+    },
     goDemo: () => navigate(`/r/${DEMO_SLUG}/menu?table=1`),
     goLogin: () => navigate('/dashboard/login'),
     goRegister: () => navigate('/dashboard/login?mode=register'),
