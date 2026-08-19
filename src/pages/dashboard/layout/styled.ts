@@ -1,6 +1,6 @@
 import styled from 'styled-components'
 
-import { palette, radii } from '@/styles/theme'
+import { fontSizes, palette, radii } from '@/styles/theme'
 
 export const Shell = styled.div`
   flex: 1;
@@ -209,18 +209,28 @@ export const BottomNav = styled.nav<{ $count?: number }>`
 
 export const BottomLink = styled.span<{ $active: boolean }>`
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
+  gap: 2px;
   width: 100%;
   min-height: 56px;
-  padding: 10px 4px;
+  padding: 6px 2px;
   color: ${({ $active }) => ($active ? palette.white : palette.inkSoft)};
   background: ${({ $active }) => ($active ? palette.mango : 'transparent')};
   transition: transform 100ms ease-out, background 100ms ease-out, color 100ms ease-out;
+  font-size: ${fontSizes.micro};
+  font-weight: 700;
+  line-height: 1.1;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 
   svg {
-    width: 24px;
-    height: 24px;
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
     color: ${({ $active }) => ($active ? palette.white : 'currentColor')};
     stroke-width: ${({ $active }) => ($active ? 1.75 : 1.5)};
   }

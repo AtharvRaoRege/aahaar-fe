@@ -2,16 +2,23 @@
   "id": "/",
   "name": "Aahaar",
   "short_name": "Aahaar",
-  "description": "Kitchen tickets, guest menus, and ratings — saved on your phone.",
+  "description": "Kitchen tickets, guest menus, and ratings \u2014 saved on your phone.",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
-  "display_override": ["standalone", "minimal-ui"],
+  "display_override": [
+    "standalone",
+    "minimal-ui"
+  ],
   "orientation": "any",
   "background_color": "#F6F1E8",
   "theme_color": "#E7B230",
   "lang": "en",
-  "categories": ["food", "lifestyle", "business"],
+  "categories": [
+    "food",
+    "lifestyle",
+    "business"
+  ],
   "prefer_related_applications": false,
   "icons": [
     {
@@ -25,6 +32,12 @@
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
+    },
+    {
+      "src": "/icons/pwa-192-maskable.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
     },
     {
       "src": "/icons/pwa-512-maskable.png",

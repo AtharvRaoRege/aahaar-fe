@@ -1,6 +1,11 @@
-import styled from 'styled-components'
+import styled, { keyframes } from 'styled-components'
 
 import { fontSizes, palette, radii, shadows, spacing } from '@/styles/theme'
+
+const livePulse = keyframes`
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%      { opacity: 0.45; transform: scale(0.82); }
+`
 
 export const Banner = styled.button`
   display: flex;
@@ -14,8 +19,7 @@ export const Banner = styled.button`
   margin: 0;
   padding: ${spacing.md} ${spacing.lg};
   background: ${palette.white};
-  border: 1px solid ${palette.line};
-  border-top: 3px solid ${palette.tomato};
+  border: 1.5px solid ${palette.tomato};
   border-radius: ${radii.md};
   box-shadow: ${shadows.card};
   text-align: left;
@@ -49,11 +53,26 @@ export const Copy = styled.span`
 `
 
 export const Kicker = styled.span`
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   font-size: ${fontSizes.labelSm};
   font-weight: 700;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: ${palette.tomato};
+  color: ${palette.tomatoDark};
+`
+
+export const LiveDot = styled.span`
+  width: 7px;
+  height: 7px;
+  border-radius: ${radii.full};
+  background: ${palette.tomato};
+  animation: ${livePulse} 1.8s ease-in-out infinite;
+
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+  }
 `
 
 export const Title = styled.span`

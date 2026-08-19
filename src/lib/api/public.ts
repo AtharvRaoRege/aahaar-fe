@@ -1,6 +1,8 @@
 import { api } from '@/lib/api/client'
+import type { LogEventPayload } from '@/types/analytics'
 import type { CreateCustomerSessionPayload, CustomerSession } from '@/types/customer'
-import type { Menu } from '@/types/menu'
+import type { Menu, Upsells } from '@/types/menu'
+import type { PublicOffer } from '@/types/offer'
 import type { Order } from '@/types/order'
 import type { PublicRestaurant } from '@/types/restaurant'
 
@@ -12,6 +14,21 @@ export const publicApi = {
   async getMenu(slug: string): Promise<Menu> {
     const { data } = await api.get<Menu>(`/public/restaurants/${slug}/menu`)
     return data
+  },
+  async getOffers(slug: string): Promise<PublicOffer[]> {
+    const { data } = await api.get<PublicOffer[]>(
+      `/public/restaurants/${slug}/offers`,
+    )
+    return data
+  },
+  async getUpsells(slug: string, menuItemId: string): Promise<Upsells> {
+    const { data } = await api.get<Upsells>(
+      `/public/restaurants/${slug}/menu-items/${menuItemId}/upsells`,
+    )
+    return data
+  },
+  async logEvent(slug: string, payload: LogEventPayload): Promise<void> {
+    await api.post(`/public/restaurants/${slug}/events`, payload)
   },
   async createSession(
     payload: CreateCustomerSessionPayload,

@@ -71,13 +71,14 @@ export const Toast = styled.div`
   }
 `
 
-export const IconBubble = styled.span<{ $kind: 'order' | 'review' }>`
+export const IconBubble = styled.span<{ $kind: 'order' | 'review' | 'waiter' }>`
   display: grid;
   place-items: center;
   width: 42px;
   height: 42px;
   border-radius: ${radii.md};
-  background: ${({ $kind }) => ($kind === 'order' ? palette.tomato : palette.mango)};
+  background: ${({ $kind }) =>
+    $kind === 'order' ? palette.tomato : $kind === 'waiter' ? palette.chutney : palette.mango};
   color: ${palette.white};
   flex-shrink: 0;
 

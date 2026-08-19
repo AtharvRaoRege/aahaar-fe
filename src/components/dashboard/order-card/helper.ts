@@ -1,15 +1,21 @@
-import { NEXT_ACTION } from '@/constants/order-status'
+import { STAGE_ADVANCE, stageOf } from '@/constants/order-stage'
+import type { OrderStage } from '@/constants/order-stage'
 import type { Order, OrderStatus } from '@/types/order'
 
-export const NEXT_LABEL_KEY = {
-  PREPARING: 'orders.startPreparing',
-  READY: 'orders.markReady',
-  SERVED: 'orders.markServed',
-  COMPLETED: 'orders.complete',
-} as const
+/** Label for the single forward action available at each stage. */
+export const STAGE_ACTION_KEY: Record<OrderStage, string | null> = {
+  NEW: 'orders.accept',
+  PREPARING: 'orders.markReady',
+  READY: 'orders.markDone',
+  CLOSED: null,
+}
 
-export function nextStatus(status: OrderStatus): OrderStatus | null {
-  return NEXT_ACTION[status] ?? null
+export function orderStage(status: OrderStatus): OrderStage {
+  return stageOf(status)
+}
+
+export function hasForwardAction(status: OrderStatus): boolean {
+  return Boolean(STAGE_ADVANCE[stageOf(status)])
 }
 
 export function orderCardItems(order: Order) {

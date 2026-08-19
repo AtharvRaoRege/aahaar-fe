@@ -21,10 +21,4 @@ export const ORDER_STATUS_VISUAL: Record<OrderStatus, StatusVisual> = {
   CANCELLED: { bg: palette.inkSoft, fg: palette.white, icon: Ban },
 }
 
-/** The forward action a staff member can take from a given status. */
-export const NEXT_ACTION: Partial<Record<OrderStatus, OrderStatus>> = {
-  ACCEPTED: 'PREPARING',
-  PREPARING: 'READY',
-  READY: 'SERVED',
-  SERVED: 'COMPLETED',
-}
+

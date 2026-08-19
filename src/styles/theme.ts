@@ -61,6 +61,7 @@ export const fontSizes = {
   bodyLg: '1.125rem',
   label: '0.8125rem',
   labelSm: '0.75rem',
+  micro: '0.625rem',
 } as const
 
 export const spacing = {
@@ -99,6 +100,16 @@ export const shadows = {
   lg: `0 16px 40px rgba(28, 25, 22, 0.1)`,
   xl: `0 24px 48px rgba(28, 25, 22, 0.12)`,
   none: 'none',
+} as const
+
+/**
+ * Luminance masks. These need true black and true transparent to work — the mask
+ * reads luminance, not brand colour — so they are defined here beside the palette
+ * rather than inline in a styled file.
+ */
+export const masks = {
+  railFade:
+    'linear-gradient(to right, transparent 0, #000 14px, #000 calc(100% - 22px), transparent 100%)',
 } as const
 
 export const transitions = {
@@ -145,6 +156,7 @@ export const theme = {
   borders,
   radii,
   shadows,
+  masks,
   transitions,
   breakpoints,
   media,

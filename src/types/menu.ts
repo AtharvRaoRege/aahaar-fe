@@ -61,3 +61,40 @@ export interface Category {
   sortOrder: number
   isActive: boolean
 }
+
+export interface UpsellSuggestion {
+  menuItemId: string
+  name: string
+  basePrice: number
+  imageUrl: string | null
+  isVegetarian: boolean
+}
+
+export interface Upsells {
+  menuItemId: string
+  suggestions: UpsellSuggestion[]
+}
+
+export type ScanConfidence = 'HIGH' | 'MEDIUM' | 'LOW'
+
+export interface MenuScanRow {
+  name: string
+  category: string
+  price: number | null
+  description: string | null
+  isVegetarian: boolean | null
+  confidence: ScanConfidence
+}
+
+export interface MenuScanResult {
+  rows: MenuScanRow[]
+  imageQuality: 'GOOD' | 'POOR'
+  notes: string | null
+  lowConfidenceCount: number
+  truncated: boolean
+}
+
+export interface MenuScanApplied {
+  created: number
+  skipped: number
+}

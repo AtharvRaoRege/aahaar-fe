@@ -1,10 +1,12 @@
 import styled from 'styled-components'
 
 import { dashboardHint, dashboardPage, dashboardTitle } from '@/pages/dashboard/shared'
+import { cardGrid } from '@/styles/mixins'
 import { palette, radii, shadows } from '@/styles/theme'
 
 export const Page = styled.div`
   ${dashboardPage};
+  max-width: none;
 `
 
 export const Title = styled.h1`
@@ -48,25 +50,8 @@ export const Featured = styled.div`
 `
 
 export const Grid = styled.div`
-  display: grid;
+  ${cardGrid('300px')};
   gap: 16px;
-  grid-template-columns: 1fr;
-
-  ${({ theme }) => theme.media.sm} {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  ${({ theme }) => theme.media.md} {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  ${({ theme }) => theme.media.lg} {
-    grid-template-columns: repeat(3, 1fr);
-  }
-
-  ${({ theme }) => theme.media.xl} {
-    grid-template-columns: repeat(3, 1fr);
-  }
 `
 
 export const Card = styled.article`

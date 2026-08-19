@@ -5,6 +5,7 @@ import { useLocation, useParams, useSearchParams } from 'react-router-dom'
 import { publicApi } from '@/lib/api/public'
 import { sessionStore } from '@/lib/customer/session-store'
 import { hasNamedTableSession } from '@/lib/customer/table-session'
+import { freshFor } from '@/lib/query/cache'
 import { queryKeys } from '@/lib/query/keys'
 
 export function useCustomerLayout() {
@@ -16,6 +17,7 @@ export function useCustomerLayout() {
     queryKey: queryKeys.publicRestaurant(slug),
     queryFn: () => publicApi.getRestaurant(slug),
     enabled: Boolean(slug),
+    staleTime: freshFor.slow,
   })
 
   const storedTable = query.data ? sessionStore.get(query.data.id)?.tableNumber : null

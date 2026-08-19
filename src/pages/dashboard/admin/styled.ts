@@ -1,11 +1,13 @@
 import styled from 'styled-components'
 
 import { dashboardHint, dashboardPage, dashboardTitle } from '@/pages/dashboard/shared'
-import { palette, radii, shadows } from '@/styles/theme'
+import { hideScrollbar } from '@/styles/mixins'
+import { palette, radii, shadows, fontSizes, spacing } from '@/styles/theme'
 
 export const Page = styled.div`
   ${dashboardPage};
-  max-width: 1120px;
+  max-width: 1320px;
+  margin-inline: auto;
 `
 
 export const Shell = styled.div`
@@ -19,8 +21,26 @@ export const Header = styled.header`
   flex-wrap: wrap;
   align-items: flex-start;
   justify-content: space-between;
-  gap: 12px 16px;
-  margin-bottom: 20px;
+  gap: ${spacing.sm};
+  margin-bottom: ${spacing.md};
+
+  ${({ theme }) => theme.media.sm} {
+    gap: ${spacing.sm} ${spacing.md};
+    margin-bottom: ${spacing.md};
+  }
+
+  ${({ theme }) => theme.media.md} {
+    gap: ${spacing.md} ${spacing.lg};
+    margin-bottom: ${spacing.xl};
+  }
+
+  ${({ theme }) => theme.media.lg} {
+    margin-bottom: ${spacing.xl};
+  }
+
+  ${({ theme }) => theme.media.xl} {
+    margin-bottom: ${spacing['2xl']};
+  }
 `
 
 export const BrandBlock = styled.div`
@@ -37,11 +57,45 @@ export const Brand = styled.p`
 
 export const Title = styled.h1`
   ${dashboardTitle};
+  font-size: 1.375rem;
+
+  ${({ theme }) => theme.media.sm} {
+    font-size: 1.5rem;
+  }
+
+  ${({ theme }) => theme.media.md} {
+    font-size: clamp(1.5rem, 3vw, 2rem);
+  }
+
+  ${({ theme }) => theme.media.lg} {
+    font-size: clamp(1.5rem, 3vw, 2rem);
+  }
+
+  ${({ theme }) => theme.media.xl} {
+    font-size: clamp(1.5rem, 3vw, 2rem);
+  }
 `
 
 export const Subtitle = styled.p`
-  ${dashboardHint};
-  margin-bottom: 0;
+  display: none;
+
+  ${({ theme }) => theme.media.sm} {
+    display: none;
+  }
+
+  ${({ theme }) => theme.media.md} {
+    display: block;
+    ${dashboardHint};
+    margin-bottom: 0;
+  }
+
+  ${({ theme }) => theme.media.lg} {
+    display: block;
+  }
+
+  ${({ theme }) => theme.media.xl} {
+    display: block;
+  }
 `
 
 export const Actions = styled.div`
@@ -51,36 +105,197 @@ export const Actions = styled.div`
 `
 
 export const Tabs = styled.div`
-  display: flex;
-  gap: 8px;
-  overflow-x: auto;
-  margin-bottom: 14px;
-  padding-bottom: 2px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: ${spacing.xs};
+  margin-bottom: ${spacing.md};
+  ${hideScrollbar};
+
+  ${({ theme }) => theme.media.sm} {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: ${spacing.sm};
+  }
+
+  ${({ theme }) => theme.media.md} {
+    display: flex;
+    gap: ${spacing.sm};
+    overflow-x: auto;
+    margin-bottom: ${spacing.lg};
+    padding-bottom: 2px;
+  }
+
+  ${({ theme }) => theme.media.lg} {
+    display: flex;
+    gap: ${spacing.sm};
+  }
+
+  ${({ theme }) => theme.media.xl} {
+    display: flex;
+    gap: ${spacing.sm};
+  }
 `
 
 export const Tab = styled.button<{ $active: boolean }>`
-  min-height: 40px;
-  padding: 0 14px;
-  font-weight: 600;
+  min-height: 36px;
+  padding: 0 ${spacing.sm};
+  font-size: ${fontSizes.micro};
+  font-weight: 700;
   white-space: nowrap;
   border-radius: ${radii.md};
   background: ${({ $active }) => ($active ? palette.mango : palette.white)};
   color: ${palette.ink};
   border: 1.5px solid ${({ $active }) => ($active ? palette.mango : palette.line)};
+
+  ${({ theme }) => theme.media.sm} {
+    min-height: 38px;
+    padding: 0 ${spacing.md};
+    font-size: ${fontSizes.labelSm};
+  }
+
+  ${({ theme }) => theme.media.md} {
+    min-height: 40px;
+    padding: 0 14px;
+    font-size: ${fontSizes.body};
+    font-weight: 600;
+  }
+
+  ${({ theme }) => theme.media.lg} {
+    min-height: 40px;
+  }
+
+  ${({ theme }) => theme.media.xl} {
+    min-height: 40px;
+  }
+`
+
+export const TabCount = styled.span`
+  margin-left: 4px;
+  font-size: ${fontSizes.micro};
+  font-weight: 800;
+
+  ${({ theme }) => theme.media.sm} {
+    font-size: ${fontSizes.micro};
+  }
+
+  ${({ theme }) => theme.media.md} {
+    margin-left: 6px;
+    font-size: ${fontSizes.labelSm};
+  }
+
+  ${({ theme }) => theme.media.lg} {
+    font-size: ${fontSizes.labelSm};
+  }
+
+  ${({ theme }) => theme.media.xl} {
+    font-size: ${fontSizes.labelSm};
+  }
+`
+
+export const FilterRow = styled.div`
+  display: flex;
+  gap: ${spacing.xs};
+  overflow-x: auto;
+  margin: 0 0 ${spacing.md};
+  padding-bottom: 2px;
+  ${hideScrollbar};
+
+  ${({ theme }) => theme.media.sm} {
+    gap: ${spacing.sm};
+  }
+
+  ${({ theme }) => theme.media.md} {
+    flex-wrap: wrap;
+    gap: ${spacing.sm};
+    margin: -4px 0 ${spacing.lg};
+  }
+
+  ${({ theme }) => theme.media.lg} {
+    margin: -4px 0 ${spacing.lg};
+  }
+
+  ${({ theme }) => theme.media.xl} {
+    margin: -4px 0 ${spacing.lg};
+  }
+`
+
+export const FilterChip = styled.button<{ $active: boolean }>`
+  flex: 0 0 auto;
+  min-height: 32px;
+  padding: 0 ${spacing.md};
+  font-size: ${fontSizes.micro};
+  font-weight: 700;
+  white-space: nowrap;
+  border-radius: ${radii.full};
+  background: ${({ $active }) => ($active ? palette.mango : palette.cream)};
+  color: ${palette.ink};
+  border: 1.5px solid ${({ $active }) => ($active ? palette.mango : palette.line)};
+
+  ${({ theme }) => theme.media.sm} {
+    min-height: 32px;
+    font-size: ${fontSizes.labelSm};
+  }
+
+  ${({ theme }) => theme.media.md} {
+    min-height: 36px;
+    font-size: ${fontSizes.label};
+  }
+
+  ${({ theme }) => theme.media.lg} {
+    min-height: 36px;
+  }
+
+  ${({ theme }) => theme.media.xl} {
+    min-height: 36px;
+  }
 `
 
 export const Toolbar = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 16px;
+  display: grid;
+  gap: ${spacing.xs};
+  margin-bottom: ${spacing.md};
+
+  ${({ theme }) => theme.media.sm} {
+    gap: ${spacing.sm};
+  }
+
+  ${({ theme }) => theme.media.md} {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: ${spacing.md};
+    margin-bottom: ${spacing.lg};
+  }
+
+  ${({ theme }) => theme.media.lg} {
+    display: flex;
+    margin-bottom: ${spacing.lg};
+  }
+
+  ${({ theme }) => theme.media.xl} {
+    display: flex;
+  }
 `
 
 export const Count = styled.p`
-  font-size: 0.8125rem;
+  font-size: ${fontSizes.labelSm};
   font-weight: 600;
   color: ${palette.inkSoft};
+
+  ${({ theme }) => theme.media.sm} {
+    font-size: ${fontSizes.label};
+  }
+
+  ${({ theme }) => theme.media.md} {
+    font-size: ${fontSizes.label};
+  }
+
+  ${({ theme }) => theme.media.lg} {
+    font-size: ${fontSizes.label};
+  }
+
+  ${({ theme }) => theme.media.xl} {
+    font-size: ${fontSizes.label};
+  }
 `
 
 export const ErrorText = styled.p`
@@ -99,6 +314,14 @@ export const TableWrap = styled.div`
   box-shadow: ${shadows.sm};
 
   ${({ theme }) => theme.media.md} {
+    display: block;
+  }
+
+  ${({ theme }) => theme.media.lg} {
+    display: block;
+  }
+
+  ${({ theme }) => theme.media.xl} {
     display: block;
   }
 `
@@ -150,7 +373,7 @@ export const Meta = styled.p`
   line-height: 1.35;
 `
 
-export const Pill = styled.span<{ $tone?: 'wait' | 'ok' | 'muted' }>`
+export const Pill = styled.span<{ $tone?: 'wait' | 'ok' | 'muted' | 'bad' }>`
   display: inline-flex;
   align-items: center;
   min-height: 24px;
@@ -161,27 +384,80 @@ export const Pill = styled.span<{ $tone?: 'wait' | 'ok' | 'muted' }>`
   text-transform: uppercase;
   border-radius: ${radii.full};
   background: ${({ $tone }) =>
-    $tone === 'wait' ? palette.mango : $tone === 'ok' ? '#DCEBDD' : palette.cream};
+    $tone === 'wait'
+      ? palette.mango
+      : $tone === 'ok'
+        ? palette.chutneyWash
+        : $tone === 'bad'
+          ? palette.chiliWash
+          : palette.cream};
   color: ${palette.ink};
 `
 
 export const CardList = styled.div`
   display: grid;
-  gap: 10px;
+  gap: ${spacing.sm};
+
+  ${({ theme }) => theme.media.sm} {
+    gap: ${spacing.sm};
+  }
 
   ${({ theme }) => theme.media.md} {
     display: none;
   }
+
+  ${({ theme }) => theme.media.lg} {
+    display: none;
+  }
+
+  ${({ theme }) => theme.media.xl} {
+    display: none;
+  }
+`
+
+export const CardHead = styled.div`
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: ${spacing.sm};
+
+  ${Strong} {
+    flex: 1;
+    min-width: 0;
+  }
+`
+
+export const PillRow = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: ${spacing.xs};
 `
 
 export const Card = styled.article`
   display: grid;
-  gap: 8px;
-  padding: 16px;
+  gap: ${spacing.xs};
+  padding: ${spacing.md};
   background: ${palette.white};
   border: 1.5px solid ${palette.line};
   border-radius: ${radii.md};
   box-shadow: ${shadows.sm};
+
+  ${({ theme }) => theme.media.sm} {
+    gap: ${spacing.sm};
+    padding: ${spacing.md} ${spacing.lg};
+  }
+
+  ${({ theme }) => theme.media.md} {
+    padding: ${spacing.lg};
+  }
+
+  ${({ theme }) => theme.media.lg} {
+    padding: ${spacing.lg};
+  }
+
+  ${({ theme }) => theme.media.xl} {
+    padding: ${spacing.lg};
+  }
 `
 
 export const CardActions = styled.div`

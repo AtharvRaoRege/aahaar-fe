@@ -1,6 +1,8 @@
 import { useTranslation } from 'react-i18next'
 
+import { CallWaiterButton } from '@/components/customer/call-waiter'
 import { ReviewForm } from '@/components/customer/review-form'
+import { UpiPay } from '@/components/customer/upi-pay'
 import { Button } from '@/components/global/button'
 import { EmptyState } from '@/components/global/empty-state'
 import { Skeleton } from '@/components/global/skeleton'
@@ -77,6 +79,13 @@ export function OrderTrackingPage() {
         <Title>{t('track.number', { number: order.orderNumber })}</Title>
         {order.tableNumber && <Hint>{t('track.table', { table: order.tableNumber })}</Hint>}
         <StatusBadge status={order.status} pulse={order.status !== 'COMPLETED'} />
+        {restaurant.waiterCallEnabled && (
+          <CallWaiterButton
+            slug={slug}
+            restaurantId={restaurant.id}
+            tableNumber={tableNumber ?? order.tableNumber}
+          />
+        )}
         <Hint>{t('track.liveHint')}</Hint>
       </Header>
 
@@ -107,6 +116,17 @@ export function OrderTrackingPage() {
           <span>{formatMoney(order.total, restaurant.currency)}</span>
         </TotalRow>
       </Summary>
+
+      {restaurant.upiVpa && order.status !== 'PENDING' && (
+        <RateSlot>
+          <UpiPay
+            vpa={restaurant.upiVpa}
+            payeeName={restaurant.upiPayeeName}
+            amount={order.total}
+            orderNumber={order.orderNumber}
+          />
+        </RateSlot>
+      )}
 
       <Actions>
         <Button variant={canAddMore ? 'primary' : 'outline'} fullWidth onClick={goMenu}>

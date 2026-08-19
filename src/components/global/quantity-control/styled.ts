@@ -1,21 +1,23 @@
 import styled from 'styled-components'
 
 import { focusRing } from '@/styles/mixins'
-import { palette, transitions } from '@/styles/theme'
+import { palette, radii, transitions } from '@/styles/theme'
 
 export const Wrap = styled.div<{ $size: 'sm' | 'md' }>`
   display: inline-flex;
   align-items: stretch;
-  border: 4px solid ${palette.ink};
+  overflow: hidden;
+  border: 1.5px solid ${palette.ink};
+  border-radius: ${radii.full};
   background: ${palette.white};
-  height: ${({ $size }) => ($size === 'sm' ? '40px' : '48px')};
+  height: ${({ $size }) => ($size === 'sm' ? '36px' : '44px')};
 `
 
 export const QtyButton = styled.button`
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 40px;
+  width: 36px;
   background: ${palette.mango};
   color: ${palette.ink};
   transition: background ${transitions.fast};
@@ -29,14 +31,14 @@ export const QtyButton = styled.button`
   svg {
     width: 18px;
     height: 18px;
-    stroke-width: 3.5;
+    stroke-width: 3;
   }
 
   &:first-child {
-    border-right: 3px solid ${palette.ink};
+    border-right: 1.5px solid ${palette.ink};
   }
   &:last-child {
-    border-left: 3px solid ${palette.ink};
+    border-left: 1.5px solid ${palette.ink};
   }
 `
 

@@ -51,6 +51,24 @@ export function CustomerLayout() {
     )
   }
 
+  if (!query.data.isServing) {
+    return (
+      <Shell>
+        <Centered>
+          <EmptyState
+            emoji="🕒"
+            title={t('unavailable.title')}
+            hint={
+              query.data.unavailableReason === 'NOT_PUBLISHED'
+                ? t('unavailable.notPublished')
+                : t('unavailable.suspended')
+            }
+          />
+        </Centered>
+      </Shell>
+    )
+  }
+
   if (needsTableInUrl && tableNumber) {
     return <Navigate to={customerPath(slug, restPath === '/' ? '/menu' : restPath, tableNumber)} replace />
   }
@@ -73,9 +91,7 @@ export function CustomerLayout() {
     return (
       <Shell>
         <GuestWelcome
-          restaurantName={query.data.name}
-          restaurantId={query.data.id}
-          slug={slug}
+          restaurant={query.data}
           tableNumber={tableNumber}
           onReady={markIdentified}
         />

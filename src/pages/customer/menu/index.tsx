@@ -1,14 +1,17 @@
 import { SlidersHorizontal } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 
+import { CallWaiterButton } from '@/components/customer/call-waiter'
 import { CartBar } from '@/components/customer/cart-bar'
 import { CategoryTabs } from '@/components/customer/category-tabs'
 import { FoodCard } from '@/components/customer/food-card'
 import { FoodDetailsSheet } from '@/components/customer/food-details-sheet'
 import { MenuFilterSheet } from '@/components/customer/menu-filter-sheet'
 import { MenuFilters } from '@/components/customer/menu-filters'
+import { OfferStrip } from '@/components/customer/offer-strip'
 import { OpenOrderBanner } from '@/components/customer/open-order-banner'
 import { RestaurantHeader } from '@/components/customer/restaurant-header'
+import { VenueHero } from '@/components/customer/venue-hero'
 import { EmptyState } from '@/components/global/empty-state'
 import { IconButton } from '@/components/global/icon-button'
 import { SearchInput } from '@/components/global/search-input'
@@ -16,7 +19,20 @@ import { Skeleton } from '@/components/global/skeleton'
 import { useCustomerContext } from '@/hooks/customer/context'
 
 import { itemHasOptions, useMenuPage } from './helper'
-import { FilterSlot, Grid, Page, SearchSlot, BannerSlot, SectionTitle, StickyChrome, Toolbar } from './styled'
+import {
+  BannerSlot,
+  EmptySlot,
+  FilterSlot,
+  Grid,
+  Page,
+  Rule,
+  SearchSlot,
+  SectionCount,
+  SectionHead,
+  SectionTitle,
+  StickyStack,
+  Toolbar,
+} from './styled'
 
 export function MenuPage() {
   const { t } = useTranslation(['customer', 'common'])
@@ -30,28 +46,51 @@ export function MenuPage() {
 
   return (
     <Page>
-      <RestaurantHeader name={restaurant.name} tableLabel={page.tableLabel} />
+      <VenueHero restaurant={restaurant} tableLabel={page.tableLabel} />
 
-      <Toolbar>
-        <SearchSlot>
-          <SearchInput
-            value={page.search}
-            onChange={page.setSearch}
-            placeholder={t('common:actions.search')}
-            voice
-            voiceLabel={t('common:actions.voiceSearch')}
-          />
-        </SearchSlot>
-        <FilterSlot>
-          <IconButton
-            type="button"
-            label={t('menu.openFilters')}
-            icon={<SlidersHorizontal aria-hidden />}
-            tone={page.priceFiltersOn ? 'primary' : 'default'}
-            onClick={page.openFilters}
-          />
-        </FilterSlot>
-      </Toolbar>
+      <StickyStack>
+        <RestaurantHeader
+          name={restaurant.name}
+          logoUrl={restaurant.logoUrl}
+          tableLabel={page.tableLabel}
+          action={
+            restaurant.waiterCallEnabled ? (
+              <CallWaiterButton
+                slug={slug}
+                restaurantId={restaurant.id}
+                tableNumber={tableNumber}
+              />
+            ) : undefined
+          }
+        />
+        <Toolbar>
+          <SearchSlot>
+            <SearchInput
+              value={page.search}
+              onChange={page.setSearch}
+              placeholder={t('common:actions.search')}
+              voice
+              voiceLabel={t('common:actions.voiceSearch')}
+            />
+          </SearchSlot>
+          <FilterSlot>
+            <IconButton
+              type="button"
+              label={t('menu.openFilters')}
+              icon={<SlidersHorizontal aria-hidden />}
+              tone={page.priceFiltersOn ? 'primary' : 'default'}
+              onClick={page.openFilters}
+            />
+          </FilterSlot>
+        </Toolbar>
+        <CategoryTabs
+          label={t('menu.categories')}
+          tabs={page.search ? [] : tabs}
+          activeId={page.activeCategory}
+          onSelect={page.setActiveCategory}
+          leading={<MenuFilters inline diet={page.diet} onDiet={page.setDiet} />}
+        />
+      </StickyStack>
 
       {page.openOrder && (
         <BannerSlot>
@@ -65,37 +104,39 @@ export function MenuPage() {
         </BannerSlot>
       )}
 
-      <StickyChrome>
-        {!page.search && (
-          <CategoryTabs
-            tabs={tabs}
-            activeId={page.activeCategory}
-            onSelect={page.setActiveCategory}
-          />
-        )}
-        <MenuFilters diet={page.diet} onDiet={page.setDiet} />
-      </StickyChrome>
+      <OfferStrip slug={slug} onOfferView={page.trackOfferView} />
 
       {page.menuQuery.isLoading && (
-        <Grid>
-          {Array.from({ length: 6 }).map((_, i) => (
-            <Skeleton key={i} height="260px" />
-          ))}
-        </Grid>
+        <>
+          <SectionHead>
+            <Skeleton height="20px" width="140px" />
+          </SectionHead>
+          <Grid>
+            {Array.from({ length: 6 }).map((_, i) => (
+              <Skeleton key={i} height="132px" />
+            ))}
+          </Grid>
+        </>
       )}
 
       {page.menuQuery.isSuccess &&
         page.visibleGroups.every((g) => g.items.length === 0) && (
-          <EmptyState
-            emoji="🍽️"
-            title={page.filtersOn || page.search ? t('menu.emptyFilters') : t('menu.empty')}
-          />
+          <EmptySlot>
+            <EmptyState
+              emoji="🍽️"
+              title={page.filtersOn || page.search ? t('menu.emptyFilters') : t('menu.empty')}
+            />
+          </EmptySlot>
         )}
 
       {page.visibleGroups.map((group) =>
         group.items.length === 0 ? null : (
           <section key={group.id ?? 'search'}>
-            {!page.search && <SectionTitle>{group.name}</SectionTitle>}
+            <SectionHead>
+              <SectionTitle>{page.search ? t('menu.results') : group.name}</SectionTitle>
+              <Rule aria-hidden />
+              <SectionCount>{group.items.length}</SectionCount>
+            </SectionHead>
             <Grid>
               {group.items.map((item) => (
                 <FoodCard

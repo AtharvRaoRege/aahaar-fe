@@ -4,11 +4,11 @@ import type { AxiosError, AxiosInstance, InternalAxiosRequestConfig } from 'axio
 import { signOutClerk } from '@/lib/auth/clerk'
 import { clearLocalSession, markSessionReplaced } from '@/lib/auth/local-session'
 import { tokenStore } from '@/lib/auth/token-store'
+import { getAccessToken, isSupabaseEnabled, signOut } from '@/lib/supabase/auth'
 import type { Tokens } from '@/types/auth'
 
 export const API_BASE = '/api/v1'
 
-/** Normalized error surfaced to the UI layer. */
 export class ApiRequestError extends Error {
   code: string
   status: number
@@ -28,15 +28,15 @@ export const api: AxiosInstance = axios.create({
   headers: { 'Content-Type': 'application/json' },
 })
 
-api.interceptors.request.use((config: InternalAxiosRequestConfig) => {
-  const token = tokenStore.getAccess()
-    if (token) {
-      config.headers.set('Authorization', `Bearer ${token}`)
-    }
-    if (config.data instanceof FormData) {
-      config.headers.delete('Content-Type')
-    }
-    return config
+api.interceptors.request.use(async (config: InternalAxiosRequestConfig) => {
+  const token = (await getAccessToken()) ?? tokenStore.getAccess()
+  if (token) {
+    config.headers.set('Authorization', `Bearer ${token}`)
+  }
+  if (config.data instanceof FormData) {
+    config.headers.delete('Content-Type')
+  }
+  return config
 })
 
 let refreshing: Promise<string | null> | null = null
@@ -77,9 +77,15 @@ api.interceptors.response.use(
       )
     }
 
-    // Attempt a single token refresh on 401 for authenticated requests.
-    const isAuthEndpoint = original?.url?.includes('/auth/refresh') || original?.url?.includes('/auth/login')
-    if (status === 401 && original && !original._retry && !isAuthEndpoint && tokenStore.getRefresh()) {
+    const isAuthEndpoint =
+      original?.url?.includes('/auth/refresh') || original?.url?.includes('/auth/login')
+    if (
+      status === 401 &&
+      original &&
+      !original._retry &&
+      !isAuthEndpoint &&
+      tokenStore.getRefresh()
+    ) {
       original._retry = true
       refreshing = refreshing ?? refreshAccessToken()
       const newToken = await refreshing
@@ -91,8 +97,15 @@ api.interceptors.response.use(
     }
 
     if (status === 401 && !isAuthEndpoint) {
+      if (isSupabaseEnabled) await signOut()
       clearLocalSession()
       window.dispatchEvent(new CustomEvent('aahaar:unauthorized'))
+    }
+
+    // The account is still on the waitlist. Keep the session and send them to
+    // the waitlist screen instead of surfacing a permission error per request.
+    if (status === 403 && payload?.code === 'WAITLISTED') {
+      window.dispatchEvent(new CustomEvent('aahaar:waitlisted'))
     }
 
     throw new ApiRequestError(

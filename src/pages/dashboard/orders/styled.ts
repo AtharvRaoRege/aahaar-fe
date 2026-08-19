@@ -1,10 +1,12 @@
 import styled from 'styled-components'
 
 import { dashboardHint, dashboardPage, dashboardTitle } from '@/pages/dashboard/shared'
-import { palette, shadows, spacing } from '@/styles/theme'
+import { cardGrid } from '@/styles/mixins'
+import { fontSizes, palette, radii, spacing } from '@/styles/theme'
 
 export const Page = styled.div`
   ${dashboardPage};
+  max-width: none;
 `
 
 export const Title = styled.h1`
@@ -15,102 +17,138 @@ export const Hint = styled.p`
   ${dashboardHint};
 `
 
+export const HeadRow = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: ${spacing.md};
+`
+
+export const LiveCount = styled.p`
+  display: inline-flex;
+  align-items: center;
+  gap: ${spacing.sm};
+  padding: ${spacing.xs} ${spacing.md};
+  border-radius: ${radii.full};
+  background: ${palette.white};
+  border: 1.5px solid ${palette.line};
+  font-size: ${fontSizes.label};
+  font-weight: 700;
+  white-space: nowrap;
+
+  strong {
+    font-variant-numeric: tabular-nums;
+  }
+`
+
 export const ErrorBanner = styled.p`
-  padding: 12px 14px;
-  margin-bottom: 16px;
+  padding: ${spacing.md} ${spacing.lg};
+  margin-bottom: ${spacing.lg};
   background: ${palette.chili};
   color: ${palette.white};
-  border-radius: 12px;
+  border-radius: ${radii.md};
   font-weight: 600;
-  font-size: 0.875rem;
+  font-size: ${fontSizes.label};
   line-height: 1.4;
 `
 
-export const Stats = styled.div`
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 10px;
-  margin-bottom: 16px;
-
-  ${({ theme }) => theme.media.sm} {
-    grid-template-columns: repeat(4, 1fr);
-  }
-`
-
-export const Stat = styled.div`
-  padding: 12px 14px;
-  background: ${palette.white};
-  border: 1.5px solid ${palette.line};
-  border-radius: 12px;
-  box-shadow: ${shadows.sm};
-
-  strong {
-    display: block;
-    font-size: 1.5rem;
-    font-weight: 900;
-    line-height: 1;
-  }
-
-  span {
-    font-size: 0.6875rem;
-    font-weight: 900;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: ${palette.inkSoft};
-  }
-`
-
-export const Filters = styled.div`
+export const OfflineNote = styled.p`
   display: flex;
-  gap: 8px;
-  margin-bottom: 16px;
-`
-
-export const FilterBtn = styled.button<{ $active: boolean }>`
-  min-height: 40px;
-  padding: 0 14px;
+  align-items: center;
+  gap: ${spacing.sm};
+  padding: ${spacing.sm} ${spacing.md};
+  margin-bottom: ${spacing.lg};
+  background: ${palette.mangoWash};
+  border: 1px solid ${palette.mangoDark};
+  border-radius: ${radii.sm};
+  font-size: ${fontSizes.labelSm};
   font-weight: 600;
-  border-radius: 12px;
-  background: ${({ $active }) => ($active ? palette.tomato : palette.white)};
-  color: ${({ $active }) => ($active ? palette.white : palette.ink)};
-  border: 1.5px solid ${({ $active }) => ($active ? palette.tomato : palette.line)};
-  box-shadow: ${shadows.sm};
-  transition: transform 100ms ease-out;
-
-  &:active {
-    transform: scale(0.97);
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    transition: none;
-    &:active {
-      transform: none;
-    }
-  }
+  color: ${palette.ink};
 `
 
-export const Grid = styled.div`
+export const Toolbar = styled.div`
   display: grid;
-  gap: 12px;
-  grid-template-columns: minmax(0, 1fr);
-  padding-bottom: ${spacing.xl};
+  gap: ${spacing.md};
+  margin-bottom: ${spacing.md};
+`
+
+export const FilterGrid = styled.div`
+  display: grid;
+  gap: ${spacing.sm};
+  align-items: end;
 
   ${({ theme }) => theme.media.sm} {
-    gap: 16px;
-    padding-bottom: ${spacing['2xl']};
-  }
-
-  ${({ theme }) => theme.media.md} {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    padding-bottom: ${spacing['2xl']};
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
+    gap: ${spacing.md};
   }
 
   ${({ theme }) => theme.media.lg} {
-    padding-bottom: ${spacing['3xl']};
+    grid-template-columns: minmax(160px, 240px) minmax(160px, 240px) auto;
+    justify-content: start;
+  }
+`
+
+export const TabRow = styled.div`
+  display: flex;
+  gap: ${spacing.sm};
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scrollbar-width: none;
+  padding-bottom: ${spacing.xs};
+  margin-bottom: ${spacing.md};
+
+  &::-webkit-scrollbar {
+    display: none;
   }
 
-  ${({ theme }) => theme.media.xl} {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    padding-bottom: ${spacing['3xl']};
+  ${({ theme }) => theme.media.md} {
+    overflow-x: visible;
+    flex-wrap: wrap;
+  }
+`
+
+export const Tab = styled.button<{ $active: boolean }>`
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  gap: ${spacing.sm};
+  min-height: 40px;
+  padding: 0 ${spacing.lg};
+  border-radius: ${radii.full};
+  border: 1.5px solid ${({ $active }) => ($active ? palette.ink : palette.line)};
+  background: ${({ $active }) => ($active ? palette.ink : palette.white)};
+  color: ${({ $active }) => ($active ? palette.white : palette.ink)};
+  font-size: ${fontSizes.label};
+  font-weight: 700;
+  white-space: nowrap;
+  cursor: pointer;
+`
+
+export const TabCount = styled.span<{ $active: boolean }>`
+  min-width: 20px;
+  padding: 1px ${spacing.sm};
+  border-radius: ${radii.full};
+  background: ${({ $active }) => ($active ? palette.white : palette.line)};
+  color: ${palette.ink};
+  font-size: ${fontSizes.micro};
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+`
+
+export const ResultCount = styled.p`
+  font-size: ${fontSizes.labelSm};
+  font-weight: 600;
+  color: ${palette.inkSoft};
+  margin-bottom: ${spacing.md};
+`
+
+export const Grid = styled.div`
+  ${cardGrid('320px')};
+  gap: ${spacing.md};
+  padding-bottom: ${spacing.xl};
+
+  ${({ theme }) => theme.media.sm} {
+    gap: ${spacing.lg};
   }
 `

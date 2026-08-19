@@ -2,6 +2,7 @@ import { ArrowLeft } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 
 import { CartLineItem } from '@/components/customer/cart-line-item'
+import { UpsellRow } from '@/components/customer/upsell-row'
 import { Button } from '@/components/global/button'
 import { EmptyState } from '@/components/global/empty-state'
 import { IconButton } from '@/components/global/icon-button'
@@ -82,6 +83,14 @@ export function CartPage() {
           />
         ))}
       </List>
+
+      <UpsellRow
+        slug={slug}
+        currency={restaurant.currency}
+        cartItemIds={page.cartItemIds}
+        isInCart={page.isInCart}
+        onAdd={(suggestion) => page.addSuggestion(suggestion.menuItemId)}
+      />
 
       <NotesWrap>
         <TextArea

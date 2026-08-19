@@ -1,35 +1,31 @@
 import { useTranslation } from 'react-i18next'
 
+import { AdminOverview } from '@/components/admin/overview'
+import { PeoplePanel } from '@/components/admin/people-panel'
+import { PlansPanel } from '@/components/admin/plans-panel'
+import { VenuesPanel } from '@/components/admin/venues-panel'
+import { WaitlistPanel } from '@/components/admin/waitlist-panel'
 import { Button } from '@/components/global/button'
-import { EmptyState } from '@/components/global/empty-state'
+import { ConfirmDialog } from '@/components/global/confirm-dialog'
 import { PaginationBar } from '@/components/global/pagination-bar'
 import { SearchInput } from '@/components/global/search-input'
-import { Skeleton } from '@/components/global/skeleton'
-import type { AdminMember, AdminVenue } from '@/types/admin'
-import type { WaitlistUser } from '@/types/auth'
 import { errorMessage } from '@/utils/error-message'
 
-import { formatJoined, useAdminPage } from './helper'
+import { adminConfirmCopy, publicMenuUrl, useAdminPage } from './helper'
 import {
   Actions,
   BrandBlock,
-  Card,
-  CardActions,
-  CardList,
   Count,
   ErrorText,
+  FilterChip,
+  FilterRow,
   Header,
-  InlineActions,
-  Meta,
   Page,
-  Pill,
   SearchSlot,
   Shell,
-  Strong,
   Subtitle,
   Tab,
-  Table,
-  TableWrap,
+  TabCount,
   Tabs,
   Title,
   Toolbar,
@@ -38,8 +34,13 @@ import {
 export function AdminPage() {
   const { t } = useTranslation(['dashboard', 'common'])
   const page = useAdminPage()
+  const dialog = adminConfirmCopy(page.confirm, t)
   const searchPlaceholder =
-    page.tab === 'venues' ? t('admin.searchVenues') : t('admin.searchPeople')
+    page.tab === 'venues'
+      ? t('admin.searchVenues')
+      : page.tab === 'plans'
+        ? t('admin.searchPlans')
+        : t('admin.searchPeople')
 
   return (
     <Page>
@@ -58,9 +59,17 @@ export function AdminPage() {
           )}
         </Header>
 
+        <AdminOverview
+          counts={page.overview}
+          tab={page.tab}
+          venueView={page.venueView}
+          onJump={page.setTab}
+        />
+
         <Tabs>
           <Tab type="button" $active={page.tab === 'waitlist'} onClick={() => page.setTab('waitlist')}>
             {t('admin.tabWaitlist')}
+            <TabCount>{page.overview.waiting}</TabCount>
           </Tab>
           <Tab type="button" $active={page.tab === 'people'} onClick={() => page.setTab('people')}>
             {t('admin.tabPeople')}
@@ -68,7 +77,50 @@ export function AdminPage() {
           <Tab type="button" $active={page.tab === 'venues'} onClick={() => page.setTab('venues')}>
             {t('admin.tabVenues')}
           </Tab>
+          <Tab type="button" $active={page.tab === 'plans'} onClick={() => page.setTab('plans')}>
+            {t('admin.tabPlans')}
+            <TabCount>{page.overview.plans}</TabCount>
+          </Tab>
         </Tabs>
+
+        {page.tab === 'people' && (
+          <FilterRow>
+            {(['all', 'waitlist', 'blocked'] as const).map((view) => (
+              <FilterChip
+                key={view}
+                type="button"
+                $active={page.peopleView === view}
+                onClick={() => page.setTab('people', view)}
+              >
+                {view === 'all'
+                  ? t('admin.filterAll')
+                  : view === 'waitlist'
+                    ? t('admin.filterWaitlist')
+                    : t('admin.filterBlocked')}
+              </FilterChip>
+            ))}
+          </FilterRow>
+        )}
+        {page.tab === 'venues' && (
+          <FilterRow>
+            {(['all', 'live', 'draft', 'pro'] as const).map((view) => (
+              <FilterChip
+                key={view}
+                type="button"
+                $active={page.venueView === view}
+                onClick={() => page.setTab('venues', view)}
+              >
+                {view === 'all'
+                  ? t('admin.filterAll')
+                  : view === 'live'
+                    ? t('admin.filterLive')
+                    : view === 'draft'
+                      ? t('admin.filterDraft')
+                      : t('admin.filterPro')}
+              </FilterChip>
+            ))}
+          </FilterRow>
+        )}
 
         <Toolbar>
           <SearchSlot>
@@ -90,29 +142,82 @@ export function AdminPage() {
         {page.approve.isError && (
           <ErrorText>{errorMessage(page.approve.error) || t('admin.approveFailed')}</ErrorText>
         )}
+        {page.actionFailed && !page.approve.isError && (
+          <ErrorText>{t('admin.actionFailed')}</ErrorText>
+        )}
+        {page.planFailed && <ErrorText>{t('admin.planReviewFailed')}</ErrorText>}
 
         {page.tab === 'waitlist' && (
           <WaitlistPanel
             loading={page.waitlistQuery.isLoading}
             rows={page.waitlist}
             pendingId={page.approve.isPending ? page.approve.variables : null}
+            copied={page.copied}
             onApprove={(id) => page.approve.mutate(id)}
+            onReject={(entry) =>
+              page.setConfirm({ kind: 'rejectWaitlist', id: entry.id, name: entry.fullName })
+            }
+            onCopyEmail={(entry) => void page.copy(`email-${entry.id}`, entry.email)}
+            onCopyPhone={(entry) => {
+              if (entry.phone) void page.copy(`phone-${entry.id}`, entry.phone)
+            }}
           />
         )}
         {page.tab === 'people' && (
           <PeoplePanel
             loading={page.usersQuery.isLoading}
             rows={page.people}
-            pendingId={page.approve.isPending ? page.approve.variables : null}
+            pendingId={
+              page.approve.isPending
+                ? page.approve.variables
+                : page.rejectWaitlist.isPending
+                  ? page.rejectWaitlist.variables
+                  : page.setUserActive.isPending
+                    ? page.setUserActive.variables?.userId
+                    : null
+            }
+            currentUserId={page.user?.id}
+            copied={page.copied}
             onApprove={(id) => page.approve.mutate(id)}
             onOpen={page.openMemberKitchen}
+            onReject={(entry) =>
+              page.setConfirm({ kind: 'rejectWaitlist', id: entry.id, name: entry.fullName })
+            }
+            onLock={(entry) => page.setConfirm({ kind: 'lockUser', id: entry.id, name: entry.fullName })}
+            onUnlock={(entry) => page.setUserActive.mutate({ userId: entry.id, isActive: true })}
+            onCopyEmail={(entry) => void page.copy(`email-${entry.id}`, entry.email)}
           />
         )}
         {page.tab === 'venues' && (
           <VenuesPanel
             loading={page.venuesQuery.isLoading}
             rows={page.venues}
+            pendingId={page.pendingVenueId}
+            copied={page.copied}
             onOpen={page.openKitchen}
+            onCopyLink={(venue) => void page.copy(`link-${venue.id}`, publicMenuUrl(venue.slug))}
+            onPublish={(venue, isPublished) =>
+              page.setPublished.mutate({ restaurantId: venue.id, isPublished })
+            }
+            onGivePro={(venue) => page.assignPlan.mutate({ restaurantId: venue.id, plan: 'PRO' })}
+            onSetBasic={(venue) =>
+              page.setConfirm({ kind: 'forceBasic', id: venue.id, name: venue.name })
+            }
+          />
+        )}
+        {page.tab === 'plans' && (
+          <PlansPanel
+            loading={page.plansQuery.isLoading}
+            rows={page.plans}
+            pendingId={
+              page.approvePlan.isPending
+                ? page.approvePlan.variables
+                : page.rejectPlan.isPending
+                  ? page.rejectPlan.variables
+                  : null
+            }
+            onApprove={(id) => page.approvePlan.mutate(id)}
+            onReject={(id) => page.rejectPlan.mutate(id)}
           />
         )}
         <PaginationBar
@@ -129,282 +234,15 @@ export function AdminPage() {
           nextLabel={t('admin.next')}
         />
       </Shell>
+      <ConfirmDialog
+        open={Boolean(page.confirm)}
+        title={dialog.title}
+        message={dialog.message}
+        confirmLabel={dialog.confirmLabel}
+        loading={page.confirmLoading}
+        onClose={() => page.setConfirm(null)}
+        onConfirm={page.runConfirm}
+      />
     </Page>
   )
-}
-
-function WaitlistPanel({
-  loading,
-  rows,
-  pendingId,
-  onApprove,
-}: {
-  loading: boolean
-  rows: WaitlistUser[]
-  pendingId: string | null | undefined
-  onApprove: (id: string) => void
-}) {
-  const { t } = useTranslation('dashboard')
-  if (loading) return <Skeleton height="180px" />
-  if (rows.length === 0) return <EmptyState title={t('admin.empty')} hint={t('admin.emptyWaitlistHint')} />
-
-  return (
-    <>
-      <TableWrap>
-        <Table>
-          <thead>
-            <tr>
-              <th>{t('admin.name')}</th>
-              <th>{t('admin.email')}</th>
-              <th>{t('admin.phone')}</th>
-              <th>{t('admin.joined')}</th>
-              <th />
-            </tr>
-          </thead>
-          <tbody>
-            {rows.map((entry) => (
-              <tr key={entry.id}>
-                <td>
-                  <Strong>{entry.fullName}</Strong>
-                </td>
-                <td>{entry.email}</td>
-                <td>{entry.phone ?? t('admin.noPhone')}</td>
-                <td>{formatJoined(entry.createdAt) || t('admin.noDate')}</td>
-                <td>
-                  <InlineActions>
-                    <Button
-                      size="sm"
-                      onClick={() => onApprove(entry.id)}
-                      loading={pendingId === entry.id}
-                    >
-                      {t('admin.approve')}
-                    </Button>
-                  </InlineActions>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </Table>
-      </TableWrap>
-      <CardList>
-        {rows.map((entry) => (
-          <Card key={entry.id}>
-            <Strong>{entry.fullName}</Strong>
-            <Meta>
-              {t('admin.email')}: {entry.email}
-            </Meta>
-            <Meta>
-              {t('admin.phone')}: {entry.phone ?? t('admin.noPhone')}
-            </Meta>
-            <CardActions>
-              <Button
-                size="sm"
-                onClick={() => onApprove(entry.id)}
-                loading={pendingId === entry.id}
-              >
-                {t('admin.approve')}
-              </Button>
-            </CardActions>
-          </Card>
-        ))}
-      </CardList>
-    </>
-  )
-}
-
-function PeoplePanel({
-  loading,
-  rows,
-  pendingId,
-  onApprove,
-  onOpen,
-}: {
-  loading: boolean
-  rows: AdminMember[]
-  pendingId: string | null | undefined
-  onApprove: (id: string) => void
-  onOpen: (member: AdminMember) => void
-}) {
-  const { t } = useTranslation('dashboard')
-  if (loading) return <Skeleton height="180px" />
-  if (rows.length === 0) return <EmptyState title={t('admin.emptyPeople')} />
-
-  return (
-    <>
-      <TableWrap>
-        <Table>
-          <thead>
-            <tr>
-              <th>{t('admin.name')}</th>
-              <th>{t('admin.email')}</th>
-              <th>{t('admin.status')}</th>
-              <th>{t('admin.venue')}</th>
-              <th />
-            </tr>
-          </thead>
-          <tbody>
-            {rows.map((entry) => (
-              <tr key={entry.id}>
-                <td>
-                  <Strong>{entry.fullName}</Strong>
-                  <Meta>{entry.phone ?? t('admin.noPhone')}</Meta>
-                </td>
-                <td>{entry.email}</td>
-                <td>
-                  <StatusPill status={entry.approvalStatus} />
-                </td>
-                <td>{entry.restaurantName ?? t('admin.noVenue')}</td>
-                <td>
-                  <InlineActions>
-                    <PeopleActions
-                      entry={entry}
-                      pending={pendingId === entry.id}
-                      onApprove={() => onApprove(entry.id)}
-                      onOpen={() => onOpen(entry)}
-                    />
-                  </InlineActions>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </Table>
-      </TableWrap>
-      <CardList>
-        {rows.map((entry) => (
-          <Card key={entry.id}>
-            <Strong>{entry.fullName}</Strong>
-            <Meta>{entry.email}</Meta>
-            <Meta>{entry.phone ?? t('admin.noPhone')}</Meta>
-            <StatusPill status={entry.approvalStatus} />
-            <Meta>{entry.restaurantName ?? t('admin.noVenue')}</Meta>
-            <CardActions>
-              <PeopleActions
-                entry={entry}
-                pending={pendingId === entry.id}
-                onApprove={() => onApprove(entry.id)}
-                onOpen={() => onOpen(entry)}
-              />
-            </CardActions>
-          </Card>
-        ))}
-      </CardList>
-    </>
-  )
-}
-
-function VenuesPanel({
-  loading,
-  rows,
-  onOpen,
-}: {
-  loading: boolean
-  rows: AdminVenue[]
-  onOpen: (venue: AdminVenue) => void
-}) {
-  const { t } = useTranslation('dashboard')
-  if (loading) return <Skeleton height="180px" />
-  if (rows.length === 0) return <EmptyState title={t('admin.emptyVenues')} hint={t('admin.emptyVenuesHint')} />
-
-  return (
-    <>
-      <TableWrap>
-        <Table>
-          <thead>
-            <tr>
-              <th>{t('admin.venue')}</th>
-              <th>{t('admin.kind')}</th>
-              <th>{t('admin.owner')}</th>
-              <th>{t('admin.slug')}</th>
-              <th />
-            </tr>
-          </thead>
-          <tbody>
-            {rows.map((venue) => (
-              <tr key={venue.id}>
-                <td>
-                  <Strong>{venue.name}</Strong>
-                  <Meta>{formatJoined(venue.createdAt) || t('admin.noDate')}</Meta>
-                </td>
-                <td>{kindLabel(venue.venueKind, t)}</td>
-                <td>
-                  <Strong>{venue.ownerName ?? t('admin.unknownOwner')}</Strong>
-                  <Meta>{venue.ownerEmail}</Meta>
-                </td>
-                <td>{venue.slug}</td>
-                <td>
-                  <InlineActions>
-                    <Button size="sm" onClick={() => onOpen(venue)}>
-                      {t('admin.openKitchen')}
-                    </Button>
-                  </InlineActions>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </Table>
-      </TableWrap>
-      <CardList>
-        {rows.map((venue) => (
-          <Card key={venue.id}>
-            <Strong>{venue.name}</Strong>
-            <Meta>{kindLabel(venue.venueKind, t)}</Meta>
-            <Meta>
-              {t('admin.owner')}: {venue.ownerName ?? t('admin.unknownOwner')}
-            </Meta>
-            <Meta>{venue.ownerEmail}</Meta>
-            <CardActions>
-              <Button size="sm" onClick={() => onOpen(venue)}>
-                {t('admin.openKitchen')}
-              </Button>
-            </CardActions>
-          </Card>
-        ))}
-      </CardList>
-    </>
-  )
-}
-
-function PeopleActions({
-  entry,
-  pending,
-  onApprove,
-  onOpen,
-}: {
-  entry: AdminMember
-  pending: boolean
-  onApprove: () => void
-  onOpen: () => void
-}) {
-  const { t } = useTranslation('dashboard')
-  return (
-    <>
-      {entry.approvalStatus === 'WAITLIST' && (
-        <Button size="sm" onClick={onApprove} loading={pending}>
-          {t('admin.approve')}
-        </Button>
-      )}
-      {entry.hasRestaurant && (
-        <Button size="sm" variant="secondary" onClick={onOpen}>
-          {t('admin.openKitchen')}
-        </Button>
-      )}
-    </>
-  )
-}
-
-function StatusPill({ status }: { status: AdminMember['approvalStatus'] }) {
-  const { t } = useTranslation('dashboard')
-  if (status === 'WAITLIST') {
-    return <Pill $tone="wait">{t('admin.waitlist')}</Pill>
-  }
-  return <Pill $tone="ok">{t('admin.approved')}</Pill>
-}
-
-function kindLabel(
-  kind: AdminVenue['venueKind'],
-  t: (key: string) => string,
-) {
-  if (kind === 'HOTEL') return t('setup.hotel')
-  if (kind === 'CAFE') return t('setup.cafe')
-  return t('setup.restaurant')
 }

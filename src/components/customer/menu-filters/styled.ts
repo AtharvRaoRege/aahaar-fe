@@ -1,8 +1,8 @@
-import styled from 'styled-components'
+import styled, { css } from 'styled-components'
 
 import { fontSizes, palette, radii, shadows, spacing, transitions } from '@/styles/theme'
 
-export const Row = styled.div`
+export const Row = styled.div<{ $inline?: boolean }>`
   display: flex;
   flex-wrap: nowrap;
   gap: ${spacing.sm};
@@ -15,6 +15,14 @@ export const Row = styled.div`
   &::-webkit-scrollbar {
     display: none;
   }
+
+  ${({ $inline }) =>
+    $inline &&
+    css`
+      flex-shrink: 0;
+      padding: 0;
+      overflow: visible;
+    `}
 
   ${({ theme }) => theme.media.sm} {
     padding: 0 ${spacing.xl} ${spacing.md};

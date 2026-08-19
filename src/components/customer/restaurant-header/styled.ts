@@ -1,89 +1,74 @@
 import styled from 'styled-components'
 
-import { palette, radii, spacing } from '@/styles/theme'
+import { fontSizes, fontWeights, palette, radii, spacing } from '@/styles/theme'
 
-export const Bar = styled.header`
-  position: sticky;
-  top: 0;
-  z-index: ${({ theme }) => theme.zIndex.header};
+export const Bar = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: ${spacing.md};
-  padding: ${spacing.md} ${spacing.lg};
-  padding-top: max(${spacing.md}, env(safe-area-inset-top, 0px));
-  background: ${palette.creamFog};
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  border-bottom: 1px solid ${palette.line};
+  min-width: 0;
+  padding: ${spacing.sm} ${spacing.lg} 0;
 
   ${({ theme }) => theme.media.sm} {
-    padding: ${spacing.md} ${spacing.xl};
-    padding-top: max(${spacing.md}, env(safe-area-inset-top, 0px));
+    padding: ${spacing.sm} ${spacing.xl} 0;
   }
 
   ${({ theme }) => theme.media.md} {
-    padding: ${spacing.lg} ${spacing['2xl']};
-    padding-top: max(${spacing.lg}, env(safe-area-inset-top, 0px));
-  }
-
-  ${({ theme }) => theme.media.lg} {
-    padding: ${spacing.lg} ${spacing['2xl']};
-    padding-top: max(${spacing.lg}, env(safe-area-inset-top, 0px));
+    padding: ${spacing.md} ${spacing['2xl']} 0;
   }
 
   ${({ theme }) => theme.media.xl} {
-    padding: ${spacing.lg} ${spacing['3xl']};
-    padding-top: max(${spacing.lg}, env(safe-area-inset-top, 0px));
-  }
-
-  @media (prefers-reduced-transparency: reduce) {
-    background: ${palette.cream};
-    backdrop-filter: none;
-    -webkit-backdrop-filter: none;
+    padding: ${spacing.md} ${spacing['3xl']} 0;
   }
 `
 
 export const Left = styled.div`
   display: flex;
-  flex-direction: column;
+  align-items: center;
+  gap: ${spacing.sm};
   min-width: 0;
 `
 
-export const Name = styled.h1`
-  font-size: 1.125rem;
-  font-weight: 800;
-  letter-spacing: -0.03em;
+export const Logo = styled.img`
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  object-fit: cover;
+  border-radius: ${radii.sm};
+  border: 1px solid ${palette.line};
+`
+
+export const Name = styled.p`
+  min-width: 0;
+  font-size: ${fontSizes.label};
+  font-weight: ${fontWeights.black};
+  letter-spacing: -0.02em;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   color: ${palette.ink};
 
-  ${({ theme }) => theme.media.sm} {
-    font-size: 1.2rem;
-  }
-
   ${({ theme }) => theme.media.md} {
-    font-size: 1.25rem;
-  }
-
-  ${({ theme }) => theme.media.lg} {
-    font-size: 1.25rem;
-  }
-
-  ${({ theme }) => theme.media.xl} {
-    font-size: 1.35rem;
+    font-size: ${fontSizes.body};
   }
 `
 
 export const Pill = styled.span`
-  align-self: flex-start;
-  margin-top: 2px;
+  flex-shrink: 0;
   padding: 2px ${spacing.sm};
-  background: ${palette.mango};
+  background: ${palette.mangoWash};
+  border: 1px solid ${palette.mangoDark};
   color: ${palette.ink};
   border-radius: ${radii.full};
   font-size: 0.6875rem;
-  font-weight: 700;
-  letter-spacing: 0.04em;
+  font-weight: ${fontWeights.bold};
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+`
+
+export const Right = styled.div`
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
 `

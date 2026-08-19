@@ -8,12 +8,14 @@ import {
   type PriceBand,
   type PriceSort,
 } from '@/components/customer/menu-filters/helper'
+import { useTrackMenuVisit } from '@/hooks/customer/use-analytics/helper'
 import { useOpenOrder } from '@/hooks/customer/use-open-order/helper'
 import { publicApi } from '@/lib/api/public'
 import { useCart } from '@/lib/cart/cart-context'
 import type { AddToCartInput } from '@/lib/cart/cart-context'
 import { customerPath } from '@/lib/customer/paths'
 import { sessionStore } from '@/lib/customer/session-store'
+import { freshFor } from '@/lib/query/cache'
 import { queryKeys } from '@/lib/query/keys'
 import type { MenuCategoryGroup, MenuItem } from '@/types/menu'
 
@@ -28,11 +30,15 @@ export function useMenuPage(slug: string, restaurantId: string, tableNumber: str
   const cart = useCart()
   const session = sessionStore.get(restaurantId)
   const openOrder = useOpenOrder(restaurantId)
+  const { track } = useTrackMenuVisit(slug, restaurantId)
 
   const menuQuery = useQuery({
     queryKey: queryKeys.publicMenu(slug),
     queryFn: () => publicApi.getMenu(slug),
     enabled: Boolean(slug),
+    // Published menus change on the owner's schedule, not the guest's. A stale
+    // window this long is what keeps browsing from re-fetching the whole menu.
+    staleTime: freshFor.slow,
   })
 
   const [search, setSearch] = useState('')
@@ -75,6 +81,7 @@ export function useMenuPage(slug: string, restaurantId: string, tableNumber: str
   const openDetails = (item: MenuItem) => {
     setSelected(item)
     setSheetOpen(true)
+    track('ITEM_VIEW', { targetId: item.id })
   }
 
   const table = tableNumber ?? session?.tableNumber ?? null
@@ -115,6 +122,7 @@ export function useMenuPage(slug: string, restaurantId: string, tableNumber: str
       setPriceBand('all')
       setSort('menu')
     },
+    trackOfferView: (offerId: string) => track('OFFER_VIEW', { targetId: offerId }),
     openOrder: openOrder.order,
     goTrack: () => {
       if (!openOrder.order) return

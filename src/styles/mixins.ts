@@ -119,3 +119,18 @@ export const fadeIn = keyframes`
   from { opacity: 0; }
   to   { opacity: 1; }
 `
+
+/**
+ * Card grid whose column count follows the space it actually has.
+ *
+ * A bare `minmax(320px, 1fr)` keeps a 320px track even inside a 290px column, so
+ * the cards run past the right edge on a small phone. Wrapping the floor in
+ * `min()` lets the track collapse to the container instead, and `auto-fill` then
+ * derives the column count from real width rather than a viewport breakpoint
+ * that knows nothing about the dashboard sidebar.
+ */
+export const cardGrid = (min: string) => css`
+  display: grid;
+  align-items: start;
+  grid-template-columns: repeat(auto-fill, minmax(min(${min}, 100%), 1fr));
+`

@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 
 import { qrApi } from '@/lib/api/qr'
+import { freshFor } from '@/lib/query/cache'
 import { queryKeys } from '@/lib/query/keys'
 import type { QrCode } from '@/types/qr'
 import { errorMessage } from '@/utils/error-message'
@@ -27,10 +28,12 @@ export function useQrPage(restaurantId: string) {
   const query = useQuery({
     queryKey: queryKeys.qr(restaurantId),
     queryFn: () => qrApi.list(restaurantId),
+    staleTime: freshFor.slow,
   })
   const reviewQuery = useQuery({
     queryKey: queryKeys.reviewQr(restaurantId),
     queryFn: () => qrApi.review(restaurantId),
+    staleTime: freshFor.slow,
   })
 
   const create = useMutation({

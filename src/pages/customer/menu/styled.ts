@@ -1,38 +1,6 @@
 import styled from 'styled-components'
 
-import { fontSizes, palette, spacing } from '@/styles/theme'
-
-export const StickyChrome = styled.div`
-  position: sticky;
-  top: calc(4.5rem + env(safe-area-inset-top, 0px));
-  z-index: ${({ theme }) => theme.zIndex.sticky};
-  background: ${palette.creamFog};
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  border-bottom: 1px solid ${palette.line};
-
-  ${({ theme }) => theme.media.sm} {
-    top: calc(4.65rem + env(safe-area-inset-top, 0px));
-  }
-
-  ${({ theme }) => theme.media.md} {
-    top: calc(4.75rem + env(safe-area-inset-top, 0px));
-  }
-
-  ${({ theme }) => theme.media.lg} {
-    top: calc(4.75rem + env(safe-area-inset-top, 0px));
-  }
-
-  ${({ theme }) => theme.media.xl} {
-    top: calc(4.85rem + env(safe-area-inset-top, 0px));
-  }
-
-  @media (prefers-reduced-transparency: reduce) {
-    background: ${palette.cream};
-    backdrop-filter: none;
-    -webkit-backdrop-filter: none;
-  }
-`
+import { fontSizes, fontWeights, palette, spacing } from '@/styles/theme'
 
 export const Page = styled.div`
   flex: 1;
@@ -44,31 +12,44 @@ export const Page = styled.div`
   padding-bottom: calc(120px + env(safe-area-inset-bottom, 0px));
 `
 
+/**
+ * The header, search and category rail travel together as one sticky unit, so
+ * nothing has to know the height of anything above it.
+ */
+export const StickyStack = styled.div`
+  position: sticky;
+  top: 0;
+  z-index: ${({ theme }) => theme.zIndex.header};
+  padding-top: env(safe-area-inset-top, 0px);
+  background: ${palette.creamFog};
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-bottom: 1px solid ${palette.line};
+
+  @media (prefers-reduced-transparency: reduce) {
+    background: ${palette.cream};
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+`
+
 export const Toolbar = styled.div`
   display: flex;
   align-items: center;
   gap: ${spacing.sm};
-  padding: ${spacing.sm} ${spacing.lg} 0;
-  overflow: visible;
+  padding: ${spacing.sm} ${spacing.lg};
 
   ${({ theme }) => theme.media.sm} {
-    gap: ${spacing.sm};
-    padding: ${spacing.md} ${spacing.xl} 0;
+    padding: ${spacing.sm} ${spacing.xl};
   }
 
   ${({ theme }) => theme.media.md} {
     gap: ${spacing.md};
-    padding: ${spacing.md} ${spacing['2xl']} 0;
-  }
-
-  ${({ theme }) => theme.media.lg} {
-    gap: ${spacing.md};
-    padding: ${spacing.lg} ${spacing['2xl']} 0;
+    padding: ${spacing.md} ${spacing['2xl']};
   }
 
   ${({ theme }) => theme.media.xl} {
-    gap: ${spacing.md};
-    padding: ${spacing.lg} ${spacing['3xl']} 0;
+    padding: ${spacing.md} ${spacing['3xl']};
   }
 `
 
@@ -77,116 +58,114 @@ export const SearchSlot = styled.div`
   min-width: 0;
 `
 
-export const BannerSlot = styled.div`
-  box-sizing: border-box;
-  width: 100%;
-  max-width: 100%;
-  min-width: 0;
-  padding: ${spacing.sm} ${spacing.lg} ${spacing.md};
-
-  ${({ theme }) => theme.media.sm} {
-    padding: ${spacing.sm} ${spacing.xl} ${spacing.md};
-  }
-
-  ${({ theme }) => theme.media.md} {
-    padding: ${spacing.md} ${spacing['2xl']} ${spacing.lg};
-  }
-
-  ${({ theme }) => theme.media.lg} {
-    padding: ${spacing.md} ${spacing['2xl']} ${spacing.lg};
-  }
-
-  ${({ theme }) => theme.media.xl} {
-    padding: ${spacing.md} ${spacing['3xl']} ${spacing.lg};
-  }
-`
-
 export const FilterSlot = styled.div`
   flex-shrink: 0;
   display: flex;
   align-items: center;
 
   > button {
-    width: 48px;
-    height: 48px;
+    width: 44px;
+    height: 44px;
   }
 
-  ${({ theme }) => theme.media.sm} {
+  ${({ theme }) => theme.media.md} {
     > button {
       width: 48px;
       height: 48px;
     }
   }
+`
 
-  ${({ theme }) => theme.media.md} {
-    > button {
-      width: 52px;
-      height: 52px;
-    }
+export const BannerSlot = styled.div`
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  padding: ${spacing.md} ${spacing.lg} 0;
+
+  ${({ theme }) => theme.media.sm} {
+    padding: ${spacing.md} ${spacing.xl} 0;
   }
 
-  ${({ theme }) => theme.media.lg} {
-    > button {
-      width: 52px;
-      height: 52px;
-    }
+  ${({ theme }) => theme.media.md} {
+    padding: ${spacing.lg} ${spacing['2xl']} 0;
   }
 
   ${({ theme }) => theme.media.xl} {
-    > button {
-      width: 56px;
-      height: 56px;
-    }
+    padding: ${spacing.lg} ${spacing['3xl']} 0;
+  }
+`
+
+export const SectionHead = styled.div`
+  display: flex;
+  align-items: baseline;
+  gap: ${spacing.md};
+  padding: ${spacing.lg} ${spacing.lg} ${spacing.sm};
+
+  ${({ theme }) => theme.media.sm} {
+    padding: ${spacing['2xl']} ${spacing.xl} ${spacing.md};
+  }
+
+  ${({ theme }) => theme.media.md} {
+    padding: ${spacing['3xl']} ${spacing['2xl']} ${spacing.md};
+  }
+
+  ${({ theme }) => theme.media.xl} {
+    padding: ${spacing['3xl']} ${spacing['3xl']} ${spacing.md};
   }
 `
 
 export const SectionTitle = styled.h2`
-  padding: ${spacing.lg} ${spacing.lg} ${spacing.sm};
   font-size: ${fontSizes.h3};
-  font-weight: 800;
+  font-weight: ${fontWeights.black};
   letter-spacing: -0.03em;
   color: ${palette.ink};
+`
 
-  ${({ theme }) => theme.media.sm} {
-    padding: ${spacing.xl} ${spacing.xl} ${spacing.sm};
-  }
+export const SectionCount = styled.span`
+  flex-shrink: 0;
+  font-size: ${fontSizes.labelSm};
+  font-weight: ${fontWeights.bold};
+  color: ${palette.inkSoft};
+`
 
-  ${({ theme }) => theme.media.md} {
-    padding: ${spacing.xl} ${spacing['2xl']} ${spacing.sm};
-  }
-
-  ${({ theme }) => theme.media.lg} {
-    padding: ${spacing['2xl']} ${spacing['2xl']} ${spacing.sm};
-  }
-
-  ${({ theme }) => theme.media.xl} {
-    padding: ${spacing['2xl']} ${spacing['3xl']} ${spacing.sm};
-  }
+export const Rule = styled.span`
+  flex: 1;
+  height: 1px;
+  background: ${palette.line};
 `
 
 export const Grid = styled.div`
   display: grid;
+  align-items: start;
   gap: ${spacing.md};
-  padding: ${spacing.sm} ${spacing.lg};
+  padding: 0 ${spacing.lg};
   grid-template-columns: minmax(0, 1fr);
 
   ${({ theme }) => theme.media.sm} {
-    padding: ${spacing.sm} ${spacing.xl};
+    padding: 0 ${spacing.xl};
     gap: ${spacing.lg};
   }
 
   ${({ theme }) => theme.media.md} {
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    padding: ${spacing.sm} ${spacing['2xl']};
+    padding: 0 ${spacing['2xl']};
   }
 
   ${({ theme }) => theme.media.lg} {
     grid-template-columns: repeat(3, minmax(0, 1fr));
-    padding: ${spacing.md} ${spacing['2xl']};
   }
 
   ${({ theme }) => theme.media.xl} {
     grid-template-columns: repeat(4, minmax(0, 1fr));
-    padding: ${spacing.md} ${spacing['3xl']};
+    padding: 0 ${spacing['3xl']};
+  }
+`
+
+export const EmptySlot = styled.div`
+  padding: ${spacing['3xl']} ${spacing.lg};
+
+  ${({ theme }) => theme.media.md} {
+    padding: ${spacing['4xl']} ${spacing['2xl']};
   }
 `

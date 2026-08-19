@@ -52,18 +52,18 @@ export const Card = styled.section`
 `
 
 export const HeroCard = styled(Card)`
-  background: ${palette.ink};
-  color: ${palette.white};
-  border-color: ${palette.ink};
+  background: ${palette.chutneyWash};
+  color: ${palette.ink};
+  border-color: ${palette.chutney};
 `
 
 export const Kicker = styled.p`
   margin: 0;
-  font-size: ${fontSizes.label};
+  font-size: ${fontSizes.labelSm};
   font-weight: 700;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: ${palette.mango};
+  color: ${palette.chutney};
 `
 
 export const Heading = styled.h2`
@@ -75,10 +75,10 @@ export const Heading = styled.h2`
 
 export const Copy = styled.p`
   margin: 0;
-  font-size: ${fontSizes.body};
+  font-size: ${fontSizes.label};
   font-weight: 500;
-  line-height: 1.45;
-  color: ${palette.line};
+  line-height: 1.5;
+  color: ${palette.inkSoft};
 `
 
 export const InkCopy = styled(Copy)`
@@ -99,7 +99,7 @@ export const Status = styled.p<{ $ok?: boolean; $light?: boolean }>`
   font-size: ${fontSizes.label};
   font-weight: 700;
   color: ${({ $ok, $light }) =>
-    $light ? palette.mango : $ok ? palette.chutney : palette.inkSoft};
+    $light ? palette.chutney : $ok ? palette.chutney : palette.inkSoft};
 
   svg {
     width: 16px;
@@ -128,15 +128,15 @@ export const StepIndex = styled.span`
   height: 36px;
   border-radius: ${radii.full};
   background: ${palette.mango};
-  color: ${palette.white};
+  color: ${palette.ink};
   font-weight: 800;
 `
 
 export const StepCopy = styled.p`
   margin: 0;
-  font-size: ${fontSizes.body};
-  font-weight: 600;
-  line-height: 1.4;
+  font-size: ${fontSizes.label};
+  font-weight: 500;
+  line-height: 1.45;
 `
 
 export const Hint = styled.p`

@@ -1,6 +1,6 @@
 import styled from 'styled-components'
 
-import { fontSizes, palette, radii, shadows, spacing, transitions } from '@/styles/theme'
+import { fontSizes, masks, palette, radii, shadows, spacing, transitions } from '@/styles/theme'
 
 export const Bar = styled.div`
   padding: ${spacing.sm} ${spacing.lg} ${spacing.sm};
@@ -25,11 +25,15 @@ export const Bar = styled.div`
 export const Scroller = styled.div`
   display: flex;
   flex-wrap: nowrap;
+  align-items: center;
   gap: ${spacing.sm};
   overflow-x: auto;
   overscroll-behavior-x: contain;
   -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
+  mask-image: ${masks.railFade};
+  -webkit-mask-image: ${masks.railFade};
+  padding-inline: 2px;
 
   &::-webkit-scrollbar {
     display: none;
@@ -101,4 +105,24 @@ export const Tab = styled.button<{ $active: boolean }>`
       transform: none;
     }
   }
+`
+
+export const Group = styled.div`
+  display: flex;
+  flex-wrap: nowrap;
+  flex-shrink: 0;
+  align-items: center;
+  gap: ${spacing.sm};
+
+  ${({ theme }) => theme.media.md} {
+    gap: ${spacing.md};
+  }
+`
+
+export const Divider = styled.span`
+  flex-shrink: 0;
+  width: 1px;
+  align-self: stretch;
+  margin-inline: ${spacing.xs};
+  background: ${palette.line};
 `

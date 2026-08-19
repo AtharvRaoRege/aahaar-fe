@@ -3,9 +3,9 @@ import { useTranslation } from 'react-i18next'
 import { Button } from '@/components/global/button'
 import { StatusBadge } from '@/components/global/status-badge'
 import { formatDate, formatMoney, formatTime } from '@/utils/format'
-import type { Order, OrderStatus } from '@/types/order'
+import type { Order } from '@/types/order'
 
-import { NEXT_LABEL_KEY, nextStatus, orderCardItems } from './helper'
+import { STAGE_ACTION_KEY, hasForwardAction, orderCardItems, orderStage } from './helper'
 import {
   Actions,
   Card,
@@ -31,7 +31,7 @@ export interface OrderCardProps {
   busy?: boolean
   onAccept: () => void
   onReject: () => void
-  onAdvance: (status: OrderStatus) => void
+  onAdvance: () => void
 }
 
 export function OrderCard({
@@ -44,9 +44,10 @@ export function OrderCard({
   onAdvance,
 }: OrderCardProps) {
   const { t } = useTranslation(['dashboard', 'common'])
-  const next = nextStatus(order.status)
-  const nextKey = next ? NEXT_LABEL_KEY[next as keyof typeof NEXT_LABEL_KEY] : undefined
-  const pending = order.status === 'PENDING'
+  const stage = orderStage(order.status)
+  const actionKey = STAGE_ACTION_KEY[stage]
+  const canAdvance = hasForwardAction(order.status)
+  const pending = stage === 'NEW'
   const guestName = order.customer?.name?.trim()
   const guestPhone = order.customer?.contactNumber?.trim()
 
@@ -97,9 +98,9 @@ export function OrderCard({
             </Button>
           </>
         )}
-        {next && nextKey && (
-          <Button size="sm" disabled={busy} onClick={() => onAdvance(next)}>
-            {t(nextKey)}
+        {!pending && canAdvance && actionKey && (
+          <Button size="sm" disabled={busy} onClick={onAdvance}>
+            {t(actionKey)}
           </Button>
         )}
       </Actions>

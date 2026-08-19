@@ -1,5 +1,14 @@
 import { api } from '@/lib/api/client'
-import type { Category, Menu, MenuImportJob, MenuItem } from '@/types/menu'
+import type {
+  Category,
+  Menu,
+  MenuImportJob,
+  MenuItem,
+  MenuScanApplied,
+  MenuScanResult,
+  MenuScanRow,
+  Upsells,
+} from '@/types/menu'
 
 export interface CreateCategoryPayload {
   name: string
@@ -33,6 +42,38 @@ export interface UpdateMenuItemPayload {
 }
 
 export const menuApi = {
+  /** Reads a menu photo or PDF into reviewable rows on our own server. Writes nothing. */
+  async scanMenu(restaurantId: string, file: File): Promise<MenuScanResult> {
+    const body = new FormData()
+    body.append('file', file)
+    const { data } = await api.post<MenuScanResult>(
+      `/restaurants/${restaurantId}/menu/scan`,
+      body,
+      // OCR on a large photo takes a few seconds.
+      { timeout: 120_000 },
+    )
+    return data
+  },
+  async applyMenuScan(
+    restaurantId: string,
+    rows: MenuScanRow[],
+  ): Promise<MenuScanApplied> {
+    const { data } = await api.post<MenuScanApplied>(
+      `/restaurants/${restaurantId}/menu/scan/apply`,
+      { rows },
+    )
+    return data
+  },
+  async getUpsells(menuItemId: string): Promise<Upsells> {
+    const { data } = await api.get<Upsells>(`/menu-items/${menuItemId}/upsells`)
+    return data
+  },
+  async setUpsells(menuItemId: string, suggestedItemIds: string[]): Promise<Upsells> {
+    const { data } = await api.put<Upsells>(`/menu-items/${menuItemId}/upsells`, {
+      suggestedItemIds,
+    })
+    return data
+  },
   async getForRestaurant(restaurantId: string): Promise<Menu> {
     const { data } = await api.get<Menu>(`/restaurants/${restaurantId}/menu`)
     return data

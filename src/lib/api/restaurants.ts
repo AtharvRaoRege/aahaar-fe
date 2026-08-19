@@ -1,5 +1,5 @@
 import { api } from '@/lib/api/client'
-import type { Restaurant } from '@/types/restaurant'
+import type { PublishReadiness, Restaurant } from '@/types/restaurant'
 
 export const restaurantsApi = {
   async list(): Promise<Restaurant[]> {
@@ -24,6 +24,22 @@ export const restaurantsApi = {
     const { data } = await api.patch<Restaurant>(
       `/restaurants/${restaurantId}`,
       payload,
+    )
+    return data
+  },
+  async publishReadiness(restaurantId: string): Promise<PublishReadiness> {
+    const { data } = await api.get<PublishReadiness>(
+      `/restaurants/${restaurantId}/publish-readiness`,
+    )
+    return data
+  },
+  async setPublished(
+    restaurantId: string,
+    isPublished: boolean,
+  ): Promise<Restaurant> {
+    const { data } = await api.post<Restaurant>(
+      `/restaurants/${restaurantId}/publish`,
+      { isPublished },
     )
     return data
   },

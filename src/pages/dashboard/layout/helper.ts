@@ -2,11 +2,11 @@ import { useEffect, useMemo, useSyncExternalStore } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { useLocation, useNavigate } from 'react-router-dom'
 import {
+  BarChart3,
   ClipboardList,
   QrCode,
   Settings,
   Shield,
-  Star,
   UtensilsCrossed,
   type LucideIcon,
 } from 'lucide-react'
@@ -17,18 +17,22 @@ import { impersonationStore } from '@/lib/dashboard/impersonation-store'
 import { restaurantStore } from '@/lib/dashboard/restaurant-store'
 import { queryKeys } from '@/lib/query/keys'
 
+type NavKey = 'nav.orders' | 'nav.menu' | 'nav.qr' | 'nav.insights' | 'nav.settings'
+
 export const NAV_ITEMS: ReadonlyArray<{
   to: string
-  key: 'nav.orders' | 'nav.menu' | 'nav.qr' | 'nav.ratings' | 'nav.settings'
+  key: NavKey
   end: boolean
   icon: LucideIcon
 }> = [
   { to: '/dashboard', key: 'nav.orders', end: true, icon: ClipboardList },
   { to: '/dashboard/menu', key: 'nav.menu', end: false, icon: UtensilsCrossed },
   { to: '/dashboard/qr', key: 'nav.qr', end: false, icon: QrCode },
-  { to: '/dashboard/ratings', key: 'nav.ratings', end: false, icon: Star },
+  { to: '/dashboard/insights', key: 'nav.insights', end: false, icon: BarChart3 },
   { to: '/dashboard/settings', key: 'nav.settings', end: false, icon: Settings },
 ]
+
+export const MOBILE_NAV_KEYS: ReadonlySet<NavKey> = new Set<NavKey>(NAV_ITEMS.map((item) => item.key))
 
 export const ADMIN_NAV = {
   to: '/dashboard/admin',

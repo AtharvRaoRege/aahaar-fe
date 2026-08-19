@@ -1,3 +1,11 @@
+export interface DayHours {
+  closed: boolean
+  opens: string | null
+  closes: string | null
+}
+
+export type OpeningHours = Record<string, DayHours>
+
 export interface Restaurant {
   id: string
   tenantId: string
@@ -13,8 +21,17 @@ export interface Restaurant {
   timezone: string
   primaryColor: string
   secondaryColor: string
+  mapsUrl: string | null
+  googleReviewUrl: string | null
+  upiVpa: string | null
+  upiPayeeName: string | null
+  openingHours: OpeningHours | null
+  waiterCallEnabled: boolean
   isActive: boolean
+  isPublished: boolean
 }
+
+export type UnavailableReason = 'NOT_PUBLISHED' | 'SUSPENDED'
 
 export interface PublicRestaurant {
   id: string
@@ -28,4 +45,24 @@ export interface PublicRestaurant {
   currency: string
   primaryColor: string
   secondaryColor: string
+  mapsUrl: string | null
+  googleReviewUrl: string | null
+  upiVpa: string | null
+  upiPayeeName: string | null
+  openingHours: OpeningHours | null
+  waiterCallEnabled: boolean
+  isServing: boolean
+  unavailableReason: UnavailableReason | null
+}
+
+export interface PublishReadiness {
+  isComplete: boolean
+  isPublished: boolean
+  hasLogo: boolean
+  hasAddress: boolean
+  hasPhone: boolean
+  hasCategory: boolean
+  hasMenuItem: boolean
+  hasTableQr: boolean
+  blockers: string[]
 }

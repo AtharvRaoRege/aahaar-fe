@@ -10,7 +10,7 @@ import type { MenuItem } from '@/types/menu'
 
 import { hasDishImage, isBestseller, isCustomizable } from './helper'
 import {
-  Bestseller,
+  ActionSlot,
   Body,
   CustomTag,
   Desc,
@@ -20,8 +20,8 @@ import {
   Name,
   Price,
   PriceBlock,
-  SoldOut,
   Spice,
+  Tag,
   TitleHit,
   Wrap,
 } from './styled'
@@ -67,20 +67,14 @@ export function FoodCard({
     )
 
   return (
-    <Wrap $unavailable={!item.isAvailable} $hasImage={photo} $veg={item.isVegetarian}>
-      {!item.isAvailable && <SoldOut>{t('menu.unavailable')}</SoldOut>}
-      {bestseller && <Bestseller>{t('menu.bestseller')}</Bestseller>}
-      {photo && (
-        <ImageButton type="button" onClick={onOpen} aria-label={item.name}>
-          <img src={item.imageUrl ?? ''} alt="" />
-        </ImageButton>
-      )}
-
-      <Body>
+    <Wrap $unavailable={!item.isAvailable} $hasImage={photo}>
+      <Body $hasImage={photo}>
         <TitleHit type="button" onClick={onOpen} aria-label={item.name}>
           <MetaRow>
-            <VegMark veg={item.isVegetarian} size={20} />
+            <VegMark veg={item.isVegetarian} size={18} />
             {spice && <Spice aria-hidden>{spice}</Spice>}
+            {bestseller && <Tag $tone="best">{t('menu.bestseller')}</Tag>}
+            {!item.isAvailable && <Tag $tone="sold">{t('menu.unavailable')}</Tag>}
           </MetaRow>
           <Name>{item.name}</Name>
           {item.description && <Desc>{item.description}</Desc>}
@@ -90,9 +84,20 @@ export function FoodCard({
             <Price>{formatMoney(item.basePrice, currency)}</Price>
             {customizable && <CustomTag>{t('menu.customizable')}</CustomTag>}
           </PriceBlock>
-          {addControl}
+          {addControl && <ActionSlot $hasImage={photo}>{addControl}</ActionSlot>}
         </FootRow>
       </Body>
+
+      {photo && (
+        <ImageButton
+          type="button"
+          onClick={onOpen}
+          aria-label={item.name}
+          disabled={!item.isAvailable}
+        >
+          <img src={item.imageUrl ?? ''} alt="" loading="lazy" />
+        </ImageButton>
+      )}
     </Wrap>
   )
 }

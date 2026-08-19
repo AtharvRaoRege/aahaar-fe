@@ -14,9 +14,12 @@ import { LandingPage } from '@/pages/landing'
 import { AdminPage } from '@/pages/dashboard/admin'
 import { DashboardLayout } from '@/pages/dashboard/layout'
 import { LoginPage } from '@/pages/dashboard/login'
+import { InsightsPage } from '@/pages/dashboard/insights'
 import { MenuManagerPage } from '@/pages/dashboard/menu'
+import { OffersPage } from '@/pages/dashboard/offers'
 import { OrdersPage } from '@/pages/dashboard/orders'
 import { PhonePage } from '@/pages/dashboard/phone'
+import { PlanPage } from '@/pages/dashboard/plan'
 import { QrPage } from '@/pages/dashboard/qr'
 import { RatingsPage } from '@/pages/dashboard/ratings'
 import { SettingsPage } from '@/pages/dashboard/settings'
@@ -78,6 +81,9 @@ export function App() {
           <Route path="menu" element={<MenuManagerPage />} />
           <Route path="qr" element={<QrPage />} />
           <Route path="ratings" element={<RatingsPage />} />
+          <Route path="offers" element={<OffersPage />} />
+          <Route path="insights" element={<InsightsPage />} />
+          <Route path="plan" element={<PlanPage />} />
           <Route path="settings" element={<SettingsPage />} />
           <Route path="admin" element={<AdminPage />} />
         </Route>

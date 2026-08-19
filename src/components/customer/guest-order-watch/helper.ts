@@ -1,14 +1,17 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { useLocation, useNavigate } from 'react-router-dom'
+import type { Socket } from 'socket.io-client'
 
 import { useOpenOrder } from '@/hooks/customer/use-open-order/helper'
+import { useLiveSocket } from '@/hooks/global/use-live-socket/helper'
 import { ordersApi } from '@/lib/api/orders'
 import { useCart } from '@/lib/cart/cart-context'
 import { guestOrderStore } from '@/lib/customer/guest-order-store'
 import { customerPath } from '@/lib/customer/paths'
+import { fallbackPoll, freshFor } from '@/lib/query/cache'
 import { queryKeys } from '@/lib/query/keys'
-import { createSocket, SOCKET_EVENTS } from '@/lib/socket/socket'
+import { SOCKET_EVENTS } from '@/lib/socket/socket'
 import type { Order, OrderEvent } from '@/types/order'
 
 function trackOrderId(pathname: string): string | null {
@@ -34,13 +37,6 @@ export function useGuestOrderWatch(restaurantId: string, slug: string, tableNumb
   const [notice, setNotice] = useState(false)
   const onTrack = location.pathname.includes('/track/')
 
-  const query = useQuery({
-    queryKey: queryKeys.order(orderId ?? 'none'),
-    queryFn: () => ordersApi.get(orderId!),
-    enabled: Boolean(orderId),
-    refetchInterval: 8_000,
-  })
-
   const clearRejected = useCallback(
     (order: { id: string; status: string }) => {
       const stamp = `${order.id}:${order.status}`
@@ -61,6 +57,53 @@ export function useGuestOrderWatch(restaurantId: string, slug: string, tableNumb
     [clearCart, navigate, onTrack, queryClient, restaurantId, sessionId, setNotice, slug, tableNumber],
   )
 
+  const bindLive = useCallback(
+    (socket: Socket) => {
+      const onEvent = (event: OrderEvent) => {
+        if (!orderId || event.orderId !== orderId) return
+        queryClient.setQueryData(queryKeys.order(orderId), (current: Order | undefined) => {
+          if (!current) return current
+          return { ...current, status: event.status, updatedAt: event.updatedAt }
+        })
+        if (isDead(event.status)) {
+          clearRejected({ id: event.orderId, status: event.status })
+        }
+        void queryClient.invalidateQueries({ queryKey: queryKeys.order(orderId) })
+        // The live-order banner reads this key, so it has to move with the event
+        // rather than wait for the next poll.
+        if (sessionId) {
+          void queryClient.invalidateQueries({ queryKey: queryKeys.openOrder(sessionId) })
+        }
+      }
+      const join = () => {
+        if (orderId) socket.emit(SOCKET_EVENTS.joinOrder, { orderId })
+      }
+      socket.on(SOCKET_EVENTS.orderRejected, onEvent)
+      socket.on(SOCKET_EVENTS.orderStatusUpdated, onEvent)
+      socket.on(SOCKET_EVENTS.orderUpdated, onEvent)
+      socket.on('connect', join)
+      if (socket.connected) join()
+      return () => {
+        if (orderId) socket.emit('leave_order', { orderId })
+        socket.off(SOCKET_EVENTS.orderRejected, onEvent)
+        socket.off(SOCKET_EVENTS.orderStatusUpdated, onEvent)
+        socket.off(SOCKET_EVENTS.orderUpdated, onEvent)
+        socket.off('connect', join)
+      }
+    },
+    [clearRejected, orderId, queryClient, sessionId],
+  )
+
+  const live = useLiveSocket(Boolean(orderId), undefined, bindLive)
+
+  const query = useQuery({
+    queryKey: queryKeys.order(orderId ?? 'none'),
+    queryFn: () => ordersApi.get(orderId!),
+    enabled: Boolean(orderId),
+    staleTime: freshFor.live,
+    refetchInterval: fallbackPoll(live, 15_000),
+  })
+
   useEffect(() => {
     const order = query.data
     if (order && isDead(order.status)) clearRejected(order)
@@ -74,38 +117,6 @@ export function useGuestOrderWatch(restaurantId: string, slug: string, tableNumb
     if (!hadOpen.current || !orderId || openOrder.isFetching) return
     void queryClient.invalidateQueries({ queryKey: queryKeys.order(orderId) })
   }, [openOrder.order, openOrder.isFetching, orderId, queryClient])
-
-  useEffect(() => {
-    if (!orderId) return
-    const socket = createSocket()
-    const onEvent = (event: OrderEvent) => {
-      if (event.orderId !== orderId) return
-      queryClient.setQueryData(queryKeys.order(orderId), (current: Order | undefined) => {
-        if (!current) return current
-        return { ...current, status: event.status, updatedAt: event.updatedAt }
-      })
-      if (isDead(event.status)) {
-        clearRejected({ id: event.orderId, status: event.status })
-      }
-      void queryClient.invalidateQueries({ queryKey: queryKeys.order(orderId) })
-    }
-    const join = () => {
-      socket.emit(SOCKET_EVENTS.joinOrder, { orderId })
-    }
-    socket.on(SOCKET_EVENTS.orderRejected, onEvent)
-    socket.on(SOCKET_EVENTS.orderStatusUpdated, onEvent)
-    socket.on(SOCKET_EVENTS.orderUpdated, onEvent)
-    socket.on('connect', join)
-    if (socket.connected) join()
-    return () => {
-      socket.emit('leave_order', { orderId })
-      socket.off(SOCKET_EVENTS.orderRejected, onEvent)
-      socket.off(SOCKET_EVENTS.orderStatusUpdated, onEvent)
-      socket.off(SOCKET_EVENTS.orderUpdated, onEvent)
-      socket.off('connect', join)
-      socket.disconnect()
-    }
-  }, [clearRejected, orderId, queryClient])
 
   useEffect(() => {
     if (!notice) return

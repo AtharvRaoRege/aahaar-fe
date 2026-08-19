@@ -1,8 +1,20 @@
-import { Download, EllipsisVertical, FolderPlus, Pencil, Plus, Trash2, Upload } from 'lucide-react'
+import {
+  Download,
+  EllipsisVertical,
+  FolderPlus,
+  Pencil,
+  Plus,
+  ScanLine,
+  Trash2,
+  Upload,
+} from 'lucide-react'
 import { useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 
+import { OffersModal } from '@/components/dashboard/offers-modal'
+import { UpsellPicker } from '@/components/dashboard/upsell-picker'
 import { Button } from '@/components/global/button'
+import { MenuScanSheet } from '@/components/dashboard/menu-scan'
 import { BottomSheet } from '@/components/global/bottom-sheet'
 import { ConfirmDialog } from '@/components/global/confirm-dialog'
 import { EmptyState } from '@/components/global/empty-state'
@@ -87,6 +99,18 @@ function MenuBody({ restaurant }: { restaurant: Restaurant }) {
             onClick={() => fileRef.current?.click()}
           >
             {t('menu.uploadExcel')}
+          </Button>
+          <Button
+            size="sm"
+            variant="outline"
+            leftIcon={<ScanLine aria-hidden />}
+            aria-label={t('scan.action')}
+            onClick={page.openScan}
+          >
+            {t('scan.action')}
+          </Button>
+          <Button size="sm" variant="outline" onClick={page.openOffers}>
+            {t('nav.offers')}
           </Button>
           <Button
             size="sm"
@@ -277,6 +301,17 @@ function MenuBody({ restaurant }: { restaurant: Restaurant }) {
           <Button
             variant="outline"
             fullWidth
+            leftIcon={<ScanLine aria-hidden />}
+            onClick={page.openScan}
+          >
+            {t('scan.action')}
+          </Button>
+          <Button variant="outline" fullWidth onClick={page.onActionsOffers}>
+            {t('nav.offers')}
+          </Button>
+          <Button
+            variant="outline"
+            fullWidth
             leftIcon={<FolderPlus aria-hidden />}
             onClick={page.onActionsAddCategory}
           >
@@ -327,6 +362,12 @@ function MenuBody({ restaurant }: { restaurant: Restaurant }) {
             <input type="checkbox" {...page.form.register('isVegetarian')} />
             {t('menu.veg')}
           </CheckRow>
+          {page.editing && page.isPro && (
+            <UpsellPicker
+              menuItemId={page.editing.id}
+              candidates={page.upsellCandidates}
+            />
+          )}
           <Button type="submit" fullWidth loading={page.saving}>
             {t('menu.saveDish')}
           </Button>
@@ -372,6 +413,18 @@ function MenuBody({ restaurant }: { restaurant: Restaurant }) {
         onClose={page.closeDelete}
         onConfirm={page.confirmDelete}
       />
+      <MenuScanSheet
+        open={page.scanOpen}
+        restaurantId={restaurant.id}
+        onClose={page.closeScan}
+        onApplied={page.onScanApplied}
+      />
+      <OffersModal
+        restaurantId={restaurant.id}
+        open={page.offersOpen}
+        onClose={page.closeOffers}
+      />
+
     </Page>
   )
 }

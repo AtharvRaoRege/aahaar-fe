@@ -93,3 +93,11 @@ export interface OrderEvent {
   updatedAt: string
   itemsAdded?: boolean
 }
+
+export interface OrderStageCounts {
+  new: number
+  cooking: number
+  ready: number
+  closed: number
+  all: number
+}

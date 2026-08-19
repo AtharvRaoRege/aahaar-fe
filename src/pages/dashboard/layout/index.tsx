@@ -10,7 +10,7 @@ import { Button } from '@/components/global/button'
 import { Skeleton } from '@/components/global/skeleton'
 import type { DashboardOutlet } from '@/hooks/dashboard/context'
 
-import { ADMIN_NAV, NAV_ITEMS, useDashboardLayout } from './helper'
+import { ADMIN_NAV, MOBILE_NAV_KEYS, NAV_ITEMS, useDashboardLayout } from './helper'
 import {
   AccountRow,
   BottomLink,
@@ -83,6 +83,7 @@ export function DashboardLayout() {
   }
 
   const context: DashboardOutlet = { restaurant }
+  const mobileNav = NAV_ITEMS.filter((item) => MOBILE_NAV_KEYS.has(item.key))
   const venueOptions =
     restaurant && !restaurants.some((venue) => venue.id === restaurant.id)
       ? [restaurant, ...restaurants]
@@ -159,14 +160,15 @@ export function DashboardLayout() {
         <Outlet context={context} />
       </Main>
 
-      <BottomNav $count={user?.isSuperAdmin ? 6 : 5}>
-        {NAV_ITEMS.map((item) => {
+      <BottomNav $count={mobileNav.length + (user?.isSuperAdmin ? 1 : 0)}>
+        {mobileNav.map((item) => {
           const Icon = item.icon
           return (
             <NavLink key={item.to} to={item.to} end={item.end}>
               {({ isActive }) => (
                 <BottomLink $active={isActive} aria-label={t(item.key)}>
                   <Icon aria-hidden />
+                  {t(item.key)}
                 </BottomLink>
               )}
             </NavLink>
@@ -179,6 +181,7 @@ export function DashboardLayout() {
               return (
                 <BottomLink $active={isActive} aria-label={t(ADMIN_NAV.key)}>
                   <Icon aria-hidden />
+                  {t(ADMIN_NAV.key)}
                 </BottomLink>
               )
             }}

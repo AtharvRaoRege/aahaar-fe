@@ -5,7 +5,7 @@ interface BrandMarkProps {
 export function BrandMark({ size = 36 }: BrandMarkProps) {
   return (
     <img
-      src="/logo/aadhaar-new.png"
+      src="/icons/brand-mark.png"
       alt=""
       width={size}
       height={size}

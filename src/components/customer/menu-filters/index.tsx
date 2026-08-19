@@ -8,13 +8,15 @@ import { Chip, Row } from './styled'
 export interface MenuFiltersProps {
   diet: DietFilter
   onDiet: (value: DietFilter) => void
+  /** Drop the row's own inset so the chips can share another scroller. */
+  inline?: boolean
 }
 
-export function MenuFilters({ diet, onDiet }: MenuFiltersProps) {
+export function MenuFilters({ diet, onDiet, inline }: MenuFiltersProps) {
   const { t } = useTranslation(['customer', 'common'])
 
   return (
-    <Row role="group" aria-label={t('menu.dietFilters')}>
+    <Row $inline={inline} role="group" aria-label={t('menu.dietFilters')}>
       <Chip type="button" $active={diet === 'veg'} $tone="veg" onClick={() => onDiet(diet === 'veg' ? 'all' : 'veg')}>
         <VegMark veg size={14} />
         {t('common:labels.veg')}

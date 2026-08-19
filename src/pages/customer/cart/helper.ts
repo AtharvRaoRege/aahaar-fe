@@ -1,16 +1,18 @@
-import { useRef } from 'react'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useCallback, useMemo, useRef } from 'react'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useNavigate } from 'react-router-dom'
 
 import { useOpenOrder } from '@/hooks/customer/use-open-order/helper'
 import { ApiRequestError } from '@/lib/api/client'
 import { ordersApi } from '@/lib/api/orders'
+import { publicApi } from '@/lib/api/public'
 import { useCart } from '@/lib/cart/cart-context'
 import { guestOrderStore } from '@/lib/customer/guest-order-store'
 import { customerPath } from '@/lib/customer/paths'
 import { sessionStore } from '@/lib/customer/session-store'
 import { ensureTableSession } from '@/lib/customer/table-session'
 import { queryKeys } from '@/lib/query/keys'
+import type { MenuItem } from '@/types/menu'
 
 export function useCartPage(slug: string, restaurantId: string, tableNumber: string | null) {
   const navigate = useNavigate()
@@ -20,6 +22,32 @@ export function useCartPage(slug: string, restaurantId: string, tableNumber: str
   const table = tableNumber ?? session?.tableNumber ?? null
   const idempotencyKey = useRef(crypto.randomUUID())
   const openOrder = useOpenOrder(restaurantId)
+
+  // Already cached by the menu screen — used to turn an upsell suggestion back
+  // into the full menu item the cart needs.
+  const menuQuery = useQuery({
+    queryKey: queryKeys.publicMenu(slug),
+    queryFn: () => publicApi.getMenu(slug),
+    enabled: Boolean(slug),
+  })
+
+  const itemsById = useMemo(() => {
+    const map = new Map<string, MenuItem>()
+    for (const group of menuQuery.data?.categories ?? []) {
+      for (const item of group.items) map.set(item.id, item)
+    }
+    return map
+  }, [menuQuery.data])
+
+  const cartItemIds = useMemo(
+    () => Array.from(new Set(cart.lines.map((line) => line.item.id))),
+    [cart.lines],
+  )
+
+  const isInCart = useCallback(
+    (menuItemId: string) => cart.lines.some((line) => line.item.id === menuItemId),
+    [cart.lines],
+  )
 
   const mutation = useMutation({
     mutationFn: async () => {
@@ -88,5 +116,11 @@ export function useCartPage(slug: string, restaurantId: string, tableNumber: str
     failed: mutation.isError,
     errorMessage,
     openOrder: openOrder.order,
+    cartItemIds,
+    isInCart,
+    addSuggestion: (menuItemId: string) => {
+      const item = itemsById.get(menuItemId)
+      if (item) cart.addItem(item)
+    },
   }
 }

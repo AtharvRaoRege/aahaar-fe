@@ -19,7 +19,8 @@ import {
 export function KitchenAlert({ restaurantId }: { restaurantId?: string }) {
   const { t } = useTranslation('dashboard')
   const page = useKitchenAlerts(restaurantId)
-  const Icon = page.alert?.kind === 'review' ? Star : ClipboardList
+  const Icon =
+    page.alert?.kind === 'review' ? Star : page.alert?.kind === 'waiter' ? Bell : ClipboardList
 
   return (
     <>

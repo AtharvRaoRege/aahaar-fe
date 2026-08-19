@@ -3,7 +3,6 @@ import { useMutation, useQuery } from '@tanstack/react-query'
 import { useForm, useWatch } from 'react-hook-form'
 
 import { authApi } from '@/lib/api/auth'
-import { reviewsApi } from '@/lib/api/reviews'
 import { restaurantsApi } from '@/lib/api/restaurants'
 import { tokenStore } from '@/lib/auth/token-store'
 import { impersonationStore } from '@/lib/dashboard/impersonation-store'
@@ -17,7 +16,26 @@ export interface SettingsForm {
   name: string
   phone: string
   address: string
+  mapsUrl: string
+  googleReviewUrl: string
+  upiVpa: string
+  upiPayeeName: string
   venueKind: Restaurant['venueKind']
+  waiterCallEnabled: boolean
+}
+
+function formValues(restaurant: Restaurant): SettingsForm {
+  return {
+    name: restaurant.name,
+    phone: restaurant.phone ?? '',
+    address: restaurant.address ?? '',
+    mapsUrl: restaurant.mapsUrl ?? '',
+    googleReviewUrl: restaurant.googleReviewUrl ?? '',
+    upiVpa: restaurant.upiVpa ?? '',
+    upiPayeeName: restaurant.upiPayeeName ?? '',
+    venueKind: restaurant.venueKind,
+    waiterCallEnabled: Boolean(restaurant.waiterCallEnabled),
+  }
 }
 
 export interface AddVenueForm {
@@ -34,14 +52,7 @@ export function useSettingsPage(restaurant: Restaurant) {
     impersonationStore.getSnapshot,
     impersonationStore.getSnapshot,
   )
-  const form = useForm<SettingsForm>({
-    defaultValues: {
-      name: restaurant.name,
-      phone: restaurant.phone ?? '',
-      address: restaurant.address ?? '',
-      venueKind: restaurant.venueKind,
-    },
-  })
+  const form = useForm<SettingsForm>({ defaultValues: formValues(restaurant) })
   const addForm = useForm<AddVenueForm>({
     defaultValues: { name: '', venueKind: 'RESTAURANT' },
   })
@@ -50,26 +61,10 @@ export function useSettingsPage(restaurant: Restaurant) {
     queryKey: queryKeys.restaurants,
     queryFn: () => restaurantsApi.list(),
   })
-  const ratingsQuery = useQuery({
-    queryKey: queryKeys.reviewSummary(restaurant.id),
-    queryFn: () => reviewsApi.summary(restaurant.id),
-  })
 
   useEffect(() => {
-    form.reset({
-      name: restaurant.name,
-      phone: restaurant.phone ?? '',
-      address: restaurant.address ?? '',
-      venueKind: restaurant.venueKind,
-    })
-  }, [
-    restaurant.id,
-    restaurant.name,
-    restaurant.phone,
-    restaurant.address,
-    restaurant.venueKind,
-    form,
-  ])
+    form.reset(formValues(restaurant))
+  }, [restaurant, form])
 
   const mutation = useMutation({
     mutationFn: (values: SettingsForm) =>
@@ -77,7 +72,12 @@ export function useSettingsPage(restaurant: Restaurant) {
         name: values.name.trim(),
         phone: values.phone.trim() || null,
         address: values.address.trim() || null,
+        mapsUrl: values.mapsUrl.trim() || null,
+        googleReviewUrl: values.googleReviewUrl.trim() || null,
+        upiVpa: values.upiVpa.trim() || null,
+        upiPayeeName: values.upiPayeeName.trim() || null,
         venueKind: values.venueKind,
+        waiterCallEnabled: values.waiterCallEnabled,
       }),
     onSuccess: (_updated, values) => {
       form.reset(values)
@@ -160,11 +160,5 @@ export function useSettingsPage(restaurant: Restaurant) {
     onAddVenue: addForm.handleSubmit((values) => addVenue.mutate(values)),
     adding: addVenue.isPending,
     addError: addVenue.isError ? errorMessage(addVenue.error) : '',
-    ratings: ratingsQuery.data ?? {
-      average: 0,
-      count: 0,
-      distribution: { '1': 0, '2': 0, '3': 0, '4': 0, '5': 0 },
-    },
-    ratingsLoading: ratingsQuery.isLoading,
   }
 }

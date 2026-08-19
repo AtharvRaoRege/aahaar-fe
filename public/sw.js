@@ -1,4 +1,4 @@
-const CACHE = 'aahaar-shell-v7'
+const CACHE = 'aahaar-shell-v10'
 
 self.addEventListener('install', (event) => {
   event.waitUntil(

@@ -28,7 +28,6 @@ function compute(): AuthSnapshot {
   return { user, isAuthenticated: Boolean(access) }
 }
 
-// Cached reference so useSyncExternalStore gets a stable snapshot.
 let snapshot: AuthSnapshot = compute()
 
 function refresh() {

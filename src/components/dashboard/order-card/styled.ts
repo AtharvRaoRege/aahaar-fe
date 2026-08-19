@@ -53,6 +53,7 @@ export const Top = styled.div`
   align-items: flex-start;
   justify-content: space-between;
   gap: ${spacing.md};
+  min-width: 0;
 `
 
 export const Number = styled.h3`
@@ -196,22 +197,26 @@ export const ItemName = styled.span`
   font-size: ${fontSizes.body};
   font-weight: 700;
   color: ${palette.ink};
+  overflow-wrap: anywhere;
 `
 
 export const ItemExtras = styled.span`
   font-size: ${fontSizes.label};
   font-weight: 500;
   color: ${palette.inkSoft};
+  overflow-wrap: anywhere;
 `
 
 export const ItemNotes = styled.span`
   font-size: ${fontSizes.label};
   font-weight: 600;
   color: ${palette.tomato};
+  overflow-wrap: anywhere;
 `
 
 export const TicketNote = styled.p`
   margin: 0;
+  overflow-wrap: anywhere;
   padding: ${spacing.sm} ${spacing.md};
   background: ${palette.mangoWash};
   border-radius: ${radii.sm};

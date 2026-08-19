@@ -1,7 +1,7 @@
 import { ArrowRight } from 'lucide-react'
 
 import type { OpenOrderBannerProps } from './helper'
-import { Action, Banner, Copy, Kicker, Meta, Title } from './styled'
+import { Action, Banner, Copy, Kicker, LiveDot, Meta, Title } from './styled'
 
 export function OpenOrderBanner({
   orderNumber,
@@ -13,7 +13,10 @@ export function OpenOrderBanner({
   return (
     <Banner type="button" onClick={onOpen}>
       <Copy>
-        <Kicker>{liveLabel}</Kicker>
+        <Kicker>
+          <LiveDot aria-hidden />
+          {liveLabel}
+        </Kicker>
         <Title>
           #{orderNumber} · {statusLabel}
         </Title>

@@ -10,6 +10,7 @@ import { authApi } from '@/lib/api/auth'
 import { tokenStore } from '@/lib/auth/token-store'
 import { useAuth } from '@/lib/auth/use-auth'
 import { impersonationStore } from '@/lib/dashboard/impersonation-store'
+import { freshFor } from '@/lib/query/cache'
 import { queryKeys } from '@/lib/query/keys'
 import type { User } from '@/types/auth'
 
@@ -61,8 +62,9 @@ export function StaffGate() {
     queryKey: queryKeys.me,
     queryFn: authApi.me,
     enabled: isAuthenticated,
-    refetchInterval: 30_000,
-    refetchOnWindowFocus: true,
+    // Approval is granted by a human, so a timer adds nothing a focus refetch
+    // does not already cover when the staff member comes back to the tab.
+    staleTime: freshFor.ownAction,
   })
 
   useEffect(() => {

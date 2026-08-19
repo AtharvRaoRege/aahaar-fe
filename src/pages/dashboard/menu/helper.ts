@@ -17,6 +17,8 @@ import {
 
 import type { SelectOption } from '@/components/global/select'
 import { menuApi } from '@/lib/api/menu'
+import { subscriptionsApi } from '@/lib/api/subscriptions'
+import { freshFor } from '@/lib/query/cache'
 import { queryKeys } from '@/lib/query/keys'
 import type { MenuCategoryGroup, MenuItem } from '@/types/menu'
 import { errorMessage } from '@/utils/error-message'
@@ -76,11 +78,21 @@ export function useMenuManager(restaurantId: string) {
   const [search, setSearch] = useState('')
   const [jobId, setJobId] = useState<string | null>(null)
   const [importError, setImportError] = useState('')
+  const [scanOpen, setScanOpen] = useState(false)
+  const [scanAdded, setScanAdded] = useState(0)
+  const [offersOpen, setOffersOpen] = useState(false)
 
   const query = useQuery({
     queryKey: queryKeys.dashboardMenu(restaurantId),
     queryFn: () => menuApi.getForRestaurant(restaurantId),
+    staleTime: freshFor.slow,
   })
+
+  const subscriptionQuery = useQuery({
+    queryKey: queryKeys.subscription(restaurantId),
+    queryFn: () => subscriptionsApi.get(restaurantId),
+  })
+  const isPro = subscriptionQuery.data?.effectivePlan === 'PRO'
 
   const invalidate = () =>
     queryClient.invalidateQueries({ queryKey: queryKeys.dashboardMenu(restaurantId) })
@@ -100,6 +112,15 @@ export function useMenuManager(restaurantId: string) {
   )
   const setCategoryId = (value: string) =>
     form.setValue('categoryId', value, { shouldDirty: true, shouldValidate: true })
+
+  // Anything on the menu except the dish being edited can be suggested with it.
+  const upsellCandidates = useMemo(
+    () =>
+      groups
+        .flatMap((group) => group.items)
+        .filter((item) => item.id !== editing?.id),
+    [groups, editing?.id],
+  )
 
   const visibleGroups = useMemo(() => {
     const needle = search.trim().toLowerCase()
@@ -281,6 +302,21 @@ export function useMenuManager(restaurantId: string) {
     selectCategory,
     sheetOpen,
     editing,
+    isPro,
+    upsellCandidates,
+    scanOpen,
+    scanAdded,
+    openScan: () => {
+      setActionsOpen(false)
+      setScanOpen(true)
+    },
+    closeScan: () => setScanOpen(false),
+    offersOpen,
+    openOffers: () => setOffersOpen(true),
+    closeOffers: () => setOffersOpen(false),
+    onActionsOffers: () => runFromActions(() => setOffersOpen(true)),
+    onScanApplied: (created: number) => setScanAdded(created),
+    dismissScanAdded: () => setScanAdded(0),
     openCreate,
     openEdit,
     closeSheet,
