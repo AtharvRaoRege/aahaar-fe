@@ -1,12 +1,16 @@
 import { io } from 'socket.io-client'
 import type { Socket } from 'socket.io-client'
 
+import { SOCKET_ORIGIN } from '@/lib/api/origin'
+
 /**
- * Connect to the Socket.IO server. Same-origin ('/'): the Vite dev server and
- * the production nginx both proxy `/socket.io` to the FastAPI backend.
+ * Connect to the Socket.IO server.
+ *
+ * Same-origin in development, where Vite proxies `/socket.io`; the API's own
+ * origin in production, because a static host cannot proxy a WebSocket upgrade.
  */
 export function createSocket(token?: string): Socket {
-  return io('/', {
+  return io(SOCKET_ORIGIN, {
     path: '/socket.io',
     transports: ['websocket', 'polling'],
     auth: token ? { token } : {},

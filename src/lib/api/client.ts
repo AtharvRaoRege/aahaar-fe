@@ -1,13 +1,15 @@
 import axios from 'axios'
 import type { AxiosError, AxiosInstance, InternalAxiosRequestConfig } from 'axios'
 
+import { API_BASE } from '@/lib/api/origin'
 import { signOutClerk } from '@/lib/auth/clerk'
 import { clearLocalSession, markSessionReplaced } from '@/lib/auth/local-session'
 import { tokenStore } from '@/lib/auth/token-store'
 import { getAccessToken, isSupabaseEnabled, signOut } from '@/lib/supabase/auth'
 import type { Tokens } from '@/types/auth'
 
-export const API_BASE = '/api/v1'
+export { API_BASE }
+
 
 export class ApiRequestError extends Error {
   code: string
