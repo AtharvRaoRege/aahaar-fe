@@ -3,12 +3,13 @@ import { useTranslation } from 'react-i18next'
 import { BrandMark } from '@/components/global/brand-mark'
 import { QrSlipArt, TableSceneArt } from '@/components/landing/art'
 import { LineIcon } from '@/components/landing/icons'
-import { Blob, Doodle, Eyebrow, GhostType } from '@/components/landing/kit/styled'
+import { Blob, Doodle, GhostType } from '@/components/landing/kit/styled'
 
 import { QR_CELLS, useScanLoop } from './helper'
 import {
   Hero,
   HeroCta,
+  HeroEyebrow,
   HeroLogo,
   HeroTag,
   MenuPop,
@@ -56,9 +57,9 @@ export function HeroScan({ id, isAuthenticated, onPrimary }: HeroScanProps) {
       </Doodle>
 
       <HeroLogo>
-        <BrandMark size={54} />
+        <BrandMark size={144} />
       </HeroLogo>
-      <Eyebrow>{t('landing.hero.eyebrow')}</Eyebrow>
+      <HeroEyebrow>{t('landing.hero.eyebrow')}</HeroEyebrow>
       <Title>
         {t('landing.hero.titleTop')}
         <span>{t('landing.hero.titleAccent')}</span>

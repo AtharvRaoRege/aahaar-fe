@@ -30,7 +30,7 @@ export function LandingHeader({ isAuthenticated, pricingId, onPrimary }: Landing
   return (
     <Bar>
       <Brand href="#top">
-        <BrandMark size={26} />
+        <BrandMark size={38} />
         <span>{t('appName')}</span>
       </Brand>
       <Actions>

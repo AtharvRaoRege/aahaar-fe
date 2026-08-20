@@ -2,7 +2,7 @@ import { useTranslation } from 'react-i18next'
 
 import { PrinterArt } from '@/components/landing/art'
 import { LineIcon } from '@/components/landing/icons'
-import { Doodle, Eyebrow, GhostType } from '@/components/landing/kit/styled'
+import { Doodle, GhostType } from '@/components/landing/kit/styled'
 import { TICKET_LINES } from '@/constants/landing'
 import { useReveal } from '@/hooks/landing/use-reveal/helper'
 
@@ -10,8 +10,10 @@ import {
   Bar,
   Dot,
   Flow,
+  KitchenEyebrow,
   Printer,
   Section,
+  Stage,
   Stamp,
   Ticket,
   TicketHead,
@@ -22,8 +24,8 @@ import {
 
 export function KitchenTicket() {
   const { t } = useTranslation('common')
-  const { ref: ticketRef, shown: ticketShown } = useReveal<HTMLDivElement>({ amount: 0.3 })
-  const { ref: flowRef, shown: flowShown } = useReveal<HTMLDivElement>({ amount: 0.6 })
+  const { ref: ticketRef, shown: ticketShown } = useReveal<HTMLDivElement>({ amount: 0.25 })
+  const { ref: flowRef, shown: flowShown } = useReveal<HTMLDivElement>({ amount: 0.5 })
 
   return (
     <Section>
@@ -37,35 +39,37 @@ export function KitchenTicket() {
         <LineIcon name="bellPlain" />
       </Doodle>
 
-      <Eyebrow $tone="turmeric">{t('landing.kitchen.eyebrow')}</Eyebrow>
+      <KitchenEyebrow>{t('landing.kitchen.eyebrow')}</KitchenEyebrow>
       <Title>
         {t('landing.kitchen.titleTop')}
         <br />
         {t('landing.kitchen.titleBottom')}
       </Title>
 
-      <Printer aria-hidden>
-        <PrinterArt />
-      </Printer>
+      <Stage>
+        <Printer aria-hidden>
+          <PrinterArt />
+        </Printer>
 
-      <Ticket ref={ticketRef} $in={ticketShown}>
-        <TicketHead>{t('landing.kitchen.ticketHead')}</TicketHead>
-        {TICKET_LINES.map((line, index) => (
-          <TicketRow key={line} $in={ticketShown} $delay={index * 200}>
-            <span>{t(`landing.kitchen.items.${line}.label`)}</span>
-            <span>{t(`landing.kitchen.items.${line}.price`)}</span>
+        <Ticket ref={ticketRef} $in={ticketShown}>
+          <TicketHead>{t('landing.kitchen.ticketHead')}</TicketHead>
+          {TICKET_LINES.map((line, index) => (
+            <TicketRow key={line} $in={ticketShown} $delay={index * 200}>
+              <span>{t(`landing.kitchen.items.${line}.label`)}</span>
+              <span>{t(`landing.kitchen.items.${line}.price`)}</span>
+            </TicketRow>
+          ))}
+          <TicketRow $in={ticketShown} $delay={TICKET_LINES.length * 200}>
+            <span>{t('landing.kitchen.ticketNote')}</span>
+            <span />
           </TicketRow>
-        ))}
-        <TicketRow $in={ticketShown} $delay={TICKET_LINES.length * 200}>
-          <span>{t('landing.kitchen.ticketNote')}</span>
-          <span />
-        </TicketRow>
-        <TicketTotal>
-          <span>{t('landing.kitchen.ticketTotal')}</span>
-          <span>{t('landing.kitchen.totalValue')}</span>
-        </TicketTotal>
-        <Stamp $in={ticketShown}>{t('landing.kitchen.ticketStamp')}</Stamp>
-      </Ticket>
+          <TicketTotal>
+            <span>{t('landing.kitchen.ticketTotal')}</span>
+            <span>{t('landing.kitchen.totalValue')}</span>
+          </TicketTotal>
+          <Stamp $in={ticketShown}>{t('landing.kitchen.ticketStamp')}</Stamp>
+        </Ticket>
+      </Stage>
 
       <Flow ref={flowRef} role="img" aria-label={t('landing.kitchen.flowLabel')}>
         <Dot $in={flowShown} $skin="turmeric" $delay={0} />

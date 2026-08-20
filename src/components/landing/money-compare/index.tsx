@@ -39,14 +39,14 @@ export function MoneyCompare() {
         <Stack>
           <Value>{t('landing.money.keepValue')}</Value>
           <BarWrap>
-            <Fill $in={shown} $to={78} $skin="ink" />
+            <Fill $in={shown} $to={100} $skin="ink" />
           </BarWrap>
           <Label>{t('landing.money.keepLabel')}</Label>
         </Stack>
         <Stack>
           <Value>{t('landing.money.cutValue')}</Value>
           <BarWrap>
-            <Fill $in={shown} $to={24} $skin="chili" />
+            <Fill $in={shown} $to={4} $skin="chili" />
           </BarWrap>
           <Label>{t('landing.money.cutLabel')}</Label>
         </Stack>

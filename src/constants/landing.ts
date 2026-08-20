@@ -50,7 +50,7 @@ export const STORY_BEATS = [
 export const STAT_TILES = [
   { key: 'outlets', target: 120, suffix: '+' },
   { key: 'speed', target: 8, suffix: 's' },
-  { key: 'commission', target: 22, suffix: '%' },
+  { key: 'commission', target: 0, suffix: '%' },
   { key: 'taps', target: 3, suffix: '' },
 ] as const
 

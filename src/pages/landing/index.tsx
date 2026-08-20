@@ -2,6 +2,7 @@ import { useTranslation } from 'react-i18next'
 
 import { BentoFeatures } from '@/components/landing/bento-features'
 import { DishGallery } from '@/components/landing/dish-gallery'
+import { CreatorFooter } from '@/components/landing/creator-footer'
 import { FaqBlock } from '@/components/landing/faq-block'
 import { FeatureRail } from '@/components/landing/feature-rail'
 import { FinalCta } from '@/components/landing/final-cta'
@@ -112,6 +113,7 @@ export function LandingPage() {
         isAuthenticated={page.isAuthenticated}
         onPrimary={page.goPrimary}
       />
+      <CreatorFooter />
     </Page>
   )
 }

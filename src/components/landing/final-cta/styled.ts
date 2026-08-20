@@ -52,7 +52,7 @@ export const Cta = styled.button`
   padding: 16px 30px;
   font-family: ${landingFonts.body};
   font-weight: 700;
-  font-size: 13px;
+  font-size: 16px;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   box-shadow: 6px 6px 0 ${landing.ink};
@@ -69,13 +69,4 @@ export const Cta = styled.button`
     transform: translate(0, 0);
     box-shadow: 3px 3px 0 ${landing.ink};
   }
-`
-
-export const Footer = styled.footer`
-  text-align: center;
-  padding: 28px ${spacing.xl} ${spacing['4xl']};
-  font-size: 10px;
-  color: ${landing.inkSoft};
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
 `

@@ -5,43 +5,40 @@ import { revealUp } from '@/styles/mixins'
 
 export const Track = styled.div`
   position: relative;
-
-  &::before {
-    content: '';
-    position: absolute;
-    left: 50%;
-    top: 0;
-    bottom: 0;
-    width: 2px;
-    background: repeating-linear-gradient(
-      180deg,
-      ${landing.ink} 0 8px,
-      transparent 8px 18px
-    );
-    transform: translateX(-50%);
-    z-index: 0;
-    opacity: 0.35;
-  }
 `
 
 export const Beat = styled.section<{ $in: boolean }>`
   position: relative;
   z-index: 1;
-  padding: 9vh ${spacing.xl};
+  padding: 4.5vh ${spacing.xl};
   max-width: 520px;
   margin: 0 auto;
   text-align: center;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 22px;
+  gap: 14px;
   isolation: isolate;
   ${({ $in }) => revealUp($in)};
 
+  ${({ theme }) => theme.media.sm} {
+    padding: 5.5vh ${spacing.xl};
+    gap: 16px;
+  }
+
   ${({ theme }) => theme.media.md} {
-    padding: 16vh ${spacing.xl};
-    gap: 26px;
+    padding: 7vh ${spacing.xl};
+    gap: 18px;
     max-width: 760px;
+  }
+
+  ${({ theme }) => theme.media.lg} {
+    padding: 8vh ${spacing.xl};
+    gap: 20px;
+  }
+
+  ${({ theme }) => theme.media.xl} {
+    padding: 9vh ${spacing.xl};
   }
 `
 

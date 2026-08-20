@@ -4,7 +4,7 @@ import { LineIcon } from '@/components/landing/icons'
 import { Blob, Doodle, Eyebrow, GhostType } from '@/components/landing/kit/styled'
 import { useReveal } from '@/hooks/landing/use-reveal/helper'
 
-import { Cta, Footer, Section, Sub, Title } from './styled'
+import { Cta, Section, Sub, Title } from './styled'
 
 interface FinalCtaProps {
   id: string
@@ -47,7 +47,6 @@ export function FinalCta({ id, isAuthenticated, onPrimary }: FinalCtaProps) {
           {isAuthenticated ? t('landing.cta.kitchen') : t('landing.cta.button')}
         </Cta>
       </Section>
-      <Footer>{t('landing.footer')}</Footer>
     </>
   )
 }

@@ -37,15 +37,20 @@ export const Brand = styled.a`
   ${focusRing};
   display: inline-flex;
   align-items: center;
-  gap: ${spacing.sm};
+  gap: 8px;
   min-width: 0;
   font-family: ${landingFonts.display};
-  font-size: 16px;
-  letter-spacing: -0.02em;
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
   color: ${landing.ink};
 
   img {
     flex-shrink: 0;
+    width: 28px;
+    height: 28px;
+    object-fit: contain;
+    image-rendering: auto;
   }
 
   span {
@@ -53,10 +58,44 @@ export const Brand = styled.a`
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    color: ${landing.chili};
   }
 
   ${({ theme }) => theme.media.sm} {
     font-size: 20px;
+    gap: 10px;
+
+    img {
+      width: 32px;
+      height: 32px;
+    }
+  }
+
+  ${({ theme }) => theme.media.md} {
+    font-size: 22px;
+
+    img {
+      width: 34px;
+      height: 34px;
+    }
+  }
+
+  ${({ theme }) => theme.media.lg} {
+    font-size: 24px;
+
+    img {
+      width: 36px;
+      height: 36px;
+    }
+  }
+
+  ${({ theme }) => theme.media.xl} {
+    font-size: 26px;
+
+    img {
+      width: 38px;
+      height: 38px;
+    }
   }
 `
 
@@ -99,7 +138,7 @@ export const Cta = styled.button`
   padding: 9px 14px;
   font-family: ${landingFonts.body};
   font-weight: 700;
-  font-size: 11px;
+  font-size: 14px;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   white-space: nowrap;
@@ -115,7 +154,7 @@ export const Cta = styled.button`
 
   ${({ theme }) => theme.media.sm} {
     padding: 11px 18px;
-    font-size: 12px;
+    font-size: 15px;
   }
 `
 
