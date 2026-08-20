@@ -1,7 +1,7 @@
 import styled, { createGlobalStyle } from 'styled-components'
 
 import { focusRing } from '@/styles/mixins'
-import { fontSizes, fontWeights, palette, radii, spacing } from '@/styles/theme'
+import { fontSizes, fontWeights, palette, radii, spacing, transitions } from '@/styles/theme'
 
 /**
  * Snap the document, not a nested box, and only while this page is mounted.
@@ -33,15 +33,20 @@ export const TopBar = styled.header`
   position: sticky;
   top: 0;
   z-index: ${({ theme }) => theme.zIndex.header};
-  display: flex;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
-  justify-content: space-between;
-  gap: ${spacing.md};
-  padding: ${spacing.md} ${spacing.xl};
+  gap: ${spacing.sm};
+  padding: ${spacing.sm} ${spacing.md};
   background: ${palette.creamFog};
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   border-bottom: 1px solid ${palette.line};
+
+  ${({ theme }) => theme.media.sm} {
+    gap: ${spacing.md};
+    padding: ${spacing.sm} ${spacing.xl};
+  }
 
   ${({ theme }) => theme.media.md} {
     padding: ${spacing.md} ${spacing['3xl']};
@@ -54,12 +59,29 @@ export const TopBar = styled.header`
   }
 `
 
+/** Reading position. One composited transform, no layout per frame. */
+export const Progress = styled.span<{ $value: number }>`
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  height: 2px;
+  transform: scaleX(${({ $value }) => $value});
+  transform-origin: left center;
+  background: ${palette.tomato};
+  transition: transform ${transitions.fast};
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+`
+
 export const Brand = styled.span`
   display: inline-flex;
   align-items: center;
   gap: ${spacing.sm};
   min-width: 0;
-  font-size: ${fontSizes.subheading};
+  font-size: ${fontSizes.body};
   font-weight: ${fontWeights.black};
   letter-spacing: -0.03em;
   color: ${palette.ink};
@@ -67,10 +89,26 @@ export const Brand = styled.span`
   img {
     flex-shrink: 0;
   }
+
+  span {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  ${({ theme }) => theme.media.sm} {
+    font-size: ${fontSizes.subheading};
+  }
 `
 
+/**
+ * Below the small breakpoint there is no room for a courtesy link beside the brand
+ * and the call to action — at 320px the three together overflow the bar.
+ */
 export const SkipLink = styled.a`
   ${focusRing};
+  display: none;
   flex-shrink: 0;
   padding: ${spacing.xs} ${spacing.md};
   border-radius: ${radii.full};
@@ -82,6 +120,10 @@ export const SkipLink = styled.a`
   &:hover {
     color: ${palette.ink};
   }
+
+  ${({ theme }) => theme.media.sm} {
+    display: inline-flex;
+  }
 `
 
 export const BarActions = styled.div`
@@ -89,4 +131,22 @@ export const BarActions = styled.div`
   align-items: center;
   gap: ${spacing.sm};
   flex-shrink: 0;
+  min-width: 0;
+`
+
+/** Long label on a laptop, short one on a phone. Same button, no reflow. */
+export const LabelLong = styled.span`
+  display: none;
+
+  ${({ theme }) => theme.media.sm} {
+    display: inline;
+  }
+`
+
+export const LabelShort = styled.span`
+  display: inline;
+
+  ${({ theme }) => theme.media.sm} {
+    display: none;
+  }
 `

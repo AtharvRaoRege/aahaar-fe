@@ -155,7 +155,7 @@ export const Rail = styled.div`
   ${({ theme }) => theme.media.md} {
     grid-auto-flow: row;
     grid-auto-columns: auto;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     overflow-x: visible;
     scroll-snap-type: none;
     padding-inline: 0;
@@ -170,8 +170,8 @@ export const Rail = styled.div`
 `
 
 export const Part = styled.article`
-  scroll-snap-align: center;
   display: grid;
+  height: 100%;
   gap: ${spacing.xs};
   align-content: start;
   min-width: 0;
@@ -218,5 +218,26 @@ export const SwipeHint = styled.p`
 export const Column = styled.div`
   display: grid;
   gap: ${spacing.lg};
+  min-width: 0;
+`
+
+export const Badge = styled.span`
+  justify-self: start;
+  padding: 2px ${spacing.sm};
+  border-radius: ${radii.full};
+  background: ${palette.mangoWash};
+  border: 1px solid ${palette.mangoDark};
+  font-size: ${fontSizes.micro};
+  font-weight: ${fontWeights.black};
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: ${palette.ink};
+  white-space: nowrap;
+`
+
+/** The rail scrolls, so each cell must not be squeezed by the reveal wrapper. */
+export const RailCell = styled.div`
+  scroll-snap-align: center;
+  display: grid;
   min-width: 0;
 `

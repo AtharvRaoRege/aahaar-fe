@@ -1,17 +1,17 @@
-/** The three pieces of the engine, and the trace that ties them together. */
+/** The four things that happen, in the order the restaurant sees them. */
 export const ENGINE_PARTS = [
-  { id: 'api', titleKey: 'landing.story.engine1Title', bodyKey: 'landing.story.engine1Body' },
-  { id: 'rooms', titleKey: 'landing.story.engine2Title', bodyKey: 'landing.story.engine2Body' },
-  { id: 'truth', titleKey: 'landing.story.engine3Title', bodyKey: 'landing.story.engine3Body' },
+  { id: 'scan', titleKey: 'landing.story.engine1Title', bodyKey: 'landing.story.engine1Body' },
+  { id: 'beep', titleKey: 'landing.story.engine2Title', bodyKey: 'landing.story.engine2Body' },
+  { id: 'watch', titleKey: 'landing.story.engine3Title', bodyKey: 'landing.story.engine3Body' },
+  {
+    id: 'photo',
+    titleKey: 'landing.story.engine4Title',
+    bodyKey: 'landing.story.engine4Body',
+    badgeKey: 'landing.story.engine4Badge',
+  },
 ] as const
 
-/**
- * One order, end to end.
- *
- * Rendered as a two-column grid rather than preformatted text: the project has a
- * single font token and no monospace, and a grid wraps predictably instead of
- * forcing a horizontal scroll on a 320px screen.
- */
+/** One order, start to finish. Two columns so it never scrolls sideways. */
 export const ENGINE_TRACE = [
   { actorKey: 'landing.story.engineTrace1Actor', eventKey: 'landing.story.engineTrace1Event' },
   { actorKey: 'landing.story.engineTrace2Actor', eventKey: 'landing.story.engineTrace2Event' },

@@ -20,6 +20,9 @@ import {
   ErrorBlock,
   LogoutWrap,
   Main,
+  MobileBar,
+  MobileBrand,
+  MobileVenue,
   NavLinkItem,
   Shell,
   Sidebar,
@@ -147,6 +150,13 @@ export function DashboardLayout() {
 
       <KitchenAlert restaurantId={restaurant?.id} />
       <Main data-scroll-root>
+        <MobileBar>
+          <MobileBrand>
+            <BrandMark size={22} />
+            {t('common:appName')}
+          </MobileBrand>
+          {restaurant && <MobileVenue>{restaurant.name}</MobileVenue>}
+        </MobileBar>
         {impersonation && (
           <ViewingBanner>
             <ViewingCopy>

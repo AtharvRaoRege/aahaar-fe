@@ -2,6 +2,7 @@ import { useCallback, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import { useAuth } from '@/lib/auth/use-auth'
+import { prefersReducedMotion } from '@/utils/motion'
 
 export const DEMO_SLUG = 'spice-garden'
 
@@ -12,13 +13,6 @@ export const CHAPTERS = {
   engine: 'chapter-engine',
   finale: 'chapter-finale',
 } as const
-
-function prefersReducedMotion(): boolean {
-  return (
-    typeof window !== 'undefined' &&
-    window.matchMedia('(prefers-reduced-motion: reduce)').matches
-  )
-}
 
 export function useStoryPage() {
   const navigate = useNavigate()

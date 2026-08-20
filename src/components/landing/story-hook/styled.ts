@@ -1,7 +1,14 @@
 import styled from 'styled-components'
 
-import { focusRing } from '@/styles/mixins'
+import { focusRing, revealUp } from '@/styles/mixins'
 import { fontSizes, fontWeights, palette, radii, spacing, transitions } from '@/styles/theme'
+
+/** Staggered entrance for the opening screen. Nothing here waits on a scroll. */
+export const Enter = styled.div<{ $in: boolean; $delay: number }>`
+  display: grid;
+  min-width: 0;
+  ${({ $in, $delay }) => revealUp($in, $delay)};
+`
 
 export const Section = styled.section`
   scroll-snap-align: start;

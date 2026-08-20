@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 
 import { Button } from '@/components/global/button'
 import { TextField } from '@/components/global/field'
+import { Reveal } from '@/components/landing/reveal'
 
 import {
   Actions,
@@ -43,13 +44,16 @@ export function StoryFinale({
   return (
     <Section id={id} aria-labelledby={`${id}-title`}>
       <Inner>
+        <Reveal>
         <Head>
           <Chapter>{t('landing.story.finaleChapter')}</Chapter>
           <Title id={`${id}-title`}>{t('landing.story.finaleTitle')}</Title>
           <Lede>{t('landing.story.finaleLede')}</Lede>
           <Note>{t('landing.story.finaleFooter')}</Note>
         </Head>
+        </Reveal>
 
+        <Reveal delay={120} amount={0.2}>
         <Playground
           onSubmit={(event) => {
             event.preventDefault()
@@ -82,6 +86,7 @@ export function StoryFinale({
           </Actions>
           <Note>{t('landing.story.finaleNote')}</Note>
         </Playground>
+        </Reveal>
       </Inner>
     </Section>
   )

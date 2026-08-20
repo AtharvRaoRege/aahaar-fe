@@ -1,6 +1,6 @@
 import styled from 'styled-components'
 
-import { fontSizes, palette, radii } from '@/styles/theme'
+import { fontSizes, palette, radii, spacing } from '@/styles/theme'
 
 export const Shell = styled.div`
   flex: 1;
@@ -261,4 +261,64 @@ export const ErrorBlock = styled.div`
   justify-items: start;
   gap: 12px;
   max-width: 360px;
+`
+
+/**
+ * Mobile-only top bar.
+ *
+ * The sidebar carries the brand from the md breakpoint up, so on a phone there was
+ * nothing identifying the app at all. Deliberately short — 44px plus the safe area
+ * — because every pixel here is a pixel of order list the kitchen loses.
+ */
+export const MobileBar = styled.header`
+  position: sticky;
+  top: 0;
+  z-index: ${({ theme }) => theme.zIndex.sticky};
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: ${spacing.sm};
+  min-height: 44px;
+  padding: ${spacing.xs} ${spacing.md};
+  padding-top: calc(${spacing.xs} + env(safe-area-inset-top, 0px));
+  background: ${palette.creamFog};
+  backdrop-filter: blur(12px) saturate(160%);
+  -webkit-backdrop-filter: blur(12px) saturate(160%);
+  border-bottom: 1px solid ${palette.line};
+
+  ${({ theme }) => theme.media.md} {
+    display: none;
+  }
+
+  @media (prefers-reduced-transparency: reduce) {
+    background: ${palette.cream};
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+`
+
+export const MobileBrand = styled.span`
+  display: inline-flex;
+  align-items: center;
+  gap: ${spacing.sm};
+  min-width: 0;
+  font-size: ${fontSizes.body};
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: ${palette.ink};
+
+  img {
+    flex-shrink: 0;
+  }
+`
+
+/** The venue name, so a super admin can see which kitchen they are looking at. */
+export const MobileVenue = styled.span`
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: ${fontSizes.labelSm};
+  font-weight: 600;
+  color: ${palette.inkSoft};
 `

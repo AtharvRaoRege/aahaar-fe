@@ -134,3 +134,25 @@ export const cardGrid = (min: string) => css`
   align-items: start;
   grid-template-columns: repeat(auto-fill, minmax(min(${min}, 100%), 1fr));
 `
+
+/**
+ * Shared reveal transition for scroll-told pages.
+ *
+ * Only `opacity` and `transform` are animated — both composited, so a mid-range
+ * phone can run several at once without dropping frames. `$delay` staggers items
+ * in a group; keep it small, a story should not feel like it is buffering.
+ */
+export const revealUp = (shown: boolean, delayMs = 0) => css`
+  opacity: ${shown ? 1 : 0};
+  transform: translate3d(0, ${shown ? '0' : '18px'}, 0);
+  transition:
+    opacity 520ms ease-out ${delayMs}ms,
+    transform 520ms cubic-bezier(0.22, 1, 0.36, 1) ${delayMs}ms;
+  will-change: opacity, transform;
+
+  @media (prefers-reduced-motion: reduce) {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+`
