@@ -39,9 +39,7 @@ export function useReveal<T extends HTMLElement = HTMLDivElement>(options?: {
         }
       },
       {
-        // Fire slightly before the element is fully on screen, so the movement is
-        // already finishing as the reader's eye arrives.
-        rootMargin: '0px 0px -12% 0px',
+        rootMargin: '0px 0px -8% 0px',
         threshold: options?.amount ?? 0.15,
       },
     )

@@ -1,20 +1,17 @@
 import { useTranslation } from 'react-i18next'
 
-import { PageSkeleton } from '@/components/global/page-skeleton'
+import { VenueScreen } from '@/components/dashboard/venue-screen'
 import { Button } from '@/components/global/button'
 import { EmptyState } from '@/components/global/empty-state'
 import { TextField } from '@/components/global/field'
 import { Skeleton } from '@/components/global/skeleton'
-import { useDashboardContext } from '@/hooks/dashboard/context'
 import type { Restaurant } from '@/types/restaurant'
 
 import { useQrPage } from './helper'
 import { Card, Featured, Form, Grid, Hint, Label, Meta, Page, QrImage, Title } from './styled'
 
 export function QrPage() {
-  const { restaurant } = useDashboardContext()
-  if (!restaurant) return <PageSkeleton cards={3} />
-  return <QrBody restaurant={restaurant} />
+  return <VenueScreen cards={3}>{(restaurant) => <QrBody restaurant={restaurant} />}</VenueScreen>
 }
 
 function QrBody({ restaurant }: { restaurant: Restaurant }) {

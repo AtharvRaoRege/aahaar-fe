@@ -145,8 +145,37 @@ export const zIndex = {
   toast: 1100,
 } as const
 
+/**
+ * Landing-page world. The marketing page runs a warmer, higher-contrast "ticket
+ * paper" identity than the product chrome, so its values live here as named
+ * tokens rather than as literals inside a styled file.
+ */
+export const landing = {
+  paper: '#FAF6EC',
+  paperDim: '#F0EADA',
+  ink: '#221D17',
+  inkSoft: '#5A5346',
+  chili: '#C1392B',
+  turmeric: '#E3A729',
+  mint: '#2F7D53',
+  line: '#D8CFB8',
+  paperSoft: 'rgba(250, 246, 236, 0.85)',
+  inkWash: 'rgba(34, 29, 23, 0.12)',
+  inkHair: 'rgba(34, 29, 23, 0.02)',
+  chiliGlow: 'rgba(193, 57, 43, 0.08)',
+  shadow: '0 18px 40px rgba(34, 29, 23, 0.14)',
+  radius: '4px',
+} as const
+
+export const landingFonts = {
+  display: "'Archivo Black', 'Space Grotesk', system-ui, sans-serif",
+  body: "'Space Mono', ui-monospace, monospace",
+} as const
+
 export const theme = {
   palette,
+  landing,
+  landingFonts,
   semantic,
   colors,
   fontFamily,

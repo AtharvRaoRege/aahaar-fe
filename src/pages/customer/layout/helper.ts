@@ -22,14 +22,16 @@ export function useCustomerLayout() {
 
   const storedTable = query.data ? sessionStore.get(query.data.id)?.tableNumber : null
   const tableFromUrl = (params.get('table') ?? '').trim() || null
-  const tableNumber = tableFromUrl || storedTable || null
   const onTrack = location.pathname.includes('/track/')
   const onReview = location.pathname.endsWith('/review')
   const onIndex = location.pathname.replace(/\/$/, '') === `/r/${slug}`
-  const needsTableInUrl = Boolean(tableNumber && !tableFromUrl && !onTrack && !onReview)
+
+  const tableNumber = tableFromUrl || storedTable || null
+  const canOrder = Boolean(tableFromUrl)
+  const needsTableInUrl = Boolean(canOrder && tableNumber && !onTrack && !onReview)
   const hasProfile = Boolean(query.data && hasNamedTableSession(query.data.id, tableNumber))
   const needsIdentity = Boolean(
-    tableNumber && query.data && !hasProfile && !onTrack && !onReview,
+    canOrder && tableNumber && query.data && !hasProfile && !onTrack && !onReview,
   )
 
   const restPath =
@@ -40,6 +42,7 @@ export function useCustomerLayout() {
     query,
     tableNumber,
     tableFromUrl,
+    canOrder,
     onTrack,
     onReview,
     onIndex,

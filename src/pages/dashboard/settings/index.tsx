@@ -5,13 +5,13 @@ import { Plus } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 
 import { InstallApp } from '@/components/dashboard/install-app'
+import { LogoutButton } from '@/components/dashboard/logout-confirm'
 import { PublishBar } from '@/components/dashboard/publish-bar'
+import { VenueScreen } from '@/components/dashboard/venue-screen'
 import { VenueSwitcher } from '@/components/dashboard/venue-switcher'
-import { PageSkeleton } from '@/components/global/page-skeleton'
 import { Button } from '@/components/global/button'
 import { FormField, TextArea, TextField } from '@/components/global/field'
 import { Select } from '@/components/global/select'
-import { useDashboardContext } from '@/hooks/dashboard/context'
 import type { Restaurant } from '@/types/restaurant'
 
 import { useSettingsPage } from './helper'
@@ -20,7 +20,6 @@ import {
   Card,
   CardHint,
   CardTitle,
-  Column,
   Form,
   HiddenFile,
   Hint,
@@ -36,19 +35,18 @@ import {
   Page,
   Pair,
   SaveBar,
-  Sections,
+  Stack,
   Slug,
   SwitchRow,
   Title,
-  Wide,
 } from './styled'
 
 const VENUE_KIND_KEYS = ['RESTAURANT', 'HOTEL', 'CAFE'] as const
 
 export function SettingsPage() {
-  const { restaurant } = useDashboardContext()
-  if (!restaurant) return <PageSkeleton cards={2} />
-  return <SettingsBody restaurant={restaurant} />
+  return (
+    <VenueScreen cards={2}>{(restaurant) => <SettingsBody restaurant={restaurant} />}</VenueScreen>
+  )
 }
 
 function SettingsBody({ restaurant }: { restaurant: Restaurant }) {
@@ -68,11 +66,9 @@ function SettingsBody({ restaurant }: { restaurant: Restaurant }) {
       <Title>{t('settings.title')}</Title>
       <Hint>{t('settings.hint')}</Hint>
 
-      <Wide>
-        <PublishBar restaurantId={restaurant.id} />
-      </Wide>
+      <PublishBar restaurantId={restaurant.id} />
 
-      <Sections>
+      <Stack>
         <Form onSubmit={page.onSubmit}>
           {page.saved && <Banner $tone="ok">{t('settings.saved')}</Banner>}
           {page.failed && (
@@ -82,92 +78,7 @@ function SettingsBody({ restaurant }: { restaurant: Restaurant }) {
           <Card>
             <CardTitle>{t('settings.detailsTitle')}</CardTitle>
             <CardHint>{t('settings.detailsHint')}</CardHint>
-            <TextField
-              label={t('settings.name')}
-              error={page.form.formState.errors.name ? t('login.required') : undefined}
-              {...page.form.register('name', { required: true })}
-            />
-            <Pair>
-              <FormField label={t('settings.kind')}>
-                <Select
-                  value={page.venueKind}
-                  options={kindOptions}
-                  onChange={page.setVenueKind}
-                />
-              </FormField>
-              <TextField label={t('settings.phone')} {...page.form.register('phone')} />
-            </Pair>
-            <TextArea label={t('settings.address')} {...page.form.register('address')} />
-          </Card>
 
-          <Card>
-            <CardTitle>{t('settings.findUsTitle')}</CardTitle>
-            <CardHint>{t('settings.findUsHint')}</CardHint>
-            <TextField
-              label={t('settings.mapsUrl')}
-              placeholder="https://maps.app.goo.gl/…"
-              {...page.form.register('mapsUrl')}
-            />
-            <TextField
-              label={t('settings.googleReviewUrl')}
-              placeholder="https://g.page/r/…/review"
-              {...page.form.register('googleReviewUrl')}
-            />
-          </Card>
-
-          <Card>
-            <CardTitle>{t('settings.paymentsTitle')}</CardTitle>
-            <CardHint>{t('settings.paymentsHint')}</CardHint>
-            <Pair>
-              <TextField
-                label={t('settings.upiVpa')}
-                placeholder="name@bank"
-                {...page.form.register('upiVpa')}
-              />
-              <TextField
-                label={t('settings.upiPayeeName')}
-                {...page.form.register('upiPayeeName')}
-              />
-            </Pair>
-          </Card>
-
-          <Card>
-            <CardTitle>{t('settings.serviceTitle')}</CardTitle>
-            <CardHint>{t('settings.serviceHint')}</CardHint>
-            <SwitchRow>
-              <input type="checkbox" {...page.form.register('waiterCallEnabled')} />
-              {t('settings.waiterCall')}
-            </SwitchRow>
-          </Card>
-
-          <SaveBar>
-            <Button type="submit" size="lg" loading={page.saving}>
-              {t('common:actions.save')}
-            </Button>
-          </SaveBar>
-        </Form>
-
-        <Column>
-          <Card>
-            <CardTitle>{t('settings.linkTitle')}</CardTitle>
-            <CardHint>{t('settings.linkHint')}</CardHint>
-            <Slug>{page.publicUrl}</Slug>
-            <LinkRow>
-              <Button
-                variant="outline"
-                size="sm"
-                type="button"
-                onClick={() => void page.copyLink()}
-              >
-                {page.copied ? t('settings.copied') : t('settings.copyLink')}
-              </Button>
-            </LinkRow>
-            {page.copyFailed && <CardHint>{t('settings.copyFailed')}</CardHint>}
-          </Card>
-
-          <Card>
-            <CardTitle>{t('settings.logoTitle')}</CardTitle>
-            <CardHint>{t('settings.logoHint')}</CardHint>
             <LogoRow>
               <LogoFrame>
                 {page.logoUrl ? (
@@ -196,45 +107,114 @@ function SettingsBody({ restaurant }: { restaurant: Restaurant }) {
               />
             </LogoRow>
             {page.logoError && <Banner $tone="err">{page.logoError}</Banner>}
-          </Card>
 
-          <Card>
-            <CardTitle>{t('settings.switchVenue')}</CardTitle>
-            <CardHint>{t('settings.venuesHint')}</CardHint>
-            <VenueSwitcher
-              restaurants={venueOptions}
-              current={restaurant}
-              impersonating={page.impersonating}
-              onSelect={page.switchVenue}
+            <TextField
+              label={t('settings.name')}
+              error={page.form.formState.errors.name ? t('login.required') : undefined}
+              {...page.form.register('name', { required: true })}
             />
-            <LinkRow>
-              <Button
-                variant="outline"
-                size="sm"
-                type="button"
-                leftIcon={<Plus aria-hidden />}
-                onClick={page.openAdd}
-              >
-                {t('settings.addVenue')}
-              </Button>
-            </LinkRow>
+            <Pair>
+              <FormField label={t('settings.kind')}>
+                <Select
+                  value={page.venueKind}
+                  options={kindOptions}
+                  onChange={page.setVenueKind}
+                />
+              </FormField>
+              <TextField label={t('settings.phone')} {...page.form.register('phone')} />
+            </Pair>
+            <TextArea label={t('settings.address')} {...page.form.register('address')} />
+            <TextField
+              label={t('settings.mapsUrl')}
+              placeholder="https://maps.app.goo.gl/…"
+              {...page.form.register('mapsUrl')}
+            />
+            <TextField
+              label={t('settings.googleReviewUrl')}
+              placeholder="https://g.page/r/…/review"
+              {...page.form.register('googleReviewUrl')}
+            />
+            <SwitchRow>
+              <input type="checkbox" {...page.form.register('waiterCallEnabled')} />
+              {t('settings.waiterCall')}
+            </SwitchRow>
           </Card>
-
-          <InstallApp restaurantId={restaurant.id} />
 
           <Card>
-            <CardTitle>{t('settings.planTitle')}</CardTitle>
-            <CardHint>{t('settings.planHint')}</CardHint>
-            <LinkRow>
-              <Link to="/dashboard/plan">
-                <Button variant="outline" size="sm" type="button">
-                  {t('settings.openPlan')}
-                </Button>
-              </Link>
-            </LinkRow>
+            <CardTitle>{t('settings.paymentsTitle')}</CardTitle>
+            <CardHint>{t('settings.paymentsHint')}</CardHint>
+            <Pair>
+              <TextField
+                label={t('settings.upiVpa')}
+                placeholder="name@bank"
+                {...page.form.register('upiVpa')}
+              />
+              <TextField
+                label={t('settings.upiPayeeName')}
+                {...page.form.register('upiPayeeName')}
+              />
+            </Pair>
           </Card>
-        </Column>
-      </Sections>
+
+          <SaveBar>
+            <Button type="submit" size="lg" loading={page.saving}>
+              {t('common:actions.save')}
+            </Button>
+          </SaveBar>
+        </Form>
+
+        <Card>
+          <CardTitle>{t('settings.linkTitle')}</CardTitle>
+          <CardHint>{t('settings.linkHint')}</CardHint>
+          <Slug>{page.publicUrl}</Slug>
+          <LinkRow>
+            <Button
+              variant="outline"
+              size="sm"
+              type="button"
+              onClick={() => void page.copyLink()}
+            >
+              {page.copied ? t('settings.copied') : t('settings.copyLink')}
+            </Button>
+            <Link to="/dashboard/plan">
+              <Button variant="outline" size="sm" type="button">
+                {t('settings.openPlan')}
+              </Button>
+            </Link>
+          </LinkRow>
+          {page.copyFailed && <CardHint>{t('settings.copyFailed')}</CardHint>}
+        </Card>
+
+        <Card>
+          <CardTitle>{t('settings.venuesTitle')}</CardTitle>
+          <CardHint>{t('settings.venuesHint')}</CardHint>
+          <VenueSwitcher
+            restaurants={venueOptions}
+            current={restaurant}
+            impersonating={page.impersonating}
+            onSelect={page.switchVenue}
+          />
+          <LinkRow>
+            <Button
+              variant="outline"
+              size="sm"
+              type="button"
+              leftIcon={<Plus aria-hidden />}
+              onClick={page.openAdd}
+            >
+              {t('settings.addVenue')}
+            </Button>
+          </LinkRow>
+        </Card>
+
+        <InstallApp restaurantId={restaurant.id} />
+
+        <Card>
+          <CardTitle>{t('settings.accountTitle')}</CardTitle>
+          <CardHint>{t('settings.accountHint')}</CardHint>
+          <LogoutButton size="sm" />
+        </Card>
+      </Stack>
 
       {page.addOpen &&
         createPortal(

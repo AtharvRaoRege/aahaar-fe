@@ -6,7 +6,7 @@ import { fontSizes, fontWeights, palette, radii, spacing } from '@/styles/theme'
 
 export const Page = styled.div`
   ${dashboardPage};
-  max-width: none;
+  max-width: 720px;
 `
 
 export const Title = styled.h1`
@@ -17,77 +17,77 @@ export const Hint = styled.p`
   ${dashboardHint};
 `
 
-export const Sections = styled.div`
+export const Stack = styled.div`
   display: grid;
   align-items: start;
-  gap: 16px;
+  gap: ${spacing.lg};
   width: 100%;
-  max-width: 1480px;
-  margin-inline: auto;
 
   ${({ theme }) => theme.media.md} {
-    gap: 20px;
+    gap: ${spacing.xl};
   }
 
   ${({ theme }) => theme.media.lg} {
-    grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
-    gap: 24px;
-  }
-`
-
-export const Column = styled.div`
-  display: grid;
-  align-items: start;
-  gap: 16px;
-  min-width: 0;
-
-  ${({ theme }) => theme.media.md} {
-    gap: 20px;
+    gap: ${spacing.xl};
   }
 
-  ${({ theme }) => theme.media.lg} {
-    gap: 24px;
+  ${({ theme }) => theme.media.xl} {
+    gap: ${spacing['2xl']};
   }
-`
-
-export const Wide = styled.div`
-  width: 100%;
-  max-width: 1480px;
-  margin-inline: auto;
 `
 
 export const Card = styled.section`
   display: grid;
-  gap: 12px;
-  padding: 16px;
+  gap: ${spacing.md};
+  padding: ${spacing.lg};
   background: ${palette.white};
   border: 1.5px solid ${palette.line};
   border-radius: ${radii.lg};
 
   ${({ theme }) => theme.media.md} {
-    padding: 20px;
-    gap: 14px;
+    padding: ${spacing.xl};
+    gap: ${spacing.md};
+  }
+
+  ${({ theme }) => theme.media.lg} {
+    padding: ${spacing.xl};
+  }
+
+  ${({ theme }) => theme.media.xl} {
+    padding: ${spacing.xl};
   }
 `
 
 export const CardTitle = styled.h2`
-  font-size: 1rem;
-  font-weight: 800;
+  font-size: ${fontSizes.subheading};
+  font-weight: ${fontWeights.black};
   letter-spacing: -0.02em;
 `
 
 export const CardHint = styled.p`
-  font-size: 0.8125rem;
-  font-weight: 500;
+  font-size: ${fontSizes.label};
+  font-weight: ${fontWeights.medium};
   line-height: 1.45;
   color: ${palette.inkSoft};
 `
 
 export const Pair = styled.div`
   display: grid;
-  gap: 12px;
+  gap: ${spacing.md};
 
   ${({ theme }) => theme.media.sm} {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  ${({ theme }) => theme.media.md} {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  ${({ theme }) => theme.media.lg} {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  ${({ theme }) => theme.media.xl} {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 `
@@ -96,49 +96,51 @@ export const LinkRow = styled.div`
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 8px;
+  gap: ${spacing.sm};
 `
 
 export const SaveBar = styled.div`
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: ${spacing.sm};
   align-items: center;
+  padding-top: ${spacing.xs};
 `
 
 export const Form = styled.form`
   display: grid;
   align-items: start;
-  gap: 16px;
+  gap: ${spacing.lg};
   min-width: 0;
 
   ${({ theme }) => theme.media.md} {
-    gap: 20px;
+    gap: ${spacing.xl};
   }
 
   ${({ theme }) => theme.media.lg} {
-    gap: 24px;
+    gap: ${spacing.xl};
+  }
+
+  ${({ theme }) => theme.media.xl} {
+    gap: ${spacing['2xl']};
   }
 `
 
-
 export const Banner = styled.p<{ $tone: 'ok' | 'err' }>`
-  padding: 12px 14px;
+  padding: ${spacing.md};
   background: ${({ $tone }) => ($tone === 'ok' ? palette.chutney : palette.chili)};
   color: ${palette.white};
   border-radius: ${radii.md};
-  font-weight: 600;
-  font-size: 0.875rem;
+  font-weight: ${fontWeights.bold};
+  font-size: ${fontSizes.label};
 `
 
 export const Slug = styled.p`
-  font-weight: 500;
+  font-weight: ${fontWeights.medium};
   color: ${palette.inkSoft};
-  margin-bottom: 10px;
   word-break: break-all;
+  font-size: ${fontSizes.label};
 `
-
-
 
 export const Overlay = styled.div`
   position: fixed;
@@ -146,15 +148,15 @@ export const Overlay = styled.div`
   z-index: ${({ theme }) => theme.zIndex.overlay};
   display: grid;
   place-items: center;
-  padding: 20px;
+  padding: ${spacing.xl};
   background: rgba(28, 25, 22, 0.4);
 `
 
 export const Modal = styled.div`
   width: min(100%, 420px);
   display: grid;
-  gap: 14px;
-  padding: 22px 20px 20px;
+  gap: ${spacing.md};
+  padding: ${spacing.xl} ${spacing.lg} ${spacing.lg};
   background: ${palette.cream};
   border: 1.5px solid ${palette.line};
   border-radius: ${radii.lg};
@@ -162,8 +164,8 @@ export const Modal = styled.div`
 `
 
 export const ModalTitle = styled.h2`
-  font-size: 1.25rem;
-  font-weight: 800;
+  font-size: ${fontSizes.h3};
+  font-weight: ${fontWeights.black};
   letter-spacing: -0.03em;
 `
 
@@ -171,21 +173,21 @@ export const ModalActions = styled.div`
   display: flex;
   flex-wrap: wrap;
   justify-content: flex-end;
-  gap: 8px;
-  margin-top: 4px;
+  gap: ${spacing.sm};
+  margin-top: ${spacing.xs};
 `
 
 export const ModalForm = styled.form`
   display: grid;
-  gap: 14px;
+  gap: ${spacing.md};
 `
 
 export const SwitchRow = styled.label`
   display: flex;
   align-items: center;
   gap: ${spacing.sm};
-  font-size: 0.875rem;
-  font-weight: 600;
+  font-size: ${fontSizes.label};
+  font-weight: ${fontWeights.bold};
   cursor: pointer;
 `
 

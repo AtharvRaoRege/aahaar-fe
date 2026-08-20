@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useSyncExternalStore } from 'react'
 import { useQuery } from '@tanstack/react-query'
-import { useLocation, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import {
   BarChart3,
   ClipboardList,
@@ -42,7 +42,6 @@ export const ADMIN_NAV = {
 
 export function useDashboardLayout() {
   const navigate = useNavigate()
-  const location = useLocation()
   const { user } = useAuth()
   const impersonation = useSyncExternalStore(
     impersonationStore.subscribe,
@@ -54,7 +53,6 @@ export function useDashboardLayout() {
     restaurantStore.getSnapshot,
     restaurantStore.getSnapshot,
   )
-  const onAdmin = location.pathname === '/dashboard/admin'
 
   const ownQuery = useQuery({
     queryKey: queryKeys.restaurants,
@@ -86,14 +84,15 @@ export function useDashboardLayout() {
 
   const listLoading = ownQuery.isLoading && !ownQuery.data
   const viewLoading = Boolean(impersonation) && viewedQuery.isLoading && !viewedQuery.data
+  const venueLoading = listLoading || viewLoading
+  const venueError = impersonation ? viewedQuery.isError : ownQuery.isError
 
   return {
     user,
     restaurant,
     impersonation,
-    onAdmin,
-    isLoading: listLoading || viewLoading,
-    isError: impersonation ? viewedQuery.isError : ownQuery.isError,
+    venueLoading,
+    venueError,
     refetch: impersonation ? viewedQuery.refetch : ownQuery.refetch,
     exitImpersonation,
     restaurants,

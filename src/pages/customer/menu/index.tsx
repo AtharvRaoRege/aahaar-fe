@@ -32,12 +32,13 @@ import {
   SectionTitle,
   StickyStack,
   Toolbar,
+  ViewOnlyBanner,
 } from './styled'
 
 export function MenuPage() {
   const { t } = useTranslation(['customer', 'common'])
-  const { restaurant, slug, tableNumber } = useCustomerContext()
-  const page = useMenuPage(slug, restaurant.id, tableNumber)
+  const { restaurant, slug, tableNumber, canOrder } = useCustomerContext()
+  const page = useMenuPage(slug, restaurant.id, tableNumber, canOrder)
 
   const tabs = [
     { id: 'all', name: t('menu.all') },
@@ -54,7 +55,7 @@ export function MenuPage() {
           logoUrl={restaurant.logoUrl}
           tableLabel={page.tableLabel}
           action={
-            restaurant.waiterCallEnabled ? (
+            canOrder && restaurant.waiterCallEnabled ? (
               <CallWaiterButton
                 slug={slug}
                 restaurantId={restaurant.id}
@@ -91,6 +92,12 @@ export function MenuPage() {
           leading={<MenuFilters inline diet={page.diet} onDiet={page.setDiet} />}
         />
       </StickyStack>
+
+      {!canOrder && (
+        <BannerSlot>
+          <ViewOnlyBanner>{t('menu.viewOnlyHint')}</ViewOnlyBanner>
+        </BannerSlot>
+      )}
 
       {page.openOrder && (
         <BannerSlot>
@@ -145,6 +152,7 @@ export function MenuPage() {
                   currency={restaurant.currency}
                   quantity={page.quantityForItem(item.id)}
                   hasOptions={itemHasOptions(item)}
+                  readOnly={!canOrder}
                   onAdd={() => page.addQuick(item)}
                   onIncrement={() => page.incItem(item)}
                   onDecrement={() => page.decItem(item)}
@@ -160,6 +168,7 @@ export function MenuPage() {
         item={page.selected}
         open={page.sheetOpen}
         currency={restaurant.currency}
+        readOnly={!canOrder}
         onClose={page.closeSheet}
         onConfirm={page.confirmDetails}
       />
@@ -174,12 +183,14 @@ export function MenuPage() {
         onClose={page.closeFilters}
       />
 
-      <CartBar
-        count={page.cartCount}
-        total={page.cartSubtotal}
-        currency={restaurant.currency}
-        onClick={page.goToCart}
-      />
+      {canOrder && (
+        <CartBar
+          count={page.cartCount}
+          total={page.cartSubtotal}
+          currency={restaurant.currency}
+          onClick={page.goToCart}
+        />
+      )}
     </Page>
   )
 }

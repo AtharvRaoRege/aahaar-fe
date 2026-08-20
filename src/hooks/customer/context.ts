@@ -6,6 +6,7 @@ export interface CustomerOutlet {
   restaurant: PublicRestaurant
   slug: string
   tableNumber: string | null
+  canOrder: boolean
 }
 
 export function useCustomerContext(): CustomerOutlet {

@@ -9,23 +9,17 @@ import { LogoutButton } from '@/components/dashboard/logout-confirm'
 import { authApi } from '@/lib/api/auth'
 import { tokenStore } from '@/lib/auth/token-store'
 import { useAuth } from '@/lib/auth/use-auth'
-import { impersonationStore } from '@/lib/dashboard/impersonation-store'
 import { freshFor } from '@/lib/query/cache'
 import { queryKeys } from '@/lib/query/keys'
 import type { User } from '@/types/auth'
 
 import { Inner, Page, Panel, Subtitle, Title } from '@/pages/dashboard/access/styled'
 
-function nextPath(user: User, current: string, impersonating: boolean): string | null {
+function nextPath(user: User, current: string): string | null {
   const onPhone = current === '/dashboard/phone'
   const onWaitlist = current === '/dashboard/waitlist'
   const onSetup = current === '/dashboard/setup'
   const onAdmin = current === '/dashboard/admin'
-  const onKitchen =
-    current === '/dashboard' ||
-    current.startsWith('/dashboard/menu') ||
-    current.startsWith('/dashboard/qr') ||
-    current.startsWith('/dashboard/settings')
   const approved = user.isSuperAdmin || user.approvalStatus !== 'WAITLIST'
   const hasPhone = Boolean(user.phone?.trim())
 
@@ -44,9 +38,13 @@ function nextPath(user: User, current: string, impersonating: boolean): string |
   }
 
   if (user.hasRestaurant === false) {
-    if (onSetup || (user.isSuperAdmin && onAdmin)) return null
-    if (user.isSuperAdmin && impersonating && onKitchen) return null
-    return user.isSuperAdmin ? '/dashboard/admin' : '/dashboard/setup'
+    // Super admins can open kitchen tabs (skeleton / empty). Owners go set up.
+    if (user.isSuperAdmin) {
+      if (onSetup) return '/dashboard/admin'
+      return null
+    }
+    if (onSetup) return null
+    return '/dashboard/setup'
   }
 
   if (onSetup) return '/dashboard'
@@ -56,7 +54,7 @@ function nextPath(user: User, current: string, impersonating: boolean): string |
 
 export function StaffGate() {
   const { t } = useTranslation(['dashboard', 'common'])
-  const { isAuthenticated } = useAuth()
+  const { isAuthenticated, user: cachedUser } = useAuth()
   const location = useLocation()
   const me = useQuery({
     queryKey: queryKeys.me,
@@ -71,11 +69,13 @@ export function StaffGate() {
     if (me.data) tokenStore.setUser(me.data)
   }, [me.data])
 
-  if (isAuthenticated && me.isLoading && !me.data) {
+  if (isAuthenticated && me.isLoading && !me.data && !cachedUser) {
     return <RouteLoading />
   }
 
-  if (isAuthenticated && me.isError && !me.data) {
+  const current = me.data ?? cachedUser
+
+  if (isAuthenticated && me.isError && !current) {
     return (
       <Page>
         <Inner>
@@ -90,14 +90,9 @@ export function StaffGate() {
     )
   }
 
-  const current = me.data
   if (!current) return <Outlet />
 
-  const redirect = nextPath(
-    current,
-    location.pathname,
-    Boolean(impersonationStore.get()),
-  )
+  const redirect = nextPath(current, location.pathname)
   if (redirect) return <Navigate to={redirect} replace />
   return <Outlet />
 }

@@ -2,11 +2,10 @@ import { createPortal } from 'react-dom'
 import { Check } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 
-import { PageSkeleton } from '@/components/global/page-skeleton'
+import { VenueScreen } from '@/components/dashboard/venue-screen'
 import { Button } from '@/components/global/button'
 import { TextArea } from '@/components/global/field'
 import { Skeleton } from '@/components/global/skeleton'
-import { useDashboardContext } from '@/hooks/dashboard/context'
 import type { PlanSpec, Subscription } from '@/types/subscription'
 import type { Restaurant } from '@/types/restaurant'
 
@@ -34,9 +33,9 @@ import {
 } from './styled'
 
 export function PlanPage() {
-  const { restaurant } = useDashboardContext()
-  if (!restaurant) return <PageSkeleton cards={2} />
-  return <PlanBody restaurant={restaurant} />
+  return (
+    <VenueScreen cards={2}>{(restaurant) => <PlanBody restaurant={restaurant} />}</VenueScreen>
+  )
 }
 
 function PlanBody({ restaurant }: { restaurant: Restaurant }) {

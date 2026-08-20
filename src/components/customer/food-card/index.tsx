@@ -31,6 +31,7 @@ export interface FoodCardProps {
   quantity: number
   currency: string
   hasOptions: boolean
+  readOnly?: boolean
   onAdd: () => void
   onIncrement: () => void
   onDecrement: () => void
@@ -42,6 +43,7 @@ export function FoodCard({
   quantity,
   currency,
   hasOptions,
+  readOnly = false,
   onAdd,
   onIncrement,
   onDecrement,
@@ -53,18 +55,22 @@ export function FoodCard({
   const customizable = isCustomizable(item)
   const bestseller = isBestseller(item)
   const addControl =
-    !item.isAvailable ? null : quantity > 0 && !hasOptions ? (
-      <QuantityControl
-        value={quantity}
-        onIncrement={onIncrement}
-        onDecrement={onDecrement}
-        size="sm"
-      />
-    ) : (
-      <Button size="sm" onClick={hasOptions ? onOpen : onAdd} leftIcon={<Plus aria-hidden />}>
-        {t('common:actions.add')}
-      </Button>
-    )
+    readOnly || !item.isAvailable
+      ? null
+      : quantity > 0 && !hasOptions
+        ? (
+            <QuantityControl
+              value={quantity}
+              onIncrement={onIncrement}
+              onDecrement={onDecrement}
+              size="sm"
+            />
+          )
+        : (
+            <Button size="sm" onClick={hasOptions ? onOpen : onAdd} leftIcon={<Plus aria-hidden />}>
+              {t('common:actions.add')}
+            </Button>
+          )
 
   return (
     <Wrap $unavailable={!item.isAvailable} $hasImage={photo}>

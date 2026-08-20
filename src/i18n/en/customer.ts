@@ -42,6 +42,8 @@ export const customer = {
     applyFilters: 'Show dishes',
     liveOrder: 'Live order',
     trackOrder: 'Add more or track this ticket',
+    viewOnlyTitle: 'Menu preview only',
+    viewOnlyHint: 'This link is for browsing. Scan a table QR to add items and place an order.',
   },
   detail: {
     addToCart: 'Add to Cart',

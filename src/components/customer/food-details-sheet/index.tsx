@@ -24,6 +24,7 @@ export interface FoodDetailsSheetProps {
   item: MenuItem | null
   open: boolean
   currency: string
+  readOnly?: boolean
   onClose: () => void
   onConfirm: (item: MenuItem, input: AddToCartInput) => void
 }
@@ -32,6 +33,7 @@ export function FoodDetailsSheet({
   item,
   open,
   currency,
+  readOnly = false,
   onClose,
   onConfirm,
 }: FoodDetailsSheetProps) {
@@ -41,6 +43,7 @@ export function FoodDetailsSheet({
   if (!item) return null
 
   const confirm = () => {
+    if (readOnly) return
     onConfirm(item, state.buildInput())
     onClose()
   }
@@ -61,6 +64,7 @@ export function FoodDetailsSheet({
               key={variant.id}
               type="button"
               $selected={state.variantId === variant.id}
+              disabled={readOnly}
               onClick={() => state.setVariantId(variant.id)}
             >
               <span>{variant.name}</span>
@@ -82,6 +86,7 @@ export function FoodDetailsSheet({
                 key={addon.id}
                 type="button"
                 $selected={state.addonIds.includes(addon.id)}
+                disabled={readOnly}
                 onClick={() => state.toggleAddon(addon.id)}
               >
                 <span>
@@ -98,20 +103,23 @@ export function FoodDetailsSheet({
         <TextArea
           placeholder={t('detail.notesPlaceholder')}
           value={state.notes}
+          disabled={readOnly}
           onChange={(event) => state.setNotes(event.target.value)}
         />
       </Section>
 
-      <Footer>
-        <QuantityControl
-          value={state.quantity}
-          onIncrement={state.increment}
-          onDecrement={state.decrement}
-        />
-        <Button fullWidth size="lg" leftIcon={<Plus aria-hidden />} onClick={confirm}>
-          {t('detail.addToCart')} · {formatMoney(state.total, currency)}
-        </Button>
-      </Footer>
+      {!readOnly && (
+        <Footer>
+          <QuantityControl
+            value={state.quantity}
+            onIncrement={state.increment}
+            onDecrement={state.decrement}
+          />
+          <Button fullWidth size="lg" leftIcon={<Plus aria-hidden />} onClick={confirm}>
+            {t('detail.addToCart')} · {formatMoney(state.total, currency)}
+          </Button>
+        </Footer>
+      )}
     </BottomSheet>
   )
 }

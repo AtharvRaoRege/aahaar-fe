@@ -30,9 +30,32 @@ import {
 
 export function CartPage() {
   const { t } = useTranslation(['customer', 'common'])
-  const { restaurant, slug, tableNumber } = useCustomerContext()
+  const { restaurant, slug, tableNumber, canOrder } = useCustomerContext()
   const page = useCartPage(slug, restaurant.id, tableNumber)
   const adding = Boolean(page.openOrder)
+
+  if (!canOrder) {
+    return (
+      <Page>
+        <Header>
+          <IconButton
+            label={t('common:actions.back')}
+            icon={<ArrowLeft aria-hidden />}
+            onClick={page.goMenu}
+          />
+          <Title>{t('cart.title')}</Title>
+        </Header>
+        <EmptyWrap>
+          <EmptyState
+            emoji="👀"
+            title={t('menu.viewOnlyTitle')}
+            hint={t('menu.viewOnlyHint')}
+            action={<Button onClick={page.goMenu}>{t('cart.browse')}</Button>}
+          />
+        </EmptyWrap>
+      </Page>
+    )
+  }
 
   if (page.count === 0) {
     return (

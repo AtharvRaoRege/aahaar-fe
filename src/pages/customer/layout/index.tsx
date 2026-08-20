@@ -18,8 +18,7 @@ export function CustomerLayout() {
     slug,
     query,
     tableNumber,
-    onTrack,
-    onReview,
+    canOrder,
     onIndex,
     needsTableInUrl,
     needsIdentity,
@@ -73,20 +72,6 @@ export function CustomerLayout() {
     return <Navigate to={customerPath(slug, restPath === '/' ? '/menu' : restPath, tableNumber)} replace />
   }
 
-  if (!tableNumber && !onTrack && !onReview) {
-    return (
-      <Shell>
-        <Centered>
-          <EmptyState
-            emoji="📱"
-            title={t('welcome.scanTitle')}
-            hint={t('welcome.scanHint')}
-          />
-        </Centered>
-      </Shell>
-    )
-  }
-
   if (needsIdentity && tableNumber) {
     return (
       <Shell>
@@ -99,24 +84,31 @@ export function CustomerLayout() {
     )
   }
 
-  if (tableNumber && onIndex) {
+  if (canOrder && tableNumber && onIndex) {
     return <Navigate to={customerPath(slug, '/menu', tableNumber)} replace />
+  }
+
+  if (!canOrder && restPath.startsWith('/cart')) {
+    return <Navigate to={customerPath(slug, '/menu', null)} replace />
   }
 
   const context: CustomerOutlet = {
     restaurant: query.data,
     slug,
     tableNumber,
+    canOrder,
   }
 
   return (
     <Shell>
       <CartProvider key={`${query.data.id}:${tableNumber ?? 'none'}`} restaurantId={query.data.id}>
-        <GuestOrderWatch
-          restaurantId={query.data.id}
-          slug={slug}
-          tableNumber={tableNumber}
-        />
+        {canOrder && (
+          <GuestOrderWatch
+            restaurantId={query.data.id}
+            slug={slug}
+            tableNumber={tableNumber}
+          />
+        )}
         <Outlet context={context} />
       </CartProvider>
     </Shell>

@@ -25,7 +25,12 @@ export function itemHasOptions(item: MenuItem): boolean {
   return item.variants.length > 0 || item.addons.length > 0
 }
 
-export function useMenuPage(slug: string, restaurantId: string, tableNumber: string | null) {
+export function useMenuPage(
+  slug: string,
+  restaurantId: string,
+  tableNumber: string | null,
+  canOrder: boolean,
+) {
   const navigate = useNavigate()
   const cart = useCart()
   const session = sessionStore.get(restaurantId)
@@ -36,8 +41,6 @@ export function useMenuPage(slug: string, restaurantId: string, tableNumber: str
     queryKey: queryKeys.publicMenu(slug),
     queryFn: () => publicApi.getMenu(slug),
     enabled: Boolean(slug),
-    // Published menus change on the owner's schedule, not the guest's. A stale
-    // window this long is what keeps browsing from re-fetching the whole menu.
     staleTime: freshFor.slow,
   })
 
@@ -90,7 +93,8 @@ export function useMenuPage(slug: string, restaurantId: string, tableNumber: str
     menuQuery,
     groups,
     visibleGroups,
-    tableLabel: table ? `Table ${table}` : null,
+    canOrder,
+    tableLabel: canOrder && table ? `Table ${table}` : null,
     search,
     setSearch,
     activeCategory,
@@ -108,14 +112,29 @@ export function useMenuPage(slug: string, restaurantId: string, tableNumber: str
     filterSheetOpen,
     openDetails,
     closeSheet: () => setSheetOpen(false),
-    addQuick: (item: MenuItem) => cart.addItem(item),
-    incItem: (item: MenuItem) => cart.addItem(item),
-    decItem: (item: MenuItem) => cart.decrementItem(item.id),
-    confirmDetails: (item: MenuItem, input: AddToCartInput) => cart.addItem(item, input),
-    quantityForItem: cart.quantityForItem,
-    cartCount: cart.count,
-    cartSubtotal: cart.subtotal,
-    goToCart: () => navigate(customerPath(slug, '/cart', table)),
+    addQuick: (item: MenuItem) => {
+      if (!canOrder) return
+      cart.addItem(item)
+    },
+    incItem: (item: MenuItem) => {
+      if (!canOrder) return
+      cart.addItem(item)
+    },
+    decItem: (item: MenuItem) => {
+      if (!canOrder) return
+      cart.decrementItem(item.id)
+    },
+    confirmDetails: (item: MenuItem, input: AddToCartInput) => {
+      if (!canOrder) return
+      cart.addItem(item, input)
+    },
+    quantityForItem: (itemId: string) => (canOrder ? cart.quantityForItem(itemId) : 0),
+    cartCount: canOrder ? cart.count : 0,
+    cartSubtotal: canOrder ? cart.subtotal : 0,
+    goToCart: () => {
+      if (!canOrder) return
+      navigate(customerPath(slug, '/cart', table))
+    },
     openFilters: () => setFilterSheetOpen(true),
     closeFilters: () => setFilterSheetOpen(false),
     clearFilters: () => {
@@ -123,9 +142,9 @@ export function useMenuPage(slug: string, restaurantId: string, tableNumber: str
       setSort('menu')
     },
     trackOfferView: (offerId: string) => track('OFFER_VIEW', { targetId: offerId }),
-    openOrder: openOrder.order,
+    openOrder: canOrder ? openOrder.order : null,
     goTrack: () => {
-      if (!openOrder.order) return
+      if (!canOrder || !openOrder.order) return
       navigate(customerPath(slug, `/track/${openOrder.order.id}`, table))
     },
   }

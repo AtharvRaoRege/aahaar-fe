@@ -3,14 +3,13 @@ import { useNavigate } from 'react-router-dom'
 
 import { OrderCard } from '@/components/dashboard/order-card'
 import { WaiterCalls } from '@/components/dashboard/waiter-calls'
-import { PageSkeleton } from '@/components/global/page-skeleton'
+import { VenueScreen } from '@/components/dashboard/venue-screen'
 import { Button } from '@/components/global/button'
 import { EmptyState } from '@/components/global/empty-state'
 import { FormField } from '@/components/global/field'
 import { SearchInput } from '@/components/global/search-input'
 import { Select } from '@/components/global/select'
 import { Skeleton } from '@/components/global/skeleton'
-import { useDashboardContext } from '@/hooks/dashboard/context'
 import type { Restaurant } from '@/types/restaurant'
 
 import { STATUS_FILTERS, WHEN_OPTIONS, useOrdersPage } from './helper'
@@ -33,9 +32,9 @@ import {
 } from './styled'
 
 export function OrdersPage() {
-  const { restaurant } = useDashboardContext()
-  if (!restaurant) return <PageSkeleton cards={3} />
-  return <OrdersBody restaurant={restaurant} />
+  return (
+    <VenueScreen cards={3}>{(restaurant) => <OrdersBody restaurant={restaurant} />}</VenueScreen>
+  )
 }
 
 function OrdersBody({ restaurant }: { restaurant: Restaurant }) {

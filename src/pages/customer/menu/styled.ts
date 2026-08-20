@@ -1,6 +1,6 @@
 import styled from 'styled-components'
 
-import { fontSizes, fontWeights, palette, spacing } from '@/styles/theme'
+import { fontSizes, fontWeights, palette, radii, spacing } from '@/styles/theme'
 
 export const Page = styled.div`
   flex: 1;
@@ -94,6 +94,17 @@ export const BannerSlot = styled.div`
   ${({ theme }) => theme.media.xl} {
     padding: ${spacing.lg} ${spacing['3xl']} 0;
   }
+`
+
+export const ViewOnlyBanner = styled.p`
+  border: 1.5px solid ${palette.line};
+  border-radius: ${radii.md};
+  background: ${palette.cream};
+  color: ${palette.inkSoft};
+  font-size: ${fontSizes.label};
+  font-weight: ${fontWeights.medium};
+  line-height: 1.45;
+  padding: ${spacing.md};
 `
 
 export const SectionHead = styled.div`

@@ -1,84 +1,116 @@
 import { useTranslation } from 'react-i18next'
 
-import { StoryEngine } from '@/components/landing/story-engine'
-import { StoryFinale } from '@/components/landing/story-finale'
-import { StoryFriction } from '@/components/landing/story-friction'
-import { StoryHook } from '@/components/landing/story-hook'
-import { BrandMark } from '@/components/global/brand-mark'
-import { Button } from '@/components/global/button'
-import { useScrollProgress } from '@/hooks/landing/use-reveal/helper'
+import { BentoFeatures } from '@/components/landing/bento-features'
+import { DishGallery } from '@/components/landing/dish-gallery'
+import { FaqBlock } from '@/components/landing/faq-block'
+import { FeatureRail } from '@/components/landing/feature-rail'
+import { FinalCta } from '@/components/landing/final-cta'
+import { GuestJourney } from '@/components/landing/guest-journey'
+import { HeroScan } from '@/components/landing/hero-scan'
+import { HowItWorks } from '@/components/landing/how-it-works'
+import { KitchenTicket } from '@/components/landing/kitchen-ticket'
+import { LandingHeader } from '@/components/landing/landing-header'
+import { MoneyCompare } from '@/components/landing/money-compare'
+import { PricingPlans } from '@/components/landing/pricing-plans'
+import { StatsStrip } from '@/components/landing/stats-strip'
+import { StoryBeats } from '@/components/landing/story-beats'
+import { Testimonials } from '@/components/landing/testimonials'
+import { TickerTape } from '@/components/landing/ticker-tape'
+import { FoodChipArt } from '@/components/landing/art'
+import { Marquee } from '@/components/landing/kit'
+import { FoodChip, Grain, Perf } from '@/components/landing/kit/styled'
+import { FLOOR_CARDS, GUEST_CARDS, OWNER_CARDS } from '@/constants/landing'
 
-import { useStoryPage } from './helper'
-import {
-  BarActions,
-  Brand,
-  LabelLong,
-  LabelShort,
-  Page,
-  Progress,
-  SkipLink,
-  StoryScroll,
-  TopBar,
-} from './styled'
+import { useLandingPage } from './helper'
+import { Page } from './styled'
 
-/** One page, four steps, read top to bottom. */
+/** Marketing page: one scroll, from the QR on the table to the price of it. */
 export function LandingPage() {
   const { t } = useTranslation('common')
-  const page = useStoryPage()
-  const progress = useScrollProgress()
+  const page = useLandingPage()
+
+  const marqueeTop = t('landing.marqueeTop', { returnObjects: true })
+  const marqueeBottom = t('landing.marqueeBottom', { returnObjects: true })
 
   return (
     <Page>
-      <StoryScroll />
-      <TopBar>
-        <Brand>
-          <BrandMark size={26} />
-          <span>{t('appName')}</span>
-        </Brand>
-        <BarActions>
-          <SkipLink href={`#${page.chapters.finale}`}>{t('landing.story.skip')}</SkipLink>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={page.isAuthenticated ? page.goKitchen : page.goLogin}
-          >
-            {page.isAuthenticated ? (
-              <>
-                <LabelLong>{t('landing.enterKitchen')}</LabelLong>
-                <LabelShort>{t('landing.story.kitchenShort')}</LabelShort>
-              </>
-            ) : (
-              t('landing.login')
-            )}
-          </Button>
-        </BarActions>
-        <Progress
-          $value={progress}
-          role="progressbar"
-          aria-label={t('landing.story.progressLabel')}
-          aria-valuenow={Math.round(progress * 100)}
-          aria-valuemin={0}
-          aria-valuemax={100}
-        />
-      </TopBar>
-
-      <StoryHook
-        id={page.chapters.hook}
+      <Grain aria-hidden />
+      <LandingHeader
         isAuthenticated={page.isAuthenticated}
-        onEnter={page.enterStory}
-        onKitchen={page.goKitchen}
-        onLogin={page.goLogin}
+        pricingId={page.sections.pricing}
+        onPrimary={page.goPrimary}
       />
-      <StoryFriction id={page.chapters.friction} />
-      <StoryEngine id={page.chapters.engine} />
-      <StoryFinale
-        id={page.chapters.finale}
+
+      <HeroScan
+        id={page.sections.top}
         isAuthenticated={page.isAuthenticated}
-        table={page.table}
-        onTable={page.setTable}
-        onOpenTable={page.openTable}
-        onKitchen={page.goKitchen}
-        onRegister={page.goRegister}
+        onPrimary={page.goPrimary}
+      />
+
+      <Marquee words={Array.isArray(marqueeTop) ? (marqueeTop as string[]) : []} />
+      <Perf />
+
+      <StatsStrip />
+      <Perf $dark />
+
+      <HowItWorks />
+      <Perf />
+
+      <StoryBeats />
+      <DishGallery />
+
+      <FeatureRail
+        scope="guest"
+        cards={GUEST_CARDS}
+        title={t('landing.guest.title')}
+        ghostLeft={false}
+      >
+        <FoodChip $top="2%" $left="6%" aria-hidden>
+          <FoodChipArt kind="samosa" />
+        </FoodChip>
+      </FeatureRail>
+
+      <Perf $dark />
+      <KitchenTicket />
+
+      <FeatureRail
+        scope="floor"
+        cards={FLOOR_CARDS}
+        title={t('landing.floor.title')}
+        dark
+        ghostLeft
+      />
+
+      <Perf />
+      <BentoFeatures />
+      <Perf />
+
+      <FeatureRail scope="owner" cards={OWNER_CARDS} title={t('landing.owner.title')}>
+        <FoodChip $top="4%" $right="8%" aria-hidden>
+          <FoodChipArt kind="biryani" />
+        </FoodChip>
+      </FeatureRail>
+
+      <MoneyCompare />
+      <GuestJourney />
+      <TickerTape />
+
+      <Marquee
+        words={Array.isArray(marqueeBottom) ? (marqueeBottom as string[]) : []}
+        light
+        reverse
+      />
+
+      <Testimonials />
+      <Perf />
+      <PricingPlans id={page.sections.pricing} />
+      <Perf $dark />
+      <FaqBlock />
+      <Perf />
+      <FinalCta
+        id={page.sections.start}
+        isAuthenticated={page.isAuthenticated}
+        onPrimary={page.goPrimary}
       />
     </Page>
   )

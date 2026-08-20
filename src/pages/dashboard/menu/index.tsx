@@ -12,7 +12,7 @@ import { useTranslation } from 'react-i18next'
 
 import { OffersModal } from '@/components/dashboard/offers-modal'
 import { UpsellPicker } from '@/components/dashboard/upsell-picker'
-import { PageSkeleton } from '@/components/global/page-skeleton'
+import { VenueScreen } from '@/components/dashboard/venue-screen'
 import { Button } from '@/components/global/button'
 // Menu scanning (OCR) is switched off. The component still exists at
 // @/components/dashboard/menu-scan — uncomment this import, the two Scan
@@ -27,7 +27,6 @@ import { Select } from '@/components/global/select'
 import { SearchInput } from '@/components/global/search-input'
 import { Skeleton } from '@/components/global/skeleton'
 import { VegMark } from '@/components/global/veg-mark'
-import { useDashboardContext } from '@/hooks/dashboard/context'
 import type { Restaurant } from '@/types/restaurant'
 import { formatMoney } from '@/utils/format'
 
@@ -64,9 +63,9 @@ import {
 } from './styled'
 
 export function MenuManagerPage() {
-  const { restaurant } = useDashboardContext()
-  if (!restaurant) return <PageSkeleton cards={3} />
-  return <MenuBody restaurant={restaurant} />
+  return (
+    <VenueScreen cards={3}>{(restaurant) => <MenuBody restaurant={restaurant} />}</VenueScreen>
+  )
 }
 
 function MenuBody({ restaurant }: { restaurant: Restaurant }) {

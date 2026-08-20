@@ -1,4 +1,4 @@
-import { NavLink, Navigate, Outlet } from 'react-router-dom'
+import { NavLink, Outlet } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 
 import { ClerkUserButton } from '@/components/dashboard/clerk-user-button'
@@ -7,7 +7,6 @@ import { LogoutButton } from '@/components/dashboard/logout-confirm'
 import { VenueSwitcher } from '@/components/dashboard/venue-switcher'
 import { BrandMark } from '@/components/global/brand-mark'
 import { Button } from '@/components/global/button'
-import { Skeleton } from '@/components/global/skeleton'
 import type { DashboardOutlet } from '@/hooks/dashboard/context'
 
 import { ADMIN_NAV, MOBILE_NAV_KEYS, NAV_ITEMS, useDashboardLayout } from './helper'
@@ -16,8 +15,7 @@ import {
   BottomLink,
   BottomNav,
   Brand,
-  Centered,
-  ErrorBlock,
+  ErrorBanner,
   LogoutWrap,
   Main,
   MobileBar,
@@ -39,54 +37,22 @@ export function DashboardLayout() {
     user,
     restaurant,
     impersonation,
-    onAdmin,
-    isLoading,
-    isError,
+    venueLoading,
+    venueError,
     refetch,
     exitImpersonation,
     restaurants,
     switchVenue,
   } = useDashboardLayout()
 
-  if (isLoading) {
-    return (
-      <Shell>
-        <Centered>
-          <Skeleton height="240px" width="320px" />
-        </Centered>
-      </Shell>
-    )
+  const context: DashboardOutlet = {
+    restaurant,
+    venueLoading,
+    venueError,
+    refetchVenue: () => {
+      void refetch()
+    },
   }
-
-  if (isError) {
-    return (
-      <Shell>
-        <Centered>
-          <ErrorBlock>
-            <p>{t('gate.venueLoadFailed')}</p>
-            <Button onClick={() => void refetch()}>{t('gate.retry')}</Button>
-            {impersonation && (
-              <Button variant="outline" onClick={exitImpersonation}>
-                {t('admin.backAdmin')}
-              </Button>
-            )}
-            <LogoutButton />
-          </ErrorBlock>
-        </Centered>
-      </Shell>
-    )
-  }
-
-  if (!restaurant && !onAdmin) {
-    return (
-      <Navigate
-        to={user?.isSuperAdmin ? '/dashboard/admin' : '/dashboard/setup'}
-        replace
-      />
-    )
-  }
-
-  const context: DashboardOutlet = { restaurant }
   const mobileNav = NAV_ITEMS.filter((item) => MOBILE_NAV_KEYS.has(item.key))
   const venueOptions =
     restaurant && !restaurants.some((venue) => venue.id === restaurant.id)
@@ -167,6 +133,14 @@ export function DashboardLayout() {
               {t('admin.backAdmin')}
             </Button>
           </ViewingBanner>
+        )}
+        {venueError && (
+          <ErrorBanner>
+            <span>{t('gate.venueLoadFailed')}</span>
+            <Button variant="outline" size="sm" onClick={() => void refetch()}>
+              {t('gate.retry')}
+            </Button>
+          </ErrorBanner>
         )}
         <Outlet context={context} />
       </Main>

@@ -2,11 +2,10 @@ import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 
 import { ReviewsPanel } from '@/components/dashboard/reviews-panel'
-import { PageSkeleton } from '@/components/global/page-skeleton'
+import { VenueScreen } from '@/components/dashboard/venue-screen'
 import { Button } from '@/components/global/button'
 import { EmptyState } from '@/components/global/empty-state'
 import { Skeleton } from '@/components/global/skeleton'
-import { useDashboardContext } from '@/hooks/dashboard/context'
 import type { DishRow, NamedCount } from '@/types/analytics'
 import type { Restaurant } from '@/types/restaurant'
 
@@ -57,9 +56,9 @@ import {
 } from './styled'
 
 export function InsightsPage() {
-  const { restaurant } = useDashboardContext()
-  if (!restaurant) return <PageSkeleton cards={4} />
-  return <InsightsBody restaurant={restaurant} />
+  return (
+    <VenueScreen cards={4}>{(restaurant) => <InsightsBody restaurant={restaurant} />}</VenueScreen>
+  )
 }
 
 function InsightsBody({ restaurant }: { restaurant: Restaurant }) {

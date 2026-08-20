@@ -256,6 +256,30 @@ export const Centered = styled.div`
   padding: 32px 20px;
 `
 
+export const ErrorBanner = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px 16px;
+  margin: ${spacing.md} ${spacing.md} 0;
+  padding: ${spacing.sm} ${spacing.md};
+  border: 1.5px solid ${palette.line};
+  border-radius: ${radii.md};
+  background: ${palette.cream};
+  color: ${palette.ink};
+  font-size: ${fontSizes.label};
+  font-weight: 600;
+
+  ${({ theme }) => theme.media.md} {
+    margin: ${spacing.md} ${spacing.lg} 0;
+  }
+
+  ${({ theme }) => theme.media.lg} {
+    margin: ${spacing.md} ${spacing.xl} 0;
+  }
+`
+
 export const ErrorBlock = styled.div`
   display: grid;
   justify-items: start;
