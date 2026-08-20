@@ -16,7 +16,7 @@ export function useLogoutConfirm() {
   const confirm = () => {
     setPending(true)
     void staffSignOut().finally(() => {
-      navigate('/dashboard/login', { replace: true })
+      navigate('/', { replace: true })
     })
   }
 

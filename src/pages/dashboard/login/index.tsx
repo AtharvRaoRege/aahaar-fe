@@ -16,6 +16,7 @@ import {
   Divider,
   ErrorBanner,
   Form,
+  HomeLink,
   Inner,
   Page,
   Panel,
@@ -123,6 +124,7 @@ export function LoginPage() {
               {isRegister ? t('login.switchToLogin') : t('login.switchToRegister')}
             </Switcher>
           )}
+          <HomeLink to="/">{t('login.backHome')}</HomeLink>
         </Panel>
       </Inner>
     </Page>

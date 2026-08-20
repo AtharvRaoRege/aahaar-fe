@@ -57,6 +57,7 @@ export const dashboard = {
     codeRequired: 'Enter the 6-digit code from Gmail.',
     verifyFailed: 'Could not finish sign-up. Request a new code.',
     sessionReplaced: 'This account signed in on another device. Sign in here to continue.',
+    backHome: 'Back to home',
   },
   phone: {
     title: 'How can we reach you?',

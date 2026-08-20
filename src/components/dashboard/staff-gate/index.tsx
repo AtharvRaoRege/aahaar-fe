@@ -38,11 +38,8 @@ function nextPath(user: User, current: string): string | null {
   }
 
   if (user.hasRestaurant === false) {
-    // Super admins can open kitchen tabs (skeleton / empty). Owners go set up.
-    if (user.isSuperAdmin) {
-      if (onSetup) return '/dashboard/admin'
-      return null
-    }
+    // Super admins may browse kitchen tabs or create their own venue.
+    if (user.isSuperAdmin) return null
     if (onSetup) return null
     return '/dashboard/setup'
   }

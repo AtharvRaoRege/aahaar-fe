@@ -1,7 +1,8 @@
 import styled from 'styled-components'
+import { Link } from 'react-router-dom'
 
 import { faintHalftone } from '@/styles/mixins'
-import { palette, radii, shadows } from '@/styles/theme'
+import { fontSizes, palette, radii, shadows } from '@/styles/theme'
 
 export const Page = styled.div`
   flex: 1;
@@ -19,13 +20,14 @@ export const Inner = styled.div`
   flex: 1;
   display: flex;
   flex-direction: column;
-  justify-content: flex-start;
+  justify-content: center;
   width: 100%;
   max-width: 100%;
-  padding: max(16px, env(safe-area-inset-top)) 16px max(24px, env(safe-area-inset-bottom));
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: max(20px, env(safe-area-inset-top)) 16px max(24px, env(safe-area-inset-bottom));
 
   ${({ theme }) => theme.media.sm} {
-    justify-content: center;
     padding: 32px 20px;
   }
 
@@ -55,9 +57,9 @@ export const Brand = styled.p`
   display: inline-flex;
   align-items: center;
   gap: 10px;
-  font-size: 0.75rem;
+  font-size: ${fontSizes.label};
   font-weight: 700;
-  letter-spacing: 0.14em;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
   color: ${palette.tomato};
 
@@ -69,11 +71,11 @@ export const Brand = styled.p`
 `
 
 export const Title = styled.h1`
-  font-size: clamp(1.5rem, 6vw, 2.25rem);
+  font-size: clamp(1.7rem, 6.5vw, 2.4rem);
   font-weight: 800;
   letter-spacing: -0.03em;
   line-height: 1.1;
-  margin: 8px 0 10px;
+  margin: 10px 0 12px;
   color: ${palette.ink};
 `
 
@@ -82,8 +84,8 @@ export const Subtitle = styled.p`
   color: ${palette.inkSoft};
   margin-bottom: 20px;
   max-width: 42ch;
-  font-size: 0.9375rem;
-  line-height: 1.45;
+  font-size: ${fontSizes.body};
+  line-height: 1.5;
 `
 
 export const Form = styled.form`
@@ -97,7 +99,7 @@ export const Form = styled.form`
 export const Divider = styled.p`
   margin: 20px 0 16px;
   text-align: center;
-  font-size: 0.75rem;
+  font-size: ${fontSizes.label};
   font-weight: 600;
   color: ${palette.inkSoft};
 `
@@ -108,7 +110,7 @@ export const ErrorBanner = styled.p`
   color: ${palette.white};
   border-radius: ${radii.md};
   font-weight: 600;
-  font-size: 0.875rem;
+  font-size: ${fontSizes.label};
   line-height: 1.4;
 `
 
@@ -116,11 +118,29 @@ export const Switcher = styled.button`
   margin-top: 16px;
   align-self: flex-start;
   min-height: 44px;
+  font-size: ${fontSizes.body};
   font-weight: 600;
   text-align: left;
   text-decoration: underline;
   text-underline-offset: 4px;
   color: ${palette.ink};
+
+  &:active {
+    transform: scale(0.98);
+  }
+`
+
+export const HomeLink = styled(Link)`
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-start;
+  min-height: 44px;
+  margin-top: 8px;
+  font-size: ${fontSizes.body};
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  color: ${palette.inkSoft};
 
   &:active {
     transform: scale(0.98);
