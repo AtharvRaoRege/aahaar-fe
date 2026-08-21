@@ -152,7 +152,7 @@ export function useKitchenAlerts(restaurantId: string | undefined) {
           kind: 'waiter',
           title: t('alerts.waiterTitle', { table }),
           body: t('alerts.waiterBody'),
-          href: '/dashboard/orders',
+          href: '/dashboard',
         })
       }
       const onReview = (event: ReviewEvent) => {
@@ -234,7 +234,7 @@ export function useKitchenAlerts(restaurantId: string | undefined) {
                 : 'alerts.orderFallback',
           ),
         body: data.body || (kind === 'waiter' ? t('alerts.waiterBody') : t('alerts.reviewBody')),
-        href: data.url || (kind === 'review' ? '/dashboard/insights' : '/dashboard/orders'),
+        href: data.url || (kind === 'review' ? '/dashboard/insights' : '/dashboard'),
       })
     }
     navigator.serviceWorker?.addEventListener('message', onPushMessage)

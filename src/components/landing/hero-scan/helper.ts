@@ -1,36 +1,31 @@
-import { useEffect, useState } from 'react'
+import { useSyncExternalStore } from 'react'
 
-import { prefersReducedMotion } from '@/utils/motion'
+export const APP_TOUR_GIF = '/landing/app-tour.gif'
+export const APP_TOUR_POSTER = '/landing/app-poster.png'
 
-/** Six-by-six grid of blocks, so the QR is markup rather than an image. */
-export const QR_CELLS = Array.from({ length: 36 }, (_, index) => index)
+function subscribeReducedMotion(onChange: () => void) {
+  if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') {
+    return () => undefined
+  }
+  const media = window.matchMedia('(prefers-reduced-motion: reduce)')
+  media.addEventListener('change', onChange)
+  return () => media.removeEventListener('change', onChange)
+}
 
-const SCAN_MS = 1_600
-const LOOP_MS = 5_200
+function reducedMotionSnapshot() {
+  return (
+    typeof window !== 'undefined' &&
+    typeof window.matchMedia === 'function' &&
+    window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  )
+}
 
-/**
- * Runs the scan-then-menu loop in the hero phone.
- *
- * Reduced motion settles on the finished state — the menu on screen — rather than
- * looping a beam forever, because the point of the shot is the outcome.
- */
-export function useScanLoop(): boolean {
-  const [done, setDone] = useState(prefersReducedMotion)
-
-  useEffect(() => {
-    if (prefersReducedMotion()) return
-
-    let scanTimer = window.setTimeout(() => setDone(true), SCAN_MS)
-    const loop = window.setInterval(() => {
-      setDone(false)
-      scanTimer = window.setTimeout(() => setDone(true), SCAN_MS)
-    }, LOOP_MS)
-
-    return () => {
-      window.clearTimeout(scanTimer)
-      window.clearInterval(loop)
-    }
-  }, [])
-
-  return done
+/** Still poster when the OS asks for less motion; otherwise the live app GIF. */
+export function useAppTourSrc(): string {
+  const reduceMotion = useSyncExternalStore(
+    subscribeReducedMotion,
+    reducedMotionSnapshot,
+    () => false,
+  )
+  return reduceMotion ? APP_TOUR_POSTER : APP_TOUR_GIF
 }

@@ -1,12 +1,7 @@
-import styled, { keyframes } from 'styled-components'
+import styled from 'styled-components'
 
 import { landing, landingFonts, spacing } from '@/styles/theme'
 import { focusRing } from '@/styles/mixins'
-
-const sweep = keyframes`
-  0%, 100% { top: 18%; opacity: 0.2; }
-  50% { top: 78%; opacity: 1; }
-`
 
 export const Hero = styled.section`
   min-height: 100svh;
@@ -277,86 +272,25 @@ export const Phone = styled.div`
   &::before {
     content: '';
     position: absolute;
-    top: 10px;
+    top: 8px;
     left: 50%;
     transform: translateX(-50%);
     width: 36px;
     height: 5px;
     border-radius: 3px;
     background: ${landing.ink};
+    z-index: 2;
   }
 `
 
-export const QrGrid = styled.div<{ $done: boolean }>`
-  position: absolute;
-  left: 50%;
-  top: 52%;
-  transform: translate(-50%, -50%) scale(${({ $done }) => ($done ? 0.6 : 1)});
-  opacity: ${({ $done }) => ($done ? 0 : 1)};
-  width: 96px;
-  height: 96px;
-  display: grid;
-  grid-template-columns: repeat(6, 1fr);
-  grid-template-rows: repeat(6, 1fr);
-  gap: 3px;
-  transition:
-    opacity 500ms ease,
-    transform 500ms ease;
-
-  span {
-    background: ${landing.ink};
-    border-radius: 1px;
-  }
-
-  span:nth-child(3n) {
-    background: ${landing.chili};
-  }
-
-  span:nth-child(7n) {
-    background: transparent;
-  }
-`
-
-export const ScanBeam = styled.span<{ $done: boolean }>`
-  position: absolute;
-  left: 8%;
-  width: 84%;
-  height: 3px;
-  background: linear-gradient(90deg, transparent, ${landing.mint}, transparent);
-  top: 20%;
-  opacity: ${({ $done }) => ($done ? 0 : 1)};
-  animation: ${sweep} 2.2s ease-in-out infinite;
-  box-shadow: 0 0 12px ${landing.mint};
-`
-
-export const MenuPop = styled.div<{ $done: boolean }>`
-  position: absolute;
-  left: 10%;
-  right: 10%;
-  bottom: 14%;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  opacity: ${({ $done }) => ($done ? 1 : 0)};
-  transform: translateY(${({ $done }) => ($done ? '0' : '10px')});
-  transition:
-    opacity 500ms ease,
-    transform 500ms ease;
-
-  span {
-    height: 9px;
-    background: ${landing.line};
-    border-radius: 2px;
-  }
-
-  span:nth-child(1) {
-    width: 70%;
-    background: ${landing.turmeric};
-  }
-
-  span:nth-child(3) {
-    width: 50%;
-  }
+export const AppScreen = styled.img`
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top center;
+  pointer-events: none;
+  user-select: none;
 `
 
 export const HeroTag = styled.p`

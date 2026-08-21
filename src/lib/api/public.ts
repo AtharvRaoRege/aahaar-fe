@@ -2,7 +2,7 @@ import { api } from '@/lib/api/client'
 import type { LogEventPayload } from '@/types/analytics'
 import type { CreateCustomerSessionPayload, CustomerSession } from '@/types/customer'
 import type { Menu, Upsells } from '@/types/menu'
-import type { PublicOffer } from '@/types/offer'
+import type { PublicOffer, VerifyOfferPayload, VerifyOfferResult } from '@/types/offer'
 import type { Order } from '@/types/order'
 import type { PublicRestaurant } from '@/types/restaurant'
 
@@ -18,6 +18,16 @@ export const publicApi = {
   async getOffers(slug: string): Promise<PublicOffer[]> {
     const { data } = await api.get<PublicOffer[]>(
       `/public/restaurants/${slug}/offers`,
+    )
+    return data
+  },
+  async verifyOffer(
+    slug: string,
+    payload: VerifyOfferPayload,
+  ): Promise<VerifyOfferResult> {
+    const { data } = await api.post<VerifyOfferResult>(
+      `/public/restaurants/${slug}/offers/verify`,
+      payload,
     )
     return data
   },

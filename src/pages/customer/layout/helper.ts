@@ -3,8 +3,12 @@ import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { useLocation, useParams, useSearchParams } from 'react-router-dom'
 
 import { publicApi } from '@/lib/api/public'
+import { guestProfileStore } from '@/lib/customer/guest-profile-store'
 import { sessionStore } from '@/lib/customer/session-store'
-import { hasNamedTableSession } from '@/lib/customer/table-session'
+import {
+  createNamedTableSession,
+  hasNamedTableSession,
+} from '@/lib/customer/table-session'
 import { freshFor } from '@/lib/query/cache'
 import { queryKeys } from '@/lib/query/keys'
 
@@ -13,7 +17,8 @@ export function useCustomerLayout() {
   const [params] = useSearchParams()
   const location = useLocation()
   const queryClient = useQueryClient()
-  const [, setIdentityNonce] = useState(0)
+  const [identityNonce, setIdentityNonce] = useState(0)
+  const [restoreFailed, setRestoreFailed] = useState(false)
   const query = useQuery({
     queryKey: queryKeys.publicRestaurant(slug),
     queryFn: () => publicApi.getRestaurant(slug),
@@ -37,17 +42,51 @@ export function useCustomerLayout() {
   const onIndex = location.pathname.replace(/\/$/, '') === `/r/${slug}`
 
   const tableNumber = tableFromUrl || storedTable || null
-  /** Ordering only when the scan URL carries a table (view-only without it). */
   const canOrder = Boolean(tableFromUrl)
-  /** Put a remembered table back into the URL — never when it is already there. */
   const needsTableInUrl = Boolean(tableNumber && !tableFromUrl && !onTrack && !onReview)
-  const hasProfile = Boolean(query.data && hasNamedTableSession(query.data.id, tableNumber))
+  const hasSession = Boolean(query.data && hasNamedTableSession(query.data.id, tableNumber))
+  const savedProfile = query.data ? guestProfileStore.get(query.data.id) : null
+  const restoringIdentity = Boolean(
+    canOrder &&
+      tableNumber &&
+      query.data &&
+      !hasSession &&
+      savedProfile &&
+      !restoreFailed &&
+      !onTrack &&
+      !onReview,
+  )
   const needsIdentity = Boolean(
-    canOrder && tableNumber && query.data && !hasProfile && !onTrack && !onReview,
+    canOrder &&
+      tableNumber &&
+      query.data &&
+      !hasSession &&
+      (!savedProfile || restoreFailed) &&
+      !onTrack &&
+      !onReview,
   )
 
-  const restPath =
-    location.pathname.replace(new RegExp(`^/r/${slug}`), '') || '/menu'
+  useEffect(() => {
+    if (!restoringIdentity || !query.data || !tableNumber || !savedProfile) return
+
+    let cancelled = false
+    void createNamedTableSession(query.data.id, slug, tableNumber, {
+      name: savedProfile.name,
+      contactNumber: savedProfile.contactNumber ?? undefined,
+    })
+      .then(() => {
+        if (!cancelled) setIdentityNonce((value) => value + 1)
+      })
+      .catch(() => {
+        if (!cancelled) setRestoreFailed(true)
+      })
+
+    return () => {
+      cancelled = true
+    }
+  }, [restoringIdentity, query.data, tableNumber, savedProfile, slug, identityNonce])
+
+  const restPath = location.pathname.replace(new RegExp(`^/r/${slug}`), '') || '/menu'
 
   return {
     slug,
@@ -60,7 +99,11 @@ export function useCustomerLayout() {
     onIndex,
     needsTableInUrl,
     needsIdentity,
-    markIdentified: () => setIdentityNonce((value) => value + 1),
+    restoringIdentity,
+    markIdentified: () => {
+      setRestoreFailed(false)
+      setIdentityNonce((value) => value + 1)
+    },
     restPath: restPath === '/' ? '/menu' : restPath,
   }
 }

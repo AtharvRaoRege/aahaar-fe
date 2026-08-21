@@ -2,7 +2,7 @@ import styled, { keyframes } from 'styled-components'
 
 import { dashboardHint, dashboardTitle } from '@/pages/dashboard/shared'
 import { hideScrollbar } from '@/styles/mixins'
-import { fontSizes, palette, radii, shadows, spacing } from '@/styles/theme'
+import { fontSizes, masks, palette, radii, shadows, spacing } from '@/styles/theme'
 
 export const Page = styled.div`
   flex: 1;
@@ -178,95 +178,111 @@ export const Layout = styled.div`
   }
 
   ${({ theme }) => theme.media.md} {
-    grid-template-columns: 128px minmax(0, 1fr);
+    grid-template-columns: 168px minmax(0, 1fr);
     grid-template-rows: minmax(0, 1fr);
     gap: ${spacing.md};
   }
 
   ${({ theme }) => theme.media.lg} {
-    grid-template-columns: 148px minmax(0, 1fr);
+    grid-template-columns: 196px minmax(0, 1fr);
     gap: ${spacing.lg};
   }
 
   ${({ theme }) => theme.media.xl} {
-    grid-template-columns: 164px minmax(0, 1fr);
+    grid-template-columns: 220px minmax(0, 1fr);
     gap: ${spacing.xl};
   }
 `
 
 export const CategoryRail = styled.nav`
   display: flex;
-  align-items: stretch;
+  align-items: center;
   gap: ${spacing.xs};
-  overflow: hidden;
   flex-shrink: 0;
+  max-width: 100%;
   padding: ${spacing.xs};
+  overflow-x: auto;
+  overflow-y: hidden;
+  overscroll-behavior-x: contain;
+  -webkit-overflow-scrolling: touch;
   background: ${palette.cream};
   border: 1px solid ${palette.line};
   border-radius: ${radii.lg};
   box-shadow: ${shadows.sm};
+  ${hideScrollbar};
+  mask-image: ${masks.railFade};
+  -webkit-mask-image: ${masks.railFade};
 
   ${({ theme }) => theme.media.sm} {
-    gap: ${spacing.xs};
-    padding: ${spacing.xs};
+    gap: ${spacing.sm};
+    padding: ${spacing.sm};
   }
 
   ${({ theme }) => theme.media.md} {
     flex-direction: column;
+    align-items: stretch;
     overflow-x: hidden;
     overflow-y: auto;
+    overscroll-behavior-y: contain;
     height: 100%;
     min-height: 0;
-    padding: ${spacing.xs};
     gap: ${spacing.xs};
-    ${hideScrollbar};
+    padding: ${spacing.sm};
+    mask-image: none;
+    -webkit-mask-image: none;
   }
 
   ${({ theme }) => theme.media.lg} {
     padding: ${spacing.sm};
-    gap: ${spacing.sm};
+    gap: ${spacing.xs};
   }
 
   ${({ theme }) => theme.media.xl} {
-    padding: ${spacing.sm};
-    gap: ${spacing.sm};
+    padding: ${spacing.md} ${spacing.sm};
+    gap: ${spacing.xs};
   }
 `
 
 export const CategoryBtn = styled.button<{ $active: boolean }>`
   position: relative;
-  display: flex;
-  flex-direction: column;
+  display: inline-flex;
+  flex-direction: row;
   align-items: center;
-  justify-content: center;
-  gap: ${spacing.xs};
-  flex: 1 1 0;
-  min-width: 0;
-  min-height: ${spacing['5xl']};
-  padding: ${spacing.xs};
-  border-radius: ${radii.md};
+  justify-content: flex-start;
+  gap: ${spacing.sm};
+  flex: 0 0 auto;
+  max-width: min(200px, 72vw);
+  min-height: 40px;
+  padding: ${spacing.sm} ${spacing.md};
+  border-radius: ${radii.full};
   color: ${({ $active }) => ($active ? palette.white : palette.inkSoft)};
   background: ${({ $active }) => ($active ? palette.mango : palette.white)};
   font-weight: ${({ $active }) => ($active ? 800 : 600)};
   box-shadow: ${({ $active }) => ($active ? shadows.sm : 'none')};
-  transition: background 140ms ease-out, color 140ms ease-out, box-shadow 140ms ease-out;
+  border: 1px solid ${({ $active }) => ($active ? palette.mango : palette.line)};
+  transition:
+    background 140ms ease-out,
+    color 140ms ease-out,
+    box-shadow 140ms ease-out,
+    border-color 140ms ease-out;
 
   svg {
-    width: 18px;
-    height: 18px;
+    flex-shrink: 0;
+    width: 16px;
+    height: 16px;
     color: ${({ $active }) => ($active ? palette.white : palette.inkSoft)};
     stroke-width: ${({ $active }) => ($active ? 1.75 : 1.5)};
   }
 
   span {
-    max-width: 100%;
-    overflow: visible;
-    white-space: normal;
-    overflow-wrap: anywhere;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
     font-size: ${fontSizes.labelSm};
     font-weight: inherit;
     letter-spacing: 0.01em;
-    text-align: center;
+    text-align: left;
     line-height: 1.2;
   }
 
@@ -274,33 +290,54 @@ export const CategoryBtn = styled.button<{ $active: boolean }>`
     &:hover {
       background: ${({ $active }) => ($active ? palette.mango : palette.canvas)};
       color: ${({ $active }) => ($active ? palette.white : palette.ink)};
+      border-color: ${({ $active }) => ($active ? palette.mango : palette.line)};
     }
   }
 
   ${({ theme }) => theme.media.sm} {
-    min-height: ${spacing['5xl']};
+    min-height: 42px;
+    padding: ${spacing.sm} ${spacing.md};
+    max-width: min(220px, 60vw);
+
+    span {
+      font-size: ${fontSizes.label};
+    }
   }
 
   ${({ theme }) => theme.media.md} {
-    flex: 1 1 0;
     width: 100%;
-    min-width: 0;
-    min-height: ${spacing['6xl']};
-    padding: ${spacing.sm} ${spacing.xs};
+    max-width: none;
+    min-height: 40px;
+    padding: ${spacing.sm} ${spacing.md};
+    border-radius: ${radii.md};
+    justify-content: flex-start;
+
+    svg {
+      width: 18px;
+      height: 18px;
+    }
+
+    span {
+      font-size: ${fontSizes.labelSm};
+    }
   }
 
   ${({ theme }) => theme.media.lg} {
-    min-height: 72px;
-    padding: ${spacing.sm} ${spacing.xs};
+    min-height: 42px;
+    padding: ${spacing.sm} ${spacing.md};
 
     svg {
-      width: 22px;
-      height: 22px;
+      width: 18px;
+      height: 18px;
+    }
+
+    span {
+      font-size: ${fontSizes.label};
     }
   }
 
   ${({ theme }) => theme.media.xl} {
-    min-height: 76px;
+    min-height: 44px;
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -341,42 +378,29 @@ export const SectionTitle = styled.h2`
   align-items: center;
   justify-content: space-between;
   gap: ${spacing.sm};
-  min-height: 0;
-  padding: ${spacing.xs} ${spacing.md};
+  min-height: 44px;
+  padding: ${spacing.sm} ${spacing.md};
   font-size: ${fontSizes.label};
   font-weight: 800;
   letter-spacing: -0.02em;
   border-bottom: 1px solid ${palette.line};
   background: ${palette.cream};
 
-  span {
+  > span {
     min-width: 0;
-  }
-
-  && button {
-    display: none;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   ${({ theme }) => theme.media.sm} {
-    padding: ${spacing.xs} ${spacing.lg};
+    padding: ${spacing.sm} ${spacing.lg};
   }
 
   ${({ theme }) => theme.media.md} {
-    min-height: 40px;
+    min-height: 48px;
     padding: ${spacing.sm} ${spacing.xl};
     font-size: ${fontSizes.body};
-
-    && button {
-      display: inline-flex;
-      flex-shrink: 0;
-      min-height: 32px;
-      padding: 0 ${spacing.md};
-      background: ${palette.white};
-      border: 1px solid ${palette.line};
-      border-radius: ${radii.md};
-      box-shadow: ${shadows.sm};
-      color: ${palette.ink};
-    }
   }
 
   ${({ theme }) => theme.media.lg} {
@@ -386,6 +410,17 @@ export const SectionTitle = styled.h2`
 
   ${({ theme }) => theme.media.xl} {
     padding: ${spacing.sm} ${spacing['2xl']};
+  }
+`
+
+export const SectionActions = styled.div`
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: ${spacing.sm};
+
+  ${({ theme }) => theme.media.md} {
+    gap: ${spacing.md};
   }
 `
 
@@ -547,6 +582,7 @@ export const ItemActions = styled.div`
   display: flex;
   flex-shrink: 0;
   align-items: center;
+  gap: ${spacing.sm};
 
   && button {
     width: ${spacing['3xl']};
@@ -562,6 +598,8 @@ export const ItemActions = styled.div`
   }
 
   ${({ theme }) => theme.media.sm} {
+    gap: ${spacing.sm};
+
     && button {
       width: ${spacing['3xl']};
       height: ${spacing['3xl']};
@@ -569,6 +607,8 @@ export const ItemActions = styled.div`
   }
 
   ${({ theme }) => theme.media.md} {
+    gap: ${spacing.md};
+
     && button {
       width: ${spacing['3xl']};
       height: ${spacing['3xl']};

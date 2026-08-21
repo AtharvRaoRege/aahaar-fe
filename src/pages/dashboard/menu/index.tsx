@@ -1,4 +1,5 @@
 import {
+  BadgePercent,
   Download,
   EllipsisVertical,
   FolderPlus,
@@ -56,6 +57,7 @@ import {
   Page,
   SearchSlot,
   Section,
+  SectionActions,
   SectionTitle,
   SheetError,
   SheetForm,
@@ -211,10 +213,11 @@ function MenuBody({ restaurant }: { restaurant: Restaurant }) {
                 <SectionTitle>
                   <span>{group.name}</span>
                   {group.id && (
-                    <ItemActions>
+                    <SectionActions>
                       <IconButton
                         type="button"
                         size="sm"
+                        tone="danger"
                         label={t('menu.deleteCategory')}
                         icon={<Trash2 aria-hidden />}
                         onClick={() => page.askDeleteCategory(group.id!, group.name)}
@@ -227,7 +230,7 @@ function MenuBody({ restaurant }: { restaurant: Restaurant }) {
                       >
                         {t('menu.addItem')}
                       </Button>
-                    </ItemActions>
+                    </SectionActions>
                   )}
                 </SectionTitle>
                 {group.items.length === 0 ? (
@@ -281,6 +284,7 @@ function MenuBody({ restaurant }: { restaurant: Restaurant }) {
                             <IconButton
                               type="button"
                               size="sm"
+                              tone="danger"
                               label={t('menu.deleteDish')}
                               icon={<Trash2 aria-hidden />}
                               onClick={() => page.askDeleteItem(item.id)}
@@ -332,7 +336,12 @@ function MenuBody({ restaurant }: { restaurant: Restaurant }) {
               {t('scan.action')}
             </Button>
           )}
-          <Button variant="outline" fullWidth onClick={page.onActionsOffers}>
+          <Button
+            variant="outline"
+            fullWidth
+            leftIcon={<BadgePercent aria-hidden />}
+            onClick={page.onActionsOffers}
+          >
             {t('nav.offers')}
           </Button>
           <Button

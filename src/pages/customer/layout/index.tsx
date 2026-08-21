@@ -22,6 +22,7 @@ export function CustomerLayout() {
     onIndex,
     needsTableInUrl,
     needsIdentity,
+    restoringIdentity,
     markIdentified,
     restPath,
   } = useCustomerLayout()
@@ -70,6 +71,20 @@ export function CustomerLayout() {
 
   if (needsTableInUrl && tableNumber) {
     return <Navigate to={customerPath(slug, restPath === '/' ? '/menu' : restPath, tableNumber)} replace />
+  }
+
+  if (restoringIdentity && tableNumber) {
+    return (
+      <Shell>
+        <Centered>
+          <LoadingGrid>
+            <Skeleton height="120px" />
+            <Skeleton height="24px" width="60%" />
+            <Skeleton height="220px" />
+          </LoadingGrid>
+        </Centered>
+      </Shell>
+    )
   }
 
   if (needsIdentity && tableNumber) {

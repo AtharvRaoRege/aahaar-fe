@@ -1,17 +1,29 @@
+import { Tag } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 
 import { BottomSheet } from '@/components/global/bottom-sheet'
+import { formatMoney } from '@/utils/format'
+import { renderOfferKindIcon } from '@/utils/offers/kind-icon'
 
-import { endsLabel, offerBadge, useOfferStrip } from './helper'
+import { endsLabel, offerHeadline, useOfferStrip } from './helper'
 import {
-  Chip,
-  ChipMeta,
-  ChipTitle,
+  Banner,
+  BannerCode,
+  BannerHeadline,
+  BannerIcon,
+  BannerKicker,
+  BannerMeta,
+  BannerTitle,
+  BannerTop,
   CodeBox,
   CodeHint,
   Label,
+  LabelRow,
   Rail,
+  RuleList,
   SheetBody,
+  SheetHead,
+  SheetIcon,
   SheetText,
   SheetTitle,
   TermsLabel,
@@ -21,9 +33,10 @@ import {
 export interface OfferStripProps {
   slug: string
   onOfferView: (offerId: string) => void
+  currency?: string
 }
 
-export function OfferStrip({ slug, onOfferView }: OfferStripProps) {
+export function OfferStrip({ slug, onOfferView, currency = 'INR' }: OfferStripProps) {
   const { t } = useTranslation(['customer', 'common'])
   const strip = useOfferStrip(slug, onOfferView)
 
@@ -31,17 +44,31 @@ export function OfferStrip({ slug, onOfferView }: OfferStripProps) {
 
   return (
     <Wrap>
-      <Label>{t('offers.title')}</Label>
+      <LabelRow>
+        <Tag aria-hidden size={16} />
+        <Label>{t('offers.title')}</Label>
+      </LabelRow>
       <Rail>
         {strip.offers.map((offer) => {
-          const badge = offerBadge(offer)
+          const headline = offerHeadline(offer)
           const ends = endsLabel(offer)
           return (
-            <Chip key={offer.id} type="button" onClick={() => strip.open(offer)}>
-              <ChipTitle>{offer.title}</ChipTitle>
-              {badge && <ChipMeta>{t(badge.key, { value: badge.value })}</ChipMeta>}
-              {ends && <ChipMeta>{t(ends.key, { date: ends.date })}</ChipMeta>}
-            </Chip>
+            <Banner key={offer.id} type="button" onClick={() => strip.open(offer)}>
+              <BannerTop>
+                <BannerIcon>{renderOfferKindIcon(offer.kind, 20)}</BannerIcon>
+                <BannerKicker>{t('offers.liveNow')}</BannerKicker>
+              </BannerTop>
+              <BannerHeadline>
+                {headline.value !== undefined
+                  ? t(headline.key, { value: headline.value })
+                  : t(headline.key)}
+              </BannerHeadline>
+              <BannerTitle>{offer.title}</BannerTitle>
+              {ends && <BannerMeta>{t(ends.key, { date: ends.date })}</BannerMeta>}
+              {offer.couponCode && (
+                <BannerCode>{t('offers.code', { code: offer.couponCode })}</BannerCode>
+              )}
+            </Banner>
           )
         })}
       </Rail>
@@ -49,7 +76,10 @@ export function OfferStrip({ slug, onOfferView }: OfferStripProps) {
       <BottomSheet open={strip.active !== null} onClose={strip.close}>
         {strip.active && (
           <SheetBody>
-            <SheetTitle>{strip.active.title}</SheetTitle>
+            <SheetHead>
+              <SheetIcon>{renderOfferKindIcon(strip.active.kind, 22)}</SheetIcon>
+              <SheetTitle>{strip.active.title}</SheetTitle>
+            </SheetHead>
             {strip.active.description && <SheetText>{strip.active.description}</SheetText>}
             {strip.active.couponCode && (
               <CodeBox>
@@ -57,12 +87,22 @@ export function OfferStrip({ slug, onOfferView }: OfferStripProps) {
                 <CodeHint>{t('offers.codeHint')}</CodeHint>
               </CodeBox>
             )}
-            {strip.active.terms && (
-              <>
-                <TermsLabel>{t('offers.terms')}</TermsLabel>
-                <SheetText>{strip.active.terms}</SheetText>
-              </>
-            )}
+            <TermsLabel>{t('offers.terms')}</TermsLabel>
+            <RuleList>
+              <li>
+                {t('offers.minItems', {
+                  count: Math.max(1, strip.active.minItemCount ?? 1),
+                })}
+              </li>
+              {(strip.active.minOrderAmount ?? 0) > 0 && (
+                <li>
+                  {t('offers.minOrder', {
+                    amount: formatMoney(strip.active.minOrderAmount, currency),
+                  })}
+                </li>
+              )}
+              {strip.active.terms && <li>{strip.active.terms}</li>}
+            </RuleList>
           </SheetBody>
         )}
       </BottomSheet>

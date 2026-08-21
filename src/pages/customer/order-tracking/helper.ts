@@ -122,6 +122,7 @@ export function useOrderTracking(slug: string, tableNumber: string | null) {
     orderId,
     canAddMore,
     goMenu: () => navigate(customerPath(slug, '/menu', tableNumber)),
+    goCart: () => navigate(customerPath(slug, '/cart', tableNumber)),
     submitReview: review.mutate,
     reviewSubmitted: review.isSuccess || Boolean(query.data?.reviewed),
     reviewLoading: review.isPending,

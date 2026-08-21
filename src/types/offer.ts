@@ -18,6 +18,8 @@ export interface Offer {
   imageUrl: string | null
   couponCode: string | null
   value: number | null
+  minItemCount: number
+  minOrderAmount: number
   startsAt: string | null
   endsAt: string | null
   isActive: boolean
@@ -34,6 +36,8 @@ export interface PublicOffer {
   imageUrl: string | null
   couponCode: string | null
   value: number | null
+  minItemCount: number
+  minOrderAmount: number
   endsAt: string | null
 }
 
@@ -44,7 +48,29 @@ export interface OfferPayload {
   terms: string | null
   couponCode: string | null
   value: number | null
+  minItemCount: number
+  minOrderAmount: number
   startsAt: string | null
   endsAt: string | null
   isActive: boolean
+}
+
+export interface VerifyOfferPayload {
+  couponCode: string
+  items: Array<{
+    menuItemId: string
+    quantity: number
+    variantId?: string | null
+    addonIds?: string[]
+    notes?: string | null
+  }>
+}
+
+export interface VerifyOfferResult {
+  offerId: string
+  title: string
+  couponCode: string
+  discount: number
+  subtotal: number
+  total: number
 }

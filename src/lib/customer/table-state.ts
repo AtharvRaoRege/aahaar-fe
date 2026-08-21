@@ -4,15 +4,10 @@ import { sessionStore } from '@/lib/customer/session-store'
 const cartKey = (restaurantId: string) => `aahaar.cart.${restaurantId}`
 
 /**
- * Wipe everything tied to one seating so the next scan starts clean.
+ * Wipe seating-tied cart and open-order pointers once a ticket is closed.
  *
- * A table session otherwise survives until its 4-hour expiry, which meant the
- * next guest to scan that table inherited the previous guest's name, cart, and
- * finished order. Once a ticket is closed the seating is over — the identity
- * goes with it.
- *
- * The guest profile is kept on purpose: it is the returning diner's own name on
- * their own phone, and pre-filling it is a courtesy, not stale state.
+ * The guest profile stays on this phone so "back to menu" can recreate the
+ * named table session without asking for name and number again.
  */
 export function clearTableState(restaurantId: string): void {
   sessionStore.clear(restaurantId)

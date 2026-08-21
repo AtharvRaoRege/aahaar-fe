@@ -79,6 +79,7 @@ export interface CreateOrderPayload {
   customerSessionId: string
   items: CreateOrderItemPayload[]
   notes?: string | null
+  couponCode?: string | null
 }
 
 /** Realtime Socket.IO event payload (small — see realtime.md §6). */

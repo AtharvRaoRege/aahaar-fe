@@ -148,37 +148,41 @@ function InsightsBody({ restaurant }: { restaurant: Restaurant }) {
             </TileGrid>
           )}
 
-          {summary.commissionSavings && summary.commissionSavings.orderCount > 0 && (
+          {summary.tableHighlight && summary.tableHighlight.orderCount > 0 && (
             <>
               <SectionLabel>{t('insights.savingsTitle')}</SectionLabel>
               <SavingsCard>
                 <SavingsTitle>{t('insights.savingsCommission')}</SavingsTitle>
                 <SavingsHeadline>
-                  {formatMoney(summary.commissionSavings.commissionAvoided)}
+                  {formatMoney(summary.tableHighlight.revenue)}
                 </SavingsHeadline>
                 <SavingsBody>
                   {t('insights.savingsBody', {
-                    count: summary.commissionSavings.orderCount,
+                    count: summary.tableHighlight.orderCount,
                   })}
                 </SavingsBody>
                 <SavingsRows>
                   <SavingsRow>
                     <SavingsKey>{t('insights.savingsRevenue')}</SavingsKey>
-                    <SavingsValue>
-                      {formatMoney(summary.commissionSavings.directOrderRevenue)}
-                    </SavingsValue>
+                    <SavingsValue>{summary.tableHighlight.orderCount}</SavingsValue>
                   </SavingsRow>
                   <SavingsRow>
                     <SavingsKey>{t('insights.savingsCost')}</SavingsKey>
-                    <SavingsValue>
-                      {formatMoney(summary.commissionSavings.platformCost)}
-                    </SavingsValue>
+                    <SavingsValue>{summary.tableHighlight.completedCount}</SavingsValue>
                   </SavingsRow>
                   <SavingsRow>
                     <SavingsKey>{t('insights.savingsNet')}</SavingsKey>
                     <SavingsValue>
-                      {formatMoney(summary.commissionSavings.netSaving)}
+                      {formatMoney(summary.tableHighlight.averageOrderValue)}
                     </SavingsValue>
+                  </SavingsRow>
+                  <SavingsRow>
+                    <SavingsKey>{t('insights.savingsGuests')}</SavingsKey>
+                    <SavingsValue>{summary.tableHighlight.uniqueGuests}</SavingsValue>
+                  </SavingsRow>
+                  <SavingsRow>
+                    <SavingsKey>{t('insights.savingsReturning')}</SavingsKey>
+                    <SavingsValue>{summary.tableHighlight.returningGuests}</SavingsValue>
                   </SavingsRow>
                 </SavingsRows>
               </SavingsCard>

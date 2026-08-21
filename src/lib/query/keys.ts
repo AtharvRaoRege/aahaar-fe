@@ -34,6 +34,8 @@ export const queryKeys = {
     ['publish-readiness', restaurantId] as const,
   offers: (restaurantId: string) => ['offers', restaurantId] as const,
   publicOffers: (slug: string) => ['public', 'offers', slug] as const,
+  couponVerify: (slug: string, code: string, cartKey: string) =>
+    ['public', 'offers', 'verify', slug, code, cartKey] as const,
   publicReviewSummary: (slug: string) =>
     ['public', 'reviews', 'summary', slug] as const,
   upsells: (menuItemId: string) => ['upsells', menuItemId] as const,

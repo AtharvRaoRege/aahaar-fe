@@ -5,18 +5,16 @@ import { QrSlipArt, TableSceneArt } from '@/components/landing/art'
 import { LineIcon } from '@/components/landing/icons'
 import { Blob, Doodle, GhostType } from '@/components/landing/kit/styled'
 
-import { QR_CELLS, useScanLoop } from './helper'
+import { useAppTourSrc } from './helper'
 import {
+  AppScreen,
   Hero,
   HeroCta,
   HeroEyebrow,
   HeroLogo,
   HeroTag,
-  MenuPop,
   Phone,
-  QrGrid,
   QrSlip,
-  ScanBeam,
   ScanRig,
   TableScene,
   Title,
@@ -30,7 +28,7 @@ interface HeroScanProps {
 
 export function HeroScan({ id, isAuthenticated, onPrimary }: HeroScanProps) {
   const { t } = useTranslation('common')
-  const done = useScanLoop()
+  const tourSrc = useAppTourSrc()
 
   return (
     <Hero id={id}>
@@ -73,17 +71,14 @@ export function HeroScan({ id, isAuthenticated, onPrimary }: HeroScanProps) {
           <TableSceneArt />
         </TableScene>
         <Phone>
-          <QrGrid $done={done} aria-hidden>
-            {QR_CELLS.map((cell) => (
-              <span key={cell} />
-            ))}
-          </QrGrid>
-          <ScanBeam $done={done} aria-hidden />
-          <MenuPop $done={done} aria-hidden>
-            <span />
-            <span />
-            <span />
-          </MenuPop>
+          <AppScreen
+            src={tourSrc}
+            alt={t('landing.hero.phoneAlt')}
+            width={390}
+            height={844}
+            decoding="async"
+            fetchPriority="high"
+          />
         </Phone>
         <QrSlip aria-hidden>
           <QrSlipArt />

@@ -1,4 +1,4 @@
-import styled from 'styled-components'
+import styled, { keyframes } from 'styled-components'
 
 import { fontSizes, palette, radii, shadows, spacing } from '@/styles/theme'
 
@@ -114,6 +114,172 @@ export const NotesWrap = styled.div`
   ${({ theme }) => theme.media.xl} {
     padding: 0 ${spacing['3xl']} ${spacing['2xl']};
   }
+`
+
+export const CouponWrap = styled.div`
+  position: relative;
+  display: grid;
+  gap: ${spacing.sm};
+  padding: 0 ${spacing.lg} ${spacing.lg};
+
+  ${({ theme }) => theme.media.sm} {
+    padding: 0 ${spacing.xl} ${spacing.lg};
+  }
+
+  ${({ theme }) => theme.media.md} {
+    max-width: 640px;
+    width: 100%;
+    margin-inline: auto;
+    padding: 0 ${spacing['2xl']} ${spacing.xl};
+  }
+
+  ${({ theme }) => theme.media.lg} {
+    padding: 0 ${spacing['2xl']} ${spacing.xl};
+  }
+
+  ${({ theme }) => theme.media.xl} {
+    padding: 0 ${spacing['3xl']} ${spacing['2xl']};
+  }
+`
+
+export const CouponRow = styled.div`
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: ${spacing.sm};
+  align-items: end;
+`
+
+export const CouponSuccess = styled.p`
+  margin: 0;
+  padding: ${spacing.md} ${spacing.lg};
+  border-radius: ${radii.md};
+  background: ${palette.mangoWash};
+  border: 1.5px solid ${palette.mangoDark};
+  color: ${palette.ink};
+  font-size: ${fontSizes.label};
+  font-weight: 700;
+`
+
+export const CouponError = styled.p`
+  margin: 0;
+  color: ${palette.chili};
+  font-size: ${fontSizes.labelSm};
+  font-weight: 600;
+`
+
+export const DiscountLine = styled.div`
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  font-weight: 700;
+  font-size: ${fontSizes.label};
+  color: ${palette.tomato};
+`
+
+const confettiFall = keyframes`
+  0% {
+    transform: translate3d(0, -12vh, 0) rotate(0deg) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translate3d(var(--dx), 110vh, 0) rotate(720deg) scale(0.85);
+    opacity: 0.15;
+  }
+`
+
+const celebrateIn = keyframes`
+  0% { opacity: 0; }
+  12% { opacity: 1; }
+  75% { opacity: 1; }
+  100% { opacity: 0; }
+`
+
+const popMessage = keyframes`
+  0% { transform: scale(0.72); opacity: 0; }
+  18% { transform: scale(1.08); opacity: 1; }
+  32% { transform: scale(1); opacity: 1; }
+  78% { transform: scale(1); opacity: 1; }
+  100% { transform: scale(0.96); opacity: 0; }
+`
+
+export const CelebrateLayer = styled.div`
+  pointer-events: none;
+  position: fixed;
+  inset: 0;
+  z-index: ${({ theme }) => theme.zIndex.toast};
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+  background: rgba(28, 25, 22, 0.42);
+  animation: ${celebrateIn} 2.6s ease-out both;
+`
+
+export const CelebrateMessage = styled.div`
+  position: relative;
+  z-index: 2;
+  display: grid;
+  gap: ${spacing.sm};
+  justify-items: center;
+  max-width: min(90vw, 420px);
+  padding: ${spacing.xl} ${spacing['2xl']};
+  text-align: center;
+  background: ${palette.cream};
+  border: 2.5px solid ${palette.ink};
+  border-radius: ${radii.lg};
+  box-shadow: ${shadows.xl};
+  animation: ${popMessage} 2.6s ease-out both;
+`
+
+export const CelebrateKicker = styled.p`
+  margin: 0;
+  font-size: ${fontSizes.labelSm};
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: ${palette.tomato};
+`
+
+export const CelebrateTitle = styled.p`
+  margin: 0;
+  font-size: ${fontSizes.h1};
+  font-weight: 900;
+  letter-spacing: -0.04em;
+  line-height: 1.05;
+  color: ${palette.ink};
+`
+
+export const CelebrateSave = styled.p`
+  margin: 0;
+  font-size: ${fontSizes.h2};
+  font-weight: 800;
+  color: ${palette.tomato};
+`
+
+export const ConfettiBit = styled.span<{
+  $delay: number
+  $left: number
+  $dx: number
+  $tone: number
+  $size: number
+  $duration: number
+}>`
+  position: absolute;
+  top: -8vh;
+  left: ${({ $left }) => `${$left}%`};
+  width: ${({ $size }) => `${$size}px`};
+  height: ${({ $size }) => `${Math.round($size * 1.35)}px`};
+  border-radius: ${({ $tone }) => ($tone % 4 === 0 ? '50%' : '3px')};
+  background: ${({ $tone }) =>
+    $tone % 4 === 0
+      ? palette.mango
+      : $tone % 4 === 1
+        ? palette.tomato
+        : $tone % 4 === 2
+          ? palette.chili
+          : palette.mangoDark};
+  --dx: ${({ $dx }) => `${$dx}px`};
+  animation: ${confettiFall} ${({ $duration }) => `${$duration}ms`} linear
+    ${({ $delay }) => `${$delay}ms`} both;
 `
 
 export const Footer = styled.div`

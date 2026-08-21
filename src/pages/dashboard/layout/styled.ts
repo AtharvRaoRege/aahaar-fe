@@ -90,6 +90,59 @@ export const NavLinkItem = styled.span<{ $active: boolean }>`
   }
 `
 
+export const NavLabel = styled.span`
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+`
+
+export const NavBadge = styled.span<{ $onAccent?: boolean }>`
+  flex-shrink: 0;
+  min-width: 1.25rem;
+  height: 1.25rem;
+  padding: 0 6px;
+  display: inline-grid;
+  place-items: center;
+  border-radius: ${radii.full};
+  background: ${({ $onAccent }) => ($onAccent ? palette.white : palette.tomato)};
+  color: ${({ $onAccent }) => ($onAccent ? palette.tomato : palette.white)};
+  font-size: ${fontSizes.micro};
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.02em;
+`
+
+export const IconSlot = styled.span`
+  position: relative;
+  display: inline-grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  flex-shrink: 0;
+`
+
+export const IconBadge = styled.span`
+  position: absolute;
+  top: -5px;
+  right: -8px;
+  z-index: 1;
+  min-width: 1.05rem;
+  height: 1.05rem;
+  padding: 0 4px;
+  display: inline-grid;
+  place-items: center;
+  border-radius: ${radii.full};
+  background: ${palette.tomato};
+  color: ${palette.white};
+  border: 1.5px solid ${palette.cream};
+  font-size: 0.625rem;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.02em;
+`
+
 export const SidebarFoot = styled.div`
   margin-top: auto;
   padding: 20px 0 4px;
@@ -233,6 +286,15 @@ export const BottomLink = styled.span<{ $active: boolean }>`
     flex-shrink: 0;
     color: ${({ $active }) => ($active ? palette.white : 'currentColor')};
     stroke-width: ${({ $active }) => ($active ? 1.75 : 1.5)};
+  }
+
+  ${IconSlot} svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  ${IconBadge} {
+    border-color: ${({ $active }) => ($active ? palette.mango : palette.cream)};
   }
 
   &:active {

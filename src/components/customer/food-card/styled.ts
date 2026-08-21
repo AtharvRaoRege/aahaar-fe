@@ -1,4 +1,4 @@
-import styled, { css } from 'styled-components'
+import styled from 'styled-components'
 
 import { focusRing, neoLiftOnHover } from '@/styles/mixins'
 import { fontSizes, fontWeights, palette, radii, shadows, spacing } from '@/styles/theme'
@@ -17,6 +17,7 @@ export const Tag = styled.span<{ $tone: 'sold' | 'best' }>`
 
 export const MetaRow = styled.div`
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: ${spacing.sm};
   min-width: 0;
@@ -75,22 +76,6 @@ export const PriceBlock = styled.div`
   flex-direction: column;
   gap: 1px;
   min-width: 0;
-`
-
-export const ActionSlot = styled.div<{ $hasImage: boolean }>`
-  flex-shrink: 0;
-  padding-right: ${({ $hasImage }) => ($hasImage ? spacing.md : '0')};
-
-  ${({ theme }) => theme.media.md} {
-    padding-right: 0;
-  }
-`
-
-export const FootRow = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: ${spacing.sm};
   margin-top: auto;
   padding-top: ${spacing.sm};
 `
@@ -107,90 +92,16 @@ export const TitleHit = styled.button`
   cursor: pointer;
 `
 
-export const ImageButton = styled.button`
-  ${focusRing};
-  position: relative;
-  display: block;
-  align-self: stretch;
-  width: 104px;
-  overflow: hidden;
-  background: ${palette.cream};
-  border: none;
-  cursor: pointer;
-
-  img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-
-  ${({ theme }) => theme.media.sm} {
-    width: 124px;
-  }
-
-  ${({ theme }) => theme.media.md} {
-    order: -1;
-    width: 100%;
-    aspect-ratio: 4 / 3;
-  }
-`
-
-/**
- * A dish without a photo does not need a stacked card: the name is one line and
- * the price and Add button can sit beside it. Laying it out as a single row keeps
- * these cards about a third shorter, so more of the menu is on screen — which is
- * the whole point of the phone view.
- */
-const compact = css`
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  align-items: center;
-  column-gap: ${spacing.md};
-
-  ${FootRow} {
-    flex-direction: column;
-    align-items: flex-end;
-    justify-content: center;
-    gap: ${spacing.xs};
-    margin-top: 0;
-    padding-top: 0;
-  }
-
-  ${PriceBlock} {
-    align-items: flex-end;
-  }
-`
-
-export const Body = styled.div<{ $hasImage: boolean }>`
+export const Body = styled.div`
   display: flex;
   flex-direction: column;
   gap: ${spacing.xs};
-  /* With a thumb alongside, the grid gap supplies the right inset; without one
-     the text would otherwise run to the card edge. */
-  padding: ${spacing.md} ${({ $hasImage }) => ($hasImage ? '0' : spacing.md)} ${spacing.md}
-    ${spacing.md};
   min-width: 0;
-
-  ${({ $hasImage }) => !$hasImage && compact};
+  padding: ${spacing.md} 0 ${spacing.md} ${spacing.md};
 
   ${({ theme }) => theme.media.md} {
-    display: flex;
-    flex-direction: column;
-    align-items: stretch;
     padding: ${spacing.lg};
     gap: ${spacing.sm};
-
-    ${FootRow} {
-      flex-direction: row;
-      align-items: center;
-      justify-content: space-between;
-      margin-top: auto;
-      padding-top: ${spacing.sm};
-    }
-
-    ${PriceBlock} {
-      align-items: flex-start;
-    }
   }
 
   ${({ theme }) => theme.media.xl} {
@@ -198,30 +109,98 @@ export const Body = styled.div<{ $hasImage: boolean }>`
   }
 `
 
-/**
- * One dish, two layouts.
- *
- * On a phone the card runs horizontally — text left, thumb or price right — so
- * more of the menu fits on screen. From the two-column breakpoint up it becomes a
- * vertical card and the photo leads.
- */
-export const Wrap = styled.article<{ $unavailable: boolean; $hasImage: boolean }>`
+export const Media = styled.div`
+  position: relative;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding: ${spacing.md} ${spacing.md} ${spacing.md} 0;
+  width: 118px;
+
+  ${({ theme }) => theme.media.sm} {
+    width: 132px;
+  }
+
+  ${({ theme }) => theme.media.md} {
+    order: -1;
+    width: 100%;
+    padding: 0;
+  }
+`
+
+export const Thumb = styled.button<{ $empty: boolean }>`
+  ${focusRing};
+  position: relative;
   display: grid;
-  grid-template-columns: ${({ $hasImage }) =>
-    $hasImage ? 'minmax(0, 1fr) auto' : 'minmax(0, 1fr)'};
-  gap: ${({ $hasImage }) => ($hasImage ? spacing.md : '0')};
+  place-items: center;
+  width: 100%;
+  aspect-ratio: 1;
+  overflow: hidden;
+  padding: 0;
+  border: none;
+  border-radius: ${radii.md};
+  background: ${({ $empty }) => ($empty ? palette.cream : palette.line)};
+  cursor: pointer;
+  box-shadow: ${shadows.sm};
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  ${({ theme }) => theme.media.md} {
+    aspect-ratio: 4 / 3;
+    border-radius: ${radii.lg} ${radii.lg} 0 0;
+    box-shadow: none;
+  }
+`
+
+export const ThumbFallback = styled.span`
+  display: grid;
+  place-items: center;
+  color: ${palette.inkSoft};
+  opacity: 0.55;
+
+  svg {
+    width: 36px;
+    height: 36px;
+  }
+`
+
+export const ActionSlot = styled.div`
+  position: absolute;
+  left: 50%;
+  bottom: ${spacing.sm};
+  z-index: 1;
+  transform: translateX(-50%);
+  display: flex;
+  justify-content: center;
+  width: max-content;
+  max-width: calc(100% - ${spacing.sm});
+
+  ${({ theme }) => theme.media.md} {
+    bottom: ${spacing.md};
+  }
+`
+
+export const Wrap = styled.article<{ $unavailable: boolean }>`
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: stretch;
   min-width: 0;
   overflow: hidden;
   background: ${palette.white};
   border: 1px solid ${palette.line};
-  border-radius: ${radii.md};
+  border-radius: ${radii.lg};
   box-shadow: ${shadows.card};
   opacity: ${({ $unavailable }) => ($unavailable ? 0.55 : 1)};
   ${neoLiftOnHover};
 
   ${({ theme }) => theme.media.md} {
     grid-template-columns: minmax(0, 1fr);
-    gap: 0;
     box-shadow: ${shadows.md};
   }
 `

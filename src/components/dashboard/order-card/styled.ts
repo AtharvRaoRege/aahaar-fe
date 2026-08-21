@@ -6,9 +6,9 @@ import { fontSizes, palette, radii, shadows, spacing } from '@/styles/theme'
 export const Card = styled.article<{ $fresh?: boolean; $pending?: boolean }>`
   display: flex;
   flex-direction: column;
-  gap: ${spacing.md};
+  gap: ${spacing.sm};
   min-width: 0;
-  padding: ${spacing.lg};
+  padding: ${spacing.md};
   background: ${palette.white};
   border: 1px solid ${({ $pending, theme }) => ($pending ? theme.colors.primary : palette.line)};
   border-radius: ${radii.md};
@@ -26,21 +26,21 @@ export const Card = styled.article<{ $fresh?: boolean; $pending?: boolean }>`
     `}
 
   ${({ theme }) => theme.media.sm} {
-    padding: ${spacing.lg} ${spacing.xl};
-    gap: ${spacing.md};
+    padding: ${spacing.md} ${spacing.lg};
+    gap: ${spacing.sm};
   }
 
   ${({ theme }) => theme.media.md} {
-    padding: ${spacing.xl};
-    gap: ${spacing.lg};
+    padding: ${spacing.lg};
+    gap: ${spacing.md};
   }
 
   ${({ theme }) => theme.media.lg} {
-    padding: ${spacing.xl};
+    padding: ${spacing.lg};
   }
 
   ${({ theme }) => theme.media.xl} {
-    padding: ${spacing.xl} ${spacing['2xl']};
+    padding: ${spacing.lg} ${spacing.xl};
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -52,31 +52,28 @@ export const Top = styled.div`
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  gap: ${spacing.md};
+  gap: ${spacing.sm};
   min-width: 0;
 `
 
 export const Number = styled.h3`
   margin: 0;
-  font-size: ${fontSizes.h3};
+  font-size: ${fontSizes.subheading};
   font-weight: 800;
   letter-spacing: -0.03em;
   color: ${palette.ink};
+  line-height: 1.15;
 
-  ${({ theme }) => theme.media.sm} {
+  ${({ theme }) => theme.media.md} {
     font-size: ${fontSizes.h3};
   }
 
-  ${({ theme }) => theme.media.md} {
-    font-size: ${fontSizes.h2};
-  }
-
   ${({ theme }) => theme.media.lg} {
-    font-size: ${fontSizes.h2};
+    font-size: ${fontSizes.h3};
   }
 
   ${({ theme }) => theme.media.xl} {
-    font-size: ${fontSizes.h2};
+    font-size: ${fontSizes.h3};
   }
 `
 
@@ -89,30 +86,26 @@ export const Guest = styled.div`
 `
 
 export const GuestName = styled.span`
-  font-size: ${fontSizes.body};
+  font-size: ${fontSizes.label};
   font-weight: 700;
   color: ${palette.ink};
   overflow-wrap: anywhere;
 
-  ${({ theme }) => theme.media.sm} {
+  ${({ theme }) => theme.media.md} {
     font-size: ${fontSizes.body};
   }
 
-  ${({ theme }) => theme.media.md} {
-    font-size: ${fontSizes.bodyLg};
-  }
-
   ${({ theme }) => theme.media.lg} {
-    font-size: ${fontSizes.bodyLg};
+    font-size: ${fontSizes.body};
   }
 
   ${({ theme }) => theme.media.xl} {
-    font-size: ${fontSizes.bodyLg};
+    font-size: ${fontSizes.body};
   }
 `
 
 export const Phone = styled.span`
-  font-size: ${fontSizes.label};
+  font-size: ${fontSizes.labelSm};
   font-weight: 600;
   color: ${palette.inkSoft};
   white-space: nowrap;
@@ -121,36 +114,32 @@ export const Phone = styled.span`
     content: '· ';
   }
 
-  ${({ theme }) => theme.media.sm} {
+  ${({ theme }) => theme.media.md} {
     font-size: ${fontSizes.label};
   }
 
-  ${({ theme }) => theme.media.md} {
-    font-size: ${fontSizes.body};
-  }
-
   ${({ theme }) => theme.media.lg} {
-    font-size: ${fontSizes.body};
+    font-size: ${fontSizes.label};
   }
 
   ${({ theme }) => theme.media.xl} {
-    font-size: ${fontSizes.body};
+    font-size: ${fontSizes.label};
   }
 `
 
 export const Meta = styled.p`
   margin: 0;
-  font-size: ${fontSizes.labelSm};
+  font-size: ${fontSizes.micro};
   font-weight: 600;
   letter-spacing: 0.02em;
   color: ${palette.inkSoft};
 
   ${({ theme }) => theme.media.sm} {
-    font-size: ${fontSizes.label};
+    font-size: ${fontSizes.labelSm};
   }
 
   ${({ theme }) => theme.media.md} {
-    font-size: ${fontSizes.label};
+    font-size: ${fontSizes.labelSm};
   }
 
   ${({ theme }) => theme.media.lg} {
@@ -165,50 +154,50 @@ export const Meta = styled.p`
 export const Items = styled.ul`
   display: flex;
   flex-direction: column;
-  gap: ${spacing.sm};
+  gap: ${spacing.xs};
   margin: 0;
   padding: 0;
   list-style: none;
 
-  ${({ theme }) => theme.media.sm} {
+  ${({ theme }) => theme.media.md} {
     gap: ${spacing.sm};
   }
 
-  ${({ theme }) => theme.media.md} {
-    gap: ${spacing.md};
-  }
-
   ${({ theme }) => theme.media.lg} {
-    gap: ${spacing.md};
+    gap: ${spacing.sm};
   }
 
   ${({ theme }) => theme.media.xl} {
-    gap: ${spacing.md};
+    gap: ${spacing.sm};
   }
 `
 
 export const Item = styled.li`
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 1px;
 `
 
 export const ItemName = styled.span`
-  font-size: ${fontSizes.body};
+  font-size: ${fontSizes.label};
   font-weight: 700;
   color: ${palette.ink};
   overflow-wrap: anywhere;
+
+  ${({ theme }) => theme.media.md} {
+    font-size: ${fontSizes.body};
+  }
 `
 
 export const ItemExtras = styled.span`
-  font-size: ${fontSizes.label};
+  font-size: ${fontSizes.labelSm};
   font-weight: 500;
   color: ${palette.inkSoft};
   overflow-wrap: anywhere;
 `
 
 export const ItemNotes = styled.span`
-  font-size: ${fontSizes.label};
+  font-size: ${fontSizes.labelSm};
   font-weight: 600;
   color: ${palette.tomato};
   overflow-wrap: anywhere;
@@ -217,69 +206,65 @@ export const ItemNotes = styled.span`
 export const TicketNote = styled.p`
   margin: 0;
   overflow-wrap: anywhere;
-  padding: ${spacing.sm} ${spacing.md};
+  padding: ${spacing.xs} ${spacing.sm};
   background: ${palette.mangoWash};
   border-radius: ${radii.sm};
-  font-size: ${fontSizes.label};
+  font-size: ${fontSizes.labelSm};
   font-weight: 600;
   color: ${palette.ink};
 
-  ${({ theme }) => theme.media.sm} {
-    padding: ${spacing.sm} ${spacing.md};
-  }
-
   ${({ theme }) => theme.media.md} {
-    padding: ${spacing.md};
-    font-size: ${fontSizes.body};
+    padding: ${spacing.sm} ${spacing.md};
+    font-size: ${fontSizes.label};
   }
 
   ${({ theme }) => theme.media.lg} {
-    padding: ${spacing.md};
+    padding: ${spacing.sm} ${spacing.md};
   }
 
   ${({ theme }) => theme.media.xl} {
-    padding: ${spacing.md} ${spacing.lg};
+    padding: ${spacing.sm} ${spacing.md};
   }
 `
 
 export const Total = styled.p`
   margin: 0;
-  font-size: ${fontSizes.bodyLg};
+  font-size: ${fontSizes.body};
   font-weight: 800;
   color: ${palette.ink};
 
   ${({ theme }) => theme.media.md} {
-    font-size: ${fontSizes.h3};
+    font-size: ${fontSizes.bodyLg};
   }
 
   ${({ theme }) => theme.media.lg} {
-    font-size: ${fontSizes.h3};
+    font-size: ${fontSizes.bodyLg};
   }
 
   ${({ theme }) => theme.media.xl} {
-    font-size: ${fontSizes.h3};
+    font-size: ${fontSizes.bodyLg};
   }
 `
 
 export const Actions = styled.div`
   display: flex;
   flex-wrap: wrap;
-  gap: ${spacing.sm};
-  margin-top: ${spacing.xs};
+  gap: ${spacing.xs};
+  margin-top: 0;
 
   ${({ theme }) => theme.media.sm} {
     gap: ${spacing.sm};
   }
 
   ${({ theme }) => theme.media.md} {
-    gap: ${spacing.md};
+    gap: ${spacing.sm};
   }
 
   ${({ theme }) => theme.media.lg} {
-    gap: ${spacing.md};
+    gap: ${spacing.sm};
   }
 
   ${({ theme }) => theme.media.xl} {
-    gap: ${spacing.md};
+    gap: ${spacing.sm};
   }
 `

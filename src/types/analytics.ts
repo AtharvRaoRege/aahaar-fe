@@ -30,13 +30,13 @@ export interface HourPoint {
   count: number
 }
 
-export interface CommissionSavings {
-  directOrderRevenue: number
-  commissionRate: number
-  commissionAvoided: number
-  platformCost: number
-  netSaving: number
+export interface TableHighlight {
   orderCount: number
+  completedCount: number
+  revenue: number
+  averageOrderValue: number
+  uniqueGuests: number
+  returningGuests: number
 }
 
 export interface UpsellImpact {
@@ -63,7 +63,7 @@ export interface AnalyticsSummary {
   offerViews: NamedCount[]
   peakHours: HourPoint[]
   scansByDay: DayPoint[]
-  commissionSavings: CommissionSavings | null
+  tableHighlight: TableHighlight | null
   upsellImpact: UpsellImpact | null
 }
 

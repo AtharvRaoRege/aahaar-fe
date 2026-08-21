@@ -6,12 +6,15 @@ import { freshFor } from '@/lib/query/cache'
 import { queryKeys } from '@/lib/query/keys'
 import type { PublicOffer } from '@/types/offer'
 
-/** Shorthand shown on the chip: "20% off", "₹100 off", or the offer type. */
-export function offerBadge(offer: PublicOffer): { key: string; value: number } | null {
-  if (offer.value === null) return null
-  if (offer.kind === 'PERCENT') return { key: 'offers.percentOff', value: offer.value }
-  if (offer.kind === 'FLAT') return { key: 'offers.flatOff', value: offer.value }
-  return null
+export function offerHeadline(offer: PublicOffer): { key: string; value?: number } {
+  if (offer.kind === 'PERCENT' && offer.value !== null) {
+    return { key: 'offers.percentOff', value: offer.value }
+  }
+  if (offer.kind === 'FLAT' && offer.value !== null) {
+    return { key: 'offers.flatOff', value: offer.value }
+  }
+  if (offer.kind === 'BOGO') return { key: 'offers.bogo' }
+  return { key: 'offers.special' }
 }
 
 export function endsLabel(offer: PublicOffer): { key: string; date: string } | null {
@@ -27,10 +30,7 @@ export function endsLabel(offer: PublicOffer): { key: string; date: string } | n
   }
 }
 
-export function useOfferStrip(
-  slug: string,
-  onView: (offerId: string) => void,
-) {
+export function useOfferStrip(slug: string, onView: (offerId: string) => void) {
   const [active, setActive] = useState<PublicOffer | null>(null)
 
   const query = useQuery({

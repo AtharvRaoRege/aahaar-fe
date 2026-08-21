@@ -37,6 +37,7 @@ export const common = {
       tag: 'No app. No login. No commission. No tears. 😌✨',
       ghostOne: 'SCAN',
       ghostTwo: 'ORDER',
+      phoneAlt: 'Aahaar guest menu, offers, wait game, insights, and settings on a phone',
     },
 
     marqueeTop: ['SCAN 📷', 'ORDER 🧾', 'SERVED 🍽️', 'NO APP 🙅', 'ZERO CUT 💸'],

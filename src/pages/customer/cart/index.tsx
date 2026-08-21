@@ -1,10 +1,14 @@
 import { ArrowLeft } from 'lucide-react'
+import { createPortal } from 'react-dom'
+import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { CartLineItem } from '@/components/customer/cart-line-item'
 import { UpsellRow } from '@/components/customer/upsell-row'
+import { WaitGame } from '@/components/customer/wait-game'
 import { Button } from '@/components/global/button'
 import { EmptyState } from '@/components/global/empty-state'
+import { TextField } from '@/components/global/field'
 import { IconButton } from '@/components/global/icon-button'
 import { TextArea } from '@/components/global/field'
 import { useCustomerContext } from '@/hooks/customer/context'
@@ -12,6 +16,17 @@ import { formatMoney } from '@/utils/format'
 
 import { useCartPage } from './helper'
 import {
+  CelebrateKicker,
+  CelebrateLayer,
+  CelebrateMessage,
+  CelebrateSave,
+  CelebrateTitle,
+  ConfettiBit,
+  CouponError,
+  CouponRow,
+  CouponSuccess,
+  CouponWrap,
+  DiscountLine,
   EmptyWrap,
   ErrorBanner,
   Footer,
@@ -28,11 +43,22 @@ import {
   TotalValue,
 } from './styled'
 
+const CONFETTI = Array.from({ length: 72 }, (_, index) => ({
+  id: index,
+  delay: (index % 12) * 70,
+  left: (index * 7.3) % 100,
+  dx: ((index % 9) - 4) * 28,
+  tone: index,
+  size: 10 + (index % 5) * 4,
+  duration: 1800 + (index % 6) * 220,
+}))
+
 export function CartPage() {
   const { t } = useTranslation(['customer', 'common'])
   const { restaurant, slug, tableNumber, canOrder } = useCustomerContext()
   const page = useCartPage(slug, restaurant.id, tableNumber)
   const adding = Boolean(page.openOrder)
+  const [gameOpen, setGameOpen] = useState(false)
 
   if (!canOrder) {
     return (
@@ -73,12 +99,35 @@ export function CartPage() {
             emoji="🍽️"
             title={t('cart.empty')}
             hint={adding ? t('cart.emptyOpenHint') : t('cart.emptyHint')}
-            action={<Button onClick={page.goMenu}>{t('cart.browse')}</Button>}
+            action={
+              <>
+                <Button onClick={page.goMenu}>{t('cart.browse')}</Button>
+                {adding && (
+                  <Button variant="outline" onClick={() => setGameOpen(true)}>
+                    {t('game.playWhileWait')}
+                  </Button>
+                )}
+              </>
+            }
           />
         </EmptyWrap>
+        {adding && (
+          <WaitGame open={gameOpen} onOpenChange={setGameOpen} onExit={() => setGameOpen(false)} />
+        )}
       </Page>
     )
   }
+
+  const couponMessage =
+    page.couponError === 'invalid'
+      ? t('cart.couponInvalid')
+      : page.couponError === 'minItems'
+        ? t('cart.couponMinItems')
+        : page.couponError === 'minOrder'
+          ? t('cart.couponMinOrder')
+          : page.couponError === 'notApplicable' || page.couponError === 'noValue'
+            ? t('cart.couponNotApplicable')
+            : null
 
   return (
     <Page>
@@ -92,6 +141,17 @@ export function CartPage() {
       </Header>
 
       {adding && <Hint>{t('cart.addToOpen', { number: page.openOrder?.orderNumber })}</Hint>}
+
+      {adding && (
+        <>
+          <NotesWrap>
+            <Button variant="outline" fullWidth onClick={() => setGameOpen(true)}>
+              {t('game.playWhileWait')}
+            </Button>
+          </NotesWrap>
+          <WaitGame open={gameOpen} onOpenChange={setGameOpen} onExit={() => setGameOpen(false)} />
+        </>
+      )}
 
       <List>
         {page.lines.map((line) => (
@@ -114,6 +174,70 @@ export function CartPage() {
         isInCart={page.isInCart}
         onAdd={(suggestion) => page.addSuggestion(suggestion.menuItemId)}
       />
+
+      {!adding && (
+        <CouponWrap>
+          <CouponRow>
+            <TextField
+              label={t('cart.couponLabel')}
+              placeholder={t('cart.couponPlaceholder')}
+              value={page.couponInput}
+              onChange={(event) => page.setCouponInput(event.target.value.toUpperCase())}
+              autoCapitalize="characters"
+              disabled={Boolean(page.appliedCode)}
+            />
+            {page.appliedCode ? (
+              <Button type="button" variant="outline" onClick={page.clearCoupon}>
+                {t('cart.couponClear')}
+              </Button>
+            ) : (
+              <Button
+                type="button"
+                onClick={page.applyCoupon}
+                loading={page.applyingCoupon}
+              >
+                {t('cart.couponApply')}
+              </Button>
+            )}
+          </CouponRow>
+          {page.appliedCode && page.appliedOfferTitle && (
+            <CouponSuccess>
+              {t('cart.couponApplied', {
+                title: page.appliedOfferTitle,
+                amount: formatMoney(page.discount, restaurant.currency),
+              })}
+            </CouponSuccess>
+          )}
+          {couponMessage && <CouponError>{couponMessage}</CouponError>}
+        </CouponWrap>
+      )}
+
+      {page.celebrating &&
+        createPortal(
+          <CelebrateLayer aria-live="polite">
+            {CONFETTI.map((bit) => (
+              <ConfettiBit
+                key={bit.id}
+                $delay={bit.delay}
+                $left={bit.left}
+                $dx={bit.dx}
+                $tone={bit.tone}
+                $size={bit.size}
+                $duration={bit.duration}
+              />
+            ))}
+            <CelebrateMessage>
+              <CelebrateKicker>{t('cart.couponCelebrate')}</CelebrateKicker>
+              <CelebrateTitle>{page.appliedOfferTitle ?? t('cart.couponCelebrate')}</CelebrateTitle>
+              <CelebrateSave>
+                {t('cart.couponCelebrateSave', {
+                  amount: formatMoney(page.discount, restaurant.currency),
+                })}
+              </CelebrateSave>
+            </CelebrateMessage>
+          </CelebrateLayer>,
+          document.body,
+        )}
 
       <NotesWrap>
         <TextArea
@@ -138,9 +262,15 @@ export function CartPage() {
               <span>{t('common:labels.subtotal')}</span>
               <span>{formatMoney(page.subtotal, restaurant.currency)}</span>
             </TotalLine>
+            {page.discount > 0 && (
+              <DiscountLine>
+                <span>{t('cart.discount')}</span>
+                <span>-{formatMoney(page.discount, restaurant.currency)}</span>
+              </DiscountLine>
+            )}
             <TotalLine $emphasis>
               <span>{t('common:labels.total')}</span>
-              <TotalValue>{formatMoney(page.subtotal, restaurant.currency)}</TotalValue>
+              <TotalValue>{formatMoney(page.total, restaurant.currency)}</TotalValue>
             </TotalLine>
             <PayHint>{t('cart.payHint')}</PayHint>
           </Totals>

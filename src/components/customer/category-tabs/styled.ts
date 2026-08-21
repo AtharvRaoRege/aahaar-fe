@@ -58,6 +58,7 @@ export const Scroller = styled.div`
 
 export const Tab = styled.button<{ $active: boolean }>`
   flex-shrink: 0;
+  max-width: min(200px, 70vw);
   min-height: 36px;
   padding: 0 ${spacing.md};
   background: ${({ $active, theme }) => ($active ? theme.colors.primary : palette.white)};
@@ -70,6 +71,8 @@ export const Tab = styled.button<{ $active: boolean }>`
   font-size: ${fontSizes.labelSm};
   letter-spacing: 0.01em;
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
   transition: transform ${transitions.fast}, background ${transitions.fast}, color ${transitions.fast};
 
   &:active {
@@ -80,22 +83,26 @@ export const Tab = styled.button<{ $active: boolean }>`
     min-height: 38px;
     padding: 0 ${spacing.md};
     font-size: ${fontSizes.label};
+    max-width: min(220px, 55vw);
   }
 
   ${({ theme }) => theme.media.md} {
     min-height: 40px;
     padding: 0 ${spacing.lg};
     font-size: ${fontSizes.label};
+    max-width: 240px;
   }
 
   ${({ theme }) => theme.media.lg} {
     min-height: 40px;
     padding: 0 ${spacing.lg};
+    max-width: 260px;
   }
 
   ${({ theme }) => theme.media.xl} {
     min-height: 42px;
     padding: 0 ${spacing.lg};
+    max-width: 280px;
   }
 
   @media (prefers-reduced-motion: reduce) {

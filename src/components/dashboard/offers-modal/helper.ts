@@ -26,6 +26,8 @@ export interface OfferFormState {
   terms: string
   couponCode: string
   value: string
+  minItemCount: string
+  minOrderAmount: string
   startsAt: string
   endsAt: string
   isActive: boolean
@@ -38,6 +40,8 @@ const EMPTY_FORM: OfferFormState = {
   terms: '',
   couponCode: '',
   value: '',
+  minItemCount: '1',
+  minOrderAmount: '0',
   startsAt: '',
   endsAt: '',
   isActive: true,
@@ -59,6 +63,8 @@ function toIso(value: string): string | null {
 
 function toPayload(form: OfferFormState): OfferPayload {
   const numeric = Number.parseFloat(form.value)
+  const minItems = Number.parseInt(form.minItemCount, 10)
+  const minOrder = Number.parseFloat(form.minOrderAmount)
   return {
     kind: form.kind,
     title: form.title.trim(),
@@ -66,6 +72,8 @@ function toPayload(form: OfferFormState): OfferPayload {
     terms: form.terms.trim() || null,
     couponCode: form.couponCode.trim().toUpperCase() || null,
     value: Number.isFinite(numeric) ? numeric : null,
+    minItemCount: Number.isFinite(minItems) && minItems >= 1 ? minItems : 1,
+    minOrderAmount: Number.isFinite(minOrder) && minOrder >= 0 ? minOrder : 0,
     startsAt: toIso(form.startsAt),
     endsAt: toIso(form.endsAt),
     isActive: form.isActive,
@@ -80,6 +88,8 @@ function toForm(offer: Offer): OfferFormState {
     terms: offer.terms ?? '',
     couponCode: offer.couponCode ?? '',
     value: offer.value === null ? '' : String(offer.value),
+    minItemCount: String(offer.minItemCount ?? 1),
+    minOrderAmount: String(offer.minOrderAmount ?? 0),
     startsAt: toLocalInput(offer.startsAt),
     endsAt: toLocalInput(offer.endsAt),
     isActive: offer.isActive,

@@ -92,6 +92,31 @@ export const HeadRow = styled.div`
   gap: ${spacing.sm};
 `
 
+export const TitleWithIcon = styled.div`
+  display: flex;
+  align-items: center;
+  gap: ${spacing.sm};
+  min-width: 0;
+`
+
+export const OfferIcon = styled.span`
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+  border-radius: ${radii.md};
+  background: ${palette.mangoWash};
+  color: ${palette.tomato};
+`
+
+export const KindRow = styled.div`
+  display: flex;
+  align-items: center;
+  gap: ${spacing.sm};
+  min-width: 0;
+`
+
 export const Title = styled.h2`
   font-size: ${fontSizes.h3};
   font-weight: ${fontWeights.black};

@@ -11,6 +11,7 @@ import {
   type LucideIcon,
 } from 'lucide-react'
 
+import { ordersApi } from '@/lib/api/orders'
 import { restaurantsApi } from '@/lib/api/restaurants'
 import { useAuth } from '@/lib/auth/use-auth'
 import { impersonationStore } from '@/lib/dashboard/impersonation-store'
@@ -24,8 +25,9 @@ export const NAV_ITEMS: ReadonlyArray<{
   key: NavKey
   end: boolean
   icon: LucideIcon
+  badge?: 'pendingOrders'
 }> = [
-  { to: '/dashboard', key: 'nav.orders', end: true, icon: ClipboardList },
+  { to: '/dashboard', key: 'nav.orders', end: true, icon: ClipboardList, badge: 'pendingOrders' },
   { to: '/dashboard/menu', key: 'nav.menu', end: false, icon: UtensilsCrossed },
   { to: '/dashboard/qr', key: 'nav.qr', end: false, icon: QrCode },
   { to: '/dashboard/insights', key: 'nav.insights', end: false, icon: BarChart3 },
@@ -38,6 +40,12 @@ export const ADMIN_NAV = {
   to: '/dashboard/admin',
   key: 'nav.admin' as const,
   icon: Shield,
+}
+
+export function formatNavBadge(count: number): string {
+  if (count <= 0) return ''
+  if (count > 99) return '99+'
+  return String(count)
 }
 
 export function useDashboardLayout() {
@@ -73,6 +81,17 @@ export function useDashboardLayout() {
     return restaurants.find((item) => item.id === selectedId) ?? restaurants[0]
   }, [impersonation, viewedQuery.data, restaurants, selectedId])
 
+  const countsQuery = useQuery({
+    queryKey: queryKeys.orderCounts(restaurant?.id ?? '', {}),
+    queryFn: () => ordersApi.counts(restaurant!.id, {}),
+    enabled: Boolean(restaurant?.id),
+    // Socket invalidation keeps this fresh; poll covers background / flaky sockets.
+    refetchInterval: 20_000,
+  })
+
+  /** PENDING tickets — live via kitchen-alert socket invalidation + poll. */
+  const pendingOrderCount = countsQuery.data?.new ?? 0
+
   useEffect(() => {
     if (restaurant && !impersonation) restaurantStore.set(restaurant.id)
   }, [restaurant, impersonation])
@@ -96,6 +115,7 @@ export function useDashboardLayout() {
     refetch: impersonation ? viewedQuery.refetch : ownQuery.refetch,
     exitImpersonation,
     restaurants,
+    pendingOrderCount,
     switchVenue: (restaurantId: string) => {
       if (!restaurantId) return
       impersonationStore.clear()

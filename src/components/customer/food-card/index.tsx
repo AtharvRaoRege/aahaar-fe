@@ -1,4 +1,4 @@
-import { Plus } from 'lucide-react'
+import { Plus, UtensilsCrossed } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 
 import { Button } from '@/components/global/button'
@@ -14,14 +14,15 @@ import {
   Body,
   CustomTag,
   Desc,
-  FootRow,
-  ImageButton,
+  Media,
   MetaRow,
   Name,
   Price,
   PriceBlock,
   Spice,
   Tag,
+  Thumb,
+  ThumbFallback,
   TitleHit,
   Wrap,
 } from './styled'
@@ -73,8 +74,8 @@ export function FoodCard({
           )
 
   return (
-    <Wrap $unavailable={!item.isAvailable} $hasImage={photo}>
-      <Body $hasImage={photo}>
+    <Wrap $unavailable={!item.isAvailable}>
+      <Body>
         <TitleHit type="button" onClick={onOpen} aria-label={item.name}>
           <MetaRow>
             <VegMark veg={item.isVegetarian} size={18} />
@@ -85,25 +86,30 @@ export function FoodCard({
           <Name>{item.name}</Name>
           {item.description && <Desc>{item.description}</Desc>}
         </TitleHit>
-        <FootRow>
-          <PriceBlock>
-            <Price>{formatMoney(item.basePrice, currency)}</Price>
-            {customizable && <CustomTag>{t('menu.customizable')}</CustomTag>}
-          </PriceBlock>
-          {addControl && <ActionSlot $hasImage={photo}>{addControl}</ActionSlot>}
-        </FootRow>
+        <PriceBlock>
+          <Price>{formatMoney(item.basePrice, currency)}</Price>
+          {customizable && <CustomTag>{t('menu.customizable')}</CustomTag>}
+        </PriceBlock>
       </Body>
 
-      {photo && (
-        <ImageButton
+      <Media>
+        <Thumb
           type="button"
           onClick={onOpen}
           aria-label={item.name}
           disabled={!item.isAvailable}
+          $empty={!photo}
         >
-          <img src={item.imageUrl ?? ''} alt="" loading="lazy" />
-        </ImageButton>
-      )}
+          {photo ? (
+            <img src={item.imageUrl ?? ''} alt="" loading="lazy" />
+          ) : (
+            <ThumbFallback aria-hidden>
+              <UtensilsCrossed />
+            </ThumbFallback>
+          )}
+        </Thumb>
+        {addControl && <ActionSlot>{addControl}</ActionSlot>}
+      </Media>
     </Wrap>
   )
 }

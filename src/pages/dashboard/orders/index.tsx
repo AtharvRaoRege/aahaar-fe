@@ -115,7 +115,7 @@ function OrdersBody({ restaurant }: { restaurant: Restaurant }) {
       {page.query.isLoading && (
         <Grid>
           {Array.from({ length: 3 }).map((_, i) => (
-            <Skeleton key={i} height="200px" />
+            <Skeleton key={i} height="140px" />
           ))}
         </Grid>
       )}

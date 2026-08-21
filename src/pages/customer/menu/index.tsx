@@ -111,7 +111,7 @@ export function MenuPage() {
         </BannerSlot>
       )}
 
-      <OfferStrip slug={slug} onOfferView={page.trackOfferView} />
+      <OfferStrip slug={slug} currency={restaurant.currency} onOfferView={page.trackOfferView} />
 
       {page.menuQuery.isLoading && (
         <>

@@ -1,4 +1,4 @@
-import { Plus, X } from 'lucide-react'
+import { BadgePercent, Plus, X } from 'lucide-react'
 import { createPortal } from 'react-dom'
 import { useTranslation } from 'react-i18next'
 
@@ -10,6 +10,7 @@ import { IconButton } from '@/components/global/icon-button'
 import { Select } from '@/components/global/select'
 import { Skeleton } from '@/components/global/skeleton'
 import type { Offer } from '@/types/offer'
+import { renderOfferKindIcon } from '@/utils/offers/kind-icon'
 
 import { useOffersPage } from './helper'
 import {
@@ -23,6 +24,7 @@ import {
   Head,
   HeadRow,
   Hint,
+  KindRow,
   List,
   Meta,
   ModalActions,
@@ -30,12 +32,14 @@ import {
   ModalTitle,
   Notice,
   OfferCard,
+  OfferIcon,
   OfferTitle,
   Overlay,
   Shell,
   StatePill,
   SwitchRow,
   Title,
+  TitleWithIcon,
   Toolbar,
 } from './styled'
 
@@ -71,7 +75,12 @@ function OffersModalBody({
         >
           <Head>
             <HeadRow>
-              <Title id="offers-modal-title">{t('offers.title')}</Title>
+              <TitleWithIcon>
+                <OfferIcon aria-hidden>
+                  <BadgePercent size={22} strokeWidth={2.25} />
+                </OfferIcon>
+                <Title id="offers-modal-title">{t('offers.title')}</Title>
+              </TitleWithIcon>
               <IconButton
                 label={t('common:actions.close')}
                 icon={<X aria-hidden />}
@@ -93,7 +102,7 @@ function OffersModalBody({
             {page.isLoading && <Skeleton height="200px" />}
 
             {!page.isLoading && page.offers.length === 0 && (
-              <EmptyState emoji="%" title={t('offers.empty')} hint={t('offers.emptyHint')} />
+              <EmptyState emoji="🏷️" title={t('offers.empty')} hint={t('offers.emptyHint')} />
             )}
 
             {page.offers.length > 0 && (
@@ -101,7 +110,10 @@ function OffersModalBody({
                 {page.offers.map((offer) => (
                   <OfferCard key={offer.id}>
                     <CardHead>
-                      <OfferTitle>{offer.title}</OfferTitle>
+                      <KindRow>
+                        <OfferIcon>{renderOfferKindIcon(offer.kind, 18)}</OfferIcon>
+                        <OfferTitle>{offer.title}</OfferTitle>
+                      </KindRow>
                       <StatePill $state={offer.state}>{t(`offers.states.${offer.state}`)}</StatePill>
                     </CardHead>
                     <Meta>{t(`offers.kinds.${offer.kind}`)}</Meta>
@@ -184,6 +196,24 @@ function OffersModalBody({
                   label={t('offers.couponCode')}
                   value={page.form.couponCode}
                   onChange={(event) => page.setField('couponCode', event.target.value)}
+                />
+              </FormRow>
+              <FormRow>
+                <TextField
+                  label={t('offers.minItemCount')}
+                  type="number"
+                  inputMode="numeric"
+                  min={1}
+                  value={page.form.minItemCount}
+                  onChange={(event) => page.setField('minItemCount', event.target.value)}
+                />
+                <TextField
+                  label={t('offers.minOrderAmount')}
+                  type="number"
+                  inputMode="decimal"
+                  min={0}
+                  value={page.form.minOrderAmount}
+                  onChange={(event) => page.setField('minOrderAmount', event.target.value)}
                 />
               </FormRow>
               <FormRow>
