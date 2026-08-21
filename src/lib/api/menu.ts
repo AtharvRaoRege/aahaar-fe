@@ -5,7 +5,7 @@ import type {
   MenuImportJob,
   MenuItem,
   MenuScanApplied,
-  MenuScanResult,
+  MenuScanJob,
   MenuScanRow,
   Upsells,
 } from '@/types/menu'
@@ -42,15 +42,19 @@ export interface UpdateMenuItemPayload {
 }
 
 export const menuApi = {
-  /** Reads a menu photo or PDF into reviewable rows on our own server. Writes nothing. */
-  async scanMenu(restaurantId: string, file: File): Promise<MenuScanResult> {
+  /** Queues AI menu scan in the background. Poll getScanJob for rows. */
+  async scanMenu(restaurantId: string, file: File): Promise<MenuScanJob> {
     const body = new FormData()
     body.append('file', file)
-    const { data } = await api.post<MenuScanResult>(
+    const { data } = await api.post<MenuScanJob>(
       `/restaurants/${restaurantId}/menu/scan`,
       body,
-      // OCR on a large photo takes a few seconds.
-      { timeout: 120_000 },
+    )
+    return data
+  },
+  async getScanJob(restaurantId: string, jobId: string): Promise<MenuScanJob> {
+    const { data } = await api.get<MenuScanJob>(
+      `/restaurants/${restaurantId}/menu/scan/${jobId}`,
     )
     return data
   },
@@ -88,8 +92,8 @@ export const menuApi = {
     )
     return data
   },
-  async deleteCategory(categoryId: string): Promise<void> {
-    await api.delete(`/categories/${categoryId}`)
+  async deleteCategory(restaurantId: string, categoryId: string): Promise<void> {
+    await api.delete(`/restaurants/${restaurantId}/categories/${categoryId}`)
   },
   async createItem(
     categoryId: string,
@@ -111,8 +115,13 @@ export const menuApi = {
     )
     return data
   },
-  async deleteItem(menuItemId: string): Promise<void> {
-    await api.delete(`/menu-items/${menuItemId}`)
+  async deleteItem(restaurantId: string, menuItemId: string): Promise<void> {
+    await api.delete(`/restaurants/${restaurantId}/menu-items/${menuItemId}`)
+  },
+  async deleteItems(restaurantId: string, menuItemIds: string[]): Promise<void> {
+    await Promise.all(
+      menuItemIds.map((menuItemId) => menuApi.deleteItem(restaurantId, menuItemId)),
+    )
   },
   async downloadImportTemplate(restaurantId: string): Promise<void> {
     const { data } = await api.get<Blob>(

@@ -94,6 +94,15 @@ export interface MenuScanResult {
   truncated: boolean
 }
 
+export type MenuScanJobStatus = 'pending' | 'running' | 'done' | 'failed'
+
+export interface MenuScanJob {
+  jobId: string
+  status: MenuScanJobStatus
+  error: string | null
+  result: MenuScanResult | null
+}
+
 export interface MenuScanApplied {
   created: number
   skipped: number

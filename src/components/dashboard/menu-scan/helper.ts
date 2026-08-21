@@ -4,7 +4,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { menuApi } from '@/lib/api/menu'
 import { queryKeys } from '@/lib/query/keys'
 import { errorMessage } from '@/utils/error-message'
-import type { MenuScanRow, ScanConfidence } from '@/types/menu'
+import type { MenuScanResult, MenuScanRow, ScanConfidence } from '@/types/menu'
 
 export const ACCEPTED_TYPES =
   'image/jpeg,image/png,image/webp,application/pdf,text/csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,.csv,.xlsx'
@@ -20,31 +20,37 @@ function toDraft(row: MenuScanRow, index: number): DraftRow {
   return {
     ...row,
     key: `${index}-${row.name}`,
-    // Low-confidence rows start unchecked: the owner has to look at each one
-    // before it can reach the live menu (PRD §18).
     include: row.confidence !== 'LOW',
   }
 }
 
-export function useMenuScan(restaurantId: string, onDone: (created: number) => void) {
-  const queryClient = useQueryClient()
-  const [rows, setRows] = useState<DraftRow[] | null>(null)
-  const [quality, setQuality] = useState<'GOOD' | 'POOR'>('GOOD')
-  const [notes, setNotes] = useState<string | null>(null)
-  const [truncated, setTruncated] = useState(false)
-  const [error, setError] = useState('')
+function fromResult(result: MenuScanResult): {
+  rows: DraftRow[]
+  quality: 'GOOD' | 'POOR'
+  notes: string | null
+  truncated: boolean
+} {
+  return {
+    rows: result.rows.map(toDraft),
+    quality: result.imageQuality,
+    notes: result.notes,
+    truncated: result.truncated,
+  }
+}
 
-  const scan = useMutation({
-    mutationFn: (file: File) => menuApi.scanMenu(restaurantId, file),
-    onMutate: () => setError(''),
-    onSuccess: (result) => {
-      setRows(result.rows.map(toDraft))
-      setQuality(result.imageQuality)
-      setNotes(result.notes)
-      setTruncated(result.truncated)
-    },
-    onError: (cause) => setError(errorMessage(cause)),
-  })
+export function useMenuScan(
+  restaurantId: string,
+  onDone: (created: number) => void,
+  seed: MenuScanResult | null,
+  onQueueFile: (file: File) => void,
+) {
+  const queryClient = useQueryClient()
+  const initial = seed ? fromResult(seed) : null
+  const [rows, setRows] = useState<DraftRow[] | null>(initial?.rows ?? null)
+  const [quality] = useState<'GOOD' | 'POOR'>(initial?.quality ?? 'GOOD')
+  const [notes] = useState<string | null>(initial?.notes ?? null)
+  const [truncated] = useState(initial?.truncated ?? false)
+  const [error, setError] = useState('')
 
   const apply = useMutation({
     mutationFn: (approved: MenuScanRow[]) => menuApi.applyMenuScan(restaurantId, approved),
@@ -61,10 +67,7 @@ export function useMenuScan(restaurantId: string, onDone: (created: number) => v
 
   const reset = () => {
     setRows(null)
-    setNotes(null)
-    setTruncated(false)
     setError('')
-    scan.reset()
   }
 
   const ready = useMemo(
@@ -86,7 +89,6 @@ export function useMenuScan(restaurantId: string, onDone: (created: number) => v
     notes,
     truncated,
     error,
-    scanning: scan.isPending,
     applying: apply.isPending,
     readyCount: ready.length,
     lowCount: (rows ?? []).filter((row) => row.confidence === 'LOW').length,
@@ -96,7 +98,8 @@ export function useMenuScan(restaurantId: string, onDone: (created: number) => v
         setError('MAX_SIZE')
         return
       }
-      scan.mutate(file)
+      setError('')
+      onQueueFile(file)
     },
     setInclude: (key: string, include: boolean) => patch(key, { include }),
     setName: (key: string, name: string) => patch(key, { name }),
@@ -105,7 +108,6 @@ export function useMenuScan(restaurantId: string, onDone: (created: number) => v
       const parsed = Number.parseFloat(raw)
       patch(key, { price: Number.isFinite(parsed) && parsed >= 0 ? parsed : null })
     },
-    /** Bulk shortcut deliberately skips LOW rows — those need individual eyes. */
     approveConfident: () =>
       setRows((current) =>
         (current ?? []).map((row) =>

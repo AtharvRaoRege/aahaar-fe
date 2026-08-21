@@ -12,6 +12,8 @@ export const queryKeys = {
   dashboardMenu: (restaurantId: string) => ['menu', 'dashboard', restaurantId] as const,
   menuImport: (restaurantId: string, jobId: string) =>
     ['menu', 'import', restaurantId, jobId] as const,
+  menuScan: (restaurantId: string, jobId: string) =>
+    ['menu', 'scan', restaurantId, jobId] as const,
   publicRestaurant: (slug: string) => ['public', 'restaurant', slug] as const,
   publicMenu: (slug: string) => ['public', 'menu', slug] as const,
   customerSession: (id: string) => ['customer-session', id] as const,

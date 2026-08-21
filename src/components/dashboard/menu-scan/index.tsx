@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { BottomSheet } from '@/components/global/bottom-sheet'
 import { Button } from '@/components/global/button'
 import { TextField } from '@/components/global/field'
+import type { MenuScanResult } from '@/types/menu'
 
 import { ACCEPTED_TYPES, CONFIDENCE_TONE, useMenuScan } from './helper'
 import {
@@ -21,35 +22,51 @@ import {
   Pill,
   Row,
   RowTop,
-  Spinner,
   Toolbar,
-  Working,
-  WorkingHint,
-  WorkingText,
 } from './styled'
 
 export interface MenuScanSheetProps {
   open: boolean
   restaurantId: string
+  seed: MenuScanResult | null
   onClose: () => void
+  onQueueFile: (file: File) => void
   onApplied: (created: number) => void
+  onCleared: () => void
 }
 
 export function MenuScanSheet({
   open,
   restaurantId,
+  seed,
   onClose,
+  onQueueFile,
   onApplied,
+  onCleared,
 }: MenuScanSheetProps) {
   const { t } = useTranslation(['dashboard', 'common'])
-  const scan = useMenuScan(restaurantId, (created) => {
-    onApplied(created)
-    onClose()
-  })
+  const scan = useMenuScan(
+    restaurantId,
+    (created) => {
+      onApplied(created)
+      onCleared()
+      onClose()
+    },
+    seed,
+    (file) => {
+      onQueueFile(file)
+      onClose()
+    },
+  )
 
   const close = () => {
     scan.reset()
     onClose()
+  }
+
+  const startOver = () => {
+    scan.reset()
+    onCleared()
   }
 
   return (
@@ -61,15 +78,7 @@ export function MenuScanSheet({
           </Notice>
         )}
 
-        {scan.scanning && (
-          <Working>
-            <Spinner aria-hidden />
-            <WorkingText>{t('scan.reading')}</WorkingText>
-            <WorkingHint>{t('scan.readingHint')}</WorkingHint>
-          </Working>
-        )}
-
-        {!scan.scanning && scan.rows === null && (
+        {scan.rows === null && (
           <>
             <Intro>{t('scan.intro')}</Intro>
             <Drop>
@@ -85,7 +94,7 @@ export function MenuScanSheet({
           </>
         )}
 
-        {!scan.scanning && scan.rows !== null && (
+        {scan.rows !== null && (
           <>
             {scan.quality === 'POOR' && <Notice $tone="warn">{t('scan.poorQuality')}</Notice>}
             {scan.notes && <Notice $tone="warn">{scan.notes}</Notice>}
@@ -150,7 +159,7 @@ export function MenuScanSheet({
             )}
 
             <Footer>
-              <Button variant="outline" onClick={scan.reset}>
+              <Button variant="outline" onClick={startOver}>
                 {t('scan.startOver')}
               </Button>
               <Button

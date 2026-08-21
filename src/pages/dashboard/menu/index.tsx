@@ -31,6 +31,8 @@ import { formatMoney } from '@/utils/format'
 import { categoryIcon, sectionId, useMenuManager } from './helper'
 import {
   ActionList,
+  BulkBar,
+  BulkCount,
   CategoryBtn,
   CategoryEmpty,
   CategoryRail,
@@ -40,9 +42,9 @@ import {
   FileInput,
   GeneratingBanner,
   Header,
-  HeaderActions,
   Hint,
   ItemActions,
+  ItemCheck,
   ItemMeta,
   ItemName,
   ItemPrice,
@@ -79,60 +81,6 @@ function MenuBody({ restaurant }: { restaurant: Restaurant }) {
           <Title>{t('menu.title')}</Title>
           <Hint>{t('menu.hint')}</Hint>
         </div>
-        <HeaderActions>
-          <Button
-            size="sm"
-            variant="outline"
-            leftIcon={<Download aria-hidden />}
-            loading={page.downloadingSample}
-            aria-label={t('menu.downloadSample')}
-            onClick={() => page.downloadSample()}
-          >
-            {t('menu.downloadSample')}
-          </Button>
-          <Button
-            size="sm"
-            variant="outline"
-            leftIcon={<Upload aria-hidden />}
-            disabled={page.importBusy}
-            aria-label={t('menu.uploadExcel')}
-            onClick={() => fileRef.current?.click()}
-          >
-            {t('menu.uploadExcel')}
-          </Button>
-          {page.menuScanEnabled && (
-            <Button
-              size="sm"
-              variant="outline"
-              leftIcon={<ScanLine aria-hidden />}
-              aria-label={t('scan.action')}
-              onClick={page.openScan}
-            >
-              {t('scan.action')}
-            </Button>
-          )}
-          <Button size="sm" variant="outline" onClick={page.openOffers}>
-            {t('nav.offers')}
-          </Button>
-          <Button
-            size="sm"
-            variant="outline"
-            leftIcon={<FolderPlus aria-hidden />}
-            aria-label={t('menu.addCategory')}
-            onClick={page.openCreateCategory}
-          >
-            {t('menu.addCategory')}
-          </Button>
-          <Button
-            size="sm"
-            leftIcon={<Plus aria-hidden />}
-            aria-label={t('menu.addItem')}
-            disabled={page.categoryOptions.length === 0}
-            onClick={() => page.openCreate()}
-          >
-            {t('menu.addItem')}
-          </Button>
-        </HeaderActions>
         <MobileMore>
           <IconButton
             type="button"
@@ -162,12 +110,49 @@ function MenuBody({ restaurant }: { restaurant: Restaurant }) {
       {page.generating && (
         <GeneratingBanner role="status">{t('menu.generating')}</GeneratingBanner>
       )}
+      {page.scanBusy && (
+        <GeneratingBanner role="status">{t('scan.background')}</GeneratingBanner>
+      )}
+      {page.scanReady && !page.scanBusy && (
+        <GeneratingBanner role="status">
+          {t('scan.ready')}{' '}
+          <Button size="sm" variant="outline" onClick={page.openScan}>
+            {t('scan.reviewNow')}
+          </Button>
+        </GeneratingBanner>
+      )}
       {page.scanAdded > 0 && (
         <GeneratingBanner role="status">
           {t('scan.added', { count: page.scanAdded })}
         </GeneratingBanner>
       )}
       {page.importError && <ErrorBanner>{page.importError}</ErrorBanner>}
+      {page.scanError && <ErrorBanner>{page.scanError}</ErrorBanner>}
+      {page.categoryDeleteError && <ErrorBanner>{page.categoryDeleteError}</ErrorBanner>}
+      {page.itemDeleteError && <ErrorBanner>{page.itemDeleteError}</ErrorBanner>}
+
+      {page.selectMode && (
+        <BulkBar>
+          <BulkCount>{t('menu.selectedCount', { count: page.selectedCount })}</BulkCount>
+          <Button size="sm" variant="outline" onClick={page.selectAll}>
+            {t('menu.selectAll')}
+          </Button>
+          <Button size="sm" variant="outline" onClick={page.deselectAll}>
+            {t('menu.deselectAll')}
+          </Button>
+          <Button
+            size="sm"
+            leftIcon={<Trash2 aria-hidden />}
+            disabled={page.selectedCount === 0}
+            onClick={page.askBulkDelete}
+          >
+            {t('menu.deleteSelected')}
+          </Button>
+          <Button size="sm" variant="outline" onClick={page.exitSelectMode}>
+            {t('menu.cancelSelect')}
+          </Button>
+        </BulkBar>
+      )}
 
       {page.query.isLoading && <Skeleton height="280px" />}
 
@@ -226,14 +211,23 @@ function MenuBody({ restaurant }: { restaurant: Restaurant }) {
                 <SectionTitle>
                   <span>{group.name}</span>
                   {group.id && (
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      leftIcon={<Plus aria-hidden />}
-                      onClick={() => page.openCreate(group.id ?? undefined)}
-                    >
-                      {t('menu.addItem')}
-                    </Button>
+                    <ItemActions>
+                      <IconButton
+                        type="button"
+                        size="sm"
+                        label={t('menu.deleteCategory')}
+                        icon={<Trash2 aria-hidden />}
+                        onClick={() => page.askDeleteCategory(group.id!, group.name)}
+                      />
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        leftIcon={<Plus aria-hidden />}
+                        onClick={() => page.openCreate(group.id ?? undefined)}
+                      >
+                        {t('menu.addItem')}
+                      </Button>
+                    </ItemActions>
                   )}
                 </SectionTitle>
                 {group.items.length === 0 ? (
@@ -251,7 +245,20 @@ function MenuBody({ restaurant }: { restaurant: Restaurant }) {
                   </CategoryEmpty>
                 ) : (
                   group.items.map((item, index) => (
-                    <ItemRow key={item.id} $alt={index % 2 === 1}>
+                    <ItemRow
+                      key={item.id}
+                      $alt={index % 2 === 1}
+                      $selecting={page.selectMode}
+                      $selected={page.selectMode && page.isSelected(item.id)}
+                    >
+                      {page.selectMode && (
+                        <ItemCheck
+                          type="checkbox"
+                          checked={page.isSelected(item.id)}
+                          aria-label={item.name}
+                          onChange={() => page.toggleSelect(item.id)}
+                        />
+                      )}
                       <div>
                         <ItemName>
                           <VegMark veg={item.isVegetarian} size={14} /> {item.name}
@@ -262,15 +269,24 @@ function MenuBody({ restaurant }: { restaurant: Restaurant }) {
                         <ItemPrice>
                           {formatMoney(item.basePrice, restaurant.currency)}
                         </ItemPrice>
-                        <ItemActions>
-                          <IconButton
-                            type="button"
-                            size="sm"
-                            label={t('menu.edit')}
-                            icon={<Pencil aria-hidden />}
-                            onClick={() => page.openEdit(item)}
-                          />
-                        </ItemActions>
+                        {!page.selectMode && (
+                          <ItemActions>
+                            <IconButton
+                              type="button"
+                              size="sm"
+                              label={t('menu.edit')}
+                              icon={<Pencil aria-hidden />}
+                              onClick={() => page.openEdit(item)}
+                            />
+                            <IconButton
+                              type="button"
+                              size="sm"
+                              label={t('menu.deleteDish')}
+                              icon={<Trash2 aria-hidden />}
+                              onClick={() => page.askDeleteItem(item.id)}
+                            />
+                          </ItemActions>
+                        )}
                       </ItemSide>
                     </ItemRow>
                   ))
@@ -310,7 +326,8 @@ function MenuBody({ restaurant }: { restaurant: Restaurant }) {
               variant="outline"
               fullWidth
               leftIcon={<ScanLine aria-hidden />}
-              onClick={page.openScan}
+              disabled={page.scanBusy}
+              onClick={page.onActionsScan}
             >
               {t('scan.action')}
             </Button>
@@ -327,12 +344,21 @@ function MenuBody({ restaurant }: { restaurant: Restaurant }) {
             {t('menu.addCategory')}
           </Button>
           <Button
+            variant="outline"
             fullWidth
             leftIcon={<Plus aria-hidden />}
             disabled={page.categoryOptions.length === 0}
             onClick={page.onActionsAddItem}
           >
             {t('menu.addItem')}
+          </Button>
+          <Button
+            variant="outline"
+            fullWidth
+            disabled={page.groups.every((group) => group.items.length === 0)}
+            onClick={page.onActionsSelectDishes}
+          >
+            {t('menu.selectDishes')}
           </Button>
         </ActionList>
       </BottomSheet>
@@ -422,11 +448,35 @@ function MenuBody({ restaurant }: { restaurant: Restaurant }) {
         onClose={page.closeDelete}
         onConfirm={page.confirmDelete}
       />
+      <ConfirmDialog
+        open={page.bulkDeleteOpen}
+        title={t('menu.bulkDeleteTitle')}
+        message={t('menu.bulkDeleteConfirm', { count: page.selectedCount })}
+        confirmLabel={t('common:actions.delete')}
+        loading={page.deletingBulk}
+        onClose={page.closeBulkDelete}
+        onConfirm={page.confirmBulkDelete}
+      />
+      <ConfirmDialog
+        open={Boolean(page.deleteCategoryTarget)}
+        title={t('menu.deleteCategoryTitle')}
+        message={t('menu.deleteCategoryConfirm', {
+          name: page.deleteCategoryTarget?.name ?? '',
+        })}
+        confirmLabel={t('common:actions.delete')}
+        loading={page.deletingCategory}
+        onClose={page.closeDeleteCategory}
+        onConfirm={page.confirmDeleteCategory}
+      />
       <MenuScanSheet
+        key={page.scanResult ? 'review' : 'pick'}
         open={page.scanOpen}
         restaurantId={restaurant.id}
+        seed={page.scanResult}
         onClose={page.closeScan}
+        onQueueFile={page.queueScan}
         onApplied={page.onScanApplied}
+        onCleared={page.clearScanResult}
       />
       <OffersModal
         restaurantId={restaurant.id}

@@ -21,7 +21,7 @@ import { subscriptionsApi } from '@/lib/api/subscriptions'
 import { freshFor } from '@/lib/query/cache'
 import { invalidatePublicVenue } from '@/lib/query/invalidate-public'
 import { queryKeys } from '@/lib/query/keys'
-import type { MenuCategoryGroup, MenuItem } from '@/types/menu'
+import type { MenuCategoryGroup, MenuItem, MenuScanResult } from '@/types/menu'
 import { errorMessage } from '@/utils/error-message'
 
 export interface CategoryForm {
@@ -80,8 +80,19 @@ export function useMenuManager(restaurantId: string, slug?: string) {
   const [jobId, setJobId] = useState<string | null>(null)
   const [importError, setImportError] = useState('')
   const [scanOpen, setScanOpen] = useState(false)
+  const [scanJobId, setScanJobId] = useState<string | null>(null)
+  const [scanResult, setScanResult] = useState<MenuScanResult | null>(null)
+  const [scanError, setScanError] = useState('')
   const [scanAdded, setScanAdded] = useState(0)
   const [offersOpen, setOffersOpen] = useState(false)
+  const [selectMode, setSelectMode] = useState(false)
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(() => new Set())
+  const [pendingDeleteIds, setPendingDeleteIds] = useState<string[]>([])
+  const [bulkDeleteOpen, setBulkDeleteOpen] = useState(false)
+  const [deleteCategoryTarget, setDeleteCategoryTarget] = useState<{
+    id: string
+    name: string
+  } | null>(null)
 
   useEffect(() => {
     if (!scanAdded) return
@@ -146,6 +157,11 @@ export function useMenuManager(restaurantId: string, slug?: string) {
       .filter((group) => group.items.length > 0)
   }, [groups, search])
 
+  const selectableIds = useMemo(() => {
+    const list = search.trim() ? visibleGroups : groups
+    return list.flatMap((group) => group.items.map((item) => item.id))
+  }, [groups, visibleGroups, search])
+
   const addItem = useMutation({
     mutationFn: (values: ItemForm) =>
       menuApi.createItem(values.categoryId, {
@@ -178,10 +194,22 @@ export function useMenuManager(restaurantId: string, slug?: string) {
   })
 
   const deleteItem = useMutation({
-    mutationFn: (itemId: string) => menuApi.deleteItem(itemId),
+    mutationFn: (itemId: string) => menuApi.deleteItem(restaurantId, itemId),
     onSuccess: () => {
       setDeleteOpen(false)
+      setPendingDeleteIds([])
       closeSheet()
+      void invalidate()
+    },
+  })
+
+  const deleteItems = useMutation({
+    mutationFn: (itemIds: string[]) => menuApi.deleteItems(restaurantId, itemIds),
+    onSuccess: () => {
+      setBulkDeleteOpen(false)
+      setPendingDeleteIds([])
+      setSelectedIds(new Set())
+      setSelectMode(false)
       void invalidate()
     },
   })
@@ -192,6 +220,15 @@ export function useMenuManager(restaurantId: string, slug?: string) {
     onSuccess: (category) => {
       setActiveId(category.id)
       closeCategorySheet()
+      void invalidate()
+    },
+  })
+
+  const deleteCategory = useMutation({
+    mutationFn: (categoryId: string) => menuApi.deleteCategory(restaurantId, categoryId),
+    onSuccess: () => {
+      setDeleteCategoryTarget(null)
+      setActiveId(null)
       void invalidate()
     },
   })
@@ -214,6 +251,42 @@ export function useMenuManager(restaurantId: string, slug?: string) {
       const status = result.state.data?.status
       if (status === 'done' || status === 'failed') return false
       return 1000
+    },
+  })
+
+  const scanJob = useQuery({
+    queryKey: queryKeys.menuScan(restaurantId, scanJobId ?? ''),
+    queryFn: async () => {
+      const job = await menuApi.getScanJob(restaurantId, scanJobId!)
+      if (job.status === 'done' && job.result) {
+        setScanResult(job.result)
+        setScanJobId(null)
+        setScanError('')
+      }
+      if (job.status === 'failed') {
+        setScanError(job.error || t('scan.failed'))
+        setScanJobId(null)
+      }
+      return job
+    },
+    enabled: Boolean(scanJobId),
+    refetchOnWindowFocus: false,
+    refetchInterval: (result) => {
+      const status = result.state.data?.status
+      if (status === 'done' || status === 'failed') return false
+      return 1000
+    },
+  })
+
+  const startScan = useMutation({
+    mutationFn: (file: File) => menuApi.scanMenu(restaurantId, file),
+    onSuccess: (job) => {
+      setScanError('')
+      setScanResult(null)
+      setScanJobId(job.jobId)
+    },
+    onError: (error) => {
+      setScanError(errorMessage(error, t('scan.failed')))
     },
   })
 
@@ -318,16 +391,36 @@ export function useMenuManager(restaurantId: string, slug?: string) {
     upsellCandidates,
     scanOpen,
     scanAdded,
+    scanResult,
+    scanError,
+    scanBusy:
+      startScan.isPending ||
+      (Boolean(scanJobId) &&
+        scanJob.data?.status !== 'done' &&
+        scanJob.data?.status !== 'failed'),
+    scanReady: Boolean(scanResult),
     openScan: () => {
       setActionsOpen(false)
       setScanOpen(true)
     },
     closeScan: () => setScanOpen(false),
+    queueScan: (file: File) => {
+      setScanOpen(false)
+      startScan.mutate(file)
+    },
+    clearScanResult: () => {
+      setScanResult(null)
+      setScanError('')
+    },
+    dismissScanError: () => setScanError(''),
     offersOpen,
     openOffers: () => setOffersOpen(true),
     closeOffers: () => setOffersOpen(false),
     onActionsOffers: () => runFromActions(() => setOffersOpen(true)),
-    onScanApplied: (created: number) => setScanAdded(created),
+    onScanApplied: (created: number) => {
+      setScanResult(null)
+      setScanAdded(created)
+    },
     dismissScanAdded: () => setScanAdded(0),
     openCreate,
     openEdit,
@@ -335,6 +428,22 @@ export function useMenuManager(restaurantId: string, slug?: string) {
     categorySheetOpen,
     openCreateCategory,
     closeCategorySheet,
+    deleteCategoryTarget,
+    askDeleteCategory: (categoryId: string, name: string) => {
+      setDeleteCategoryTarget({ id: categoryId, name })
+    },
+    closeDeleteCategory: () => {
+      if (deleteCategory.isPending) return
+      setDeleteCategoryTarget(null)
+    },
+    confirmDeleteCategory: () => {
+      if (!deleteCategoryTarget) return
+      deleteCategory.mutate(deleteCategoryTarget.id)
+    },
+    deletingCategory: deleteCategory.isPending,
+    categoryDeleteError: deleteCategory.isError
+      ? errorMessage(deleteCategory.error)
+      : '',
     actionsOpen,
     openActions: () => setActionsOpen(true),
     closeActions,
@@ -344,6 +453,15 @@ export function useMenuManager(restaurantId: string, slug?: string) {
     onActionsUpload: (input: HTMLInputElement | null) => {
       setActionsOpen(false)
       input?.click()
+    },
+    onActionsSelectDishes: () => {
+      setActionsOpen(false)
+      setSelectMode(true)
+      setSelectedIds(new Set())
+    },
+    onActionsScan: () => {
+      setActionsOpen(false)
+      setScanOpen(true)
     },
     categoryForm,
     onSaveCategory: categoryForm.handleSubmit((values) => {
@@ -368,17 +486,71 @@ export function useMenuManager(restaurantId: string, slug?: string) {
     deleteOpen,
     askDelete: () => {
       if (!editing) return
+      setPendingDeleteIds([editing.id])
+      setDeleteOpen(true)
+    },
+    askDeleteItem: (itemId: string) => {
+      setPendingDeleteIds([itemId])
       setDeleteOpen(true)
     },
     closeDelete: () => {
-      if (deleteItem.isPending) return
+      if (deleteItem.isPending || deleteItems.isPending) return
       setDeleteOpen(false)
+      setPendingDeleteIds([])
     },
     confirmDelete: () => {
-      if (!editing) return
-      deleteItem.mutate(editing.id)
+      if (pendingDeleteIds.length === 1) {
+        deleteItem.mutate(pendingDeleteIds[0])
+        return
+      }
+      if (pendingDeleteIds.length > 1) {
+        deleteItems.mutate(pendingDeleteIds)
+      }
     },
-    deleting: deleteItem.isPending,
+    deleting: deleteItem.isPending || deleteItems.isPending,
+    selectMode,
+    selectedCount: selectedIds.size,
+    isSelected: (itemId: string) => selectedIds.has(itemId),
+    enterSelectMode: () => {
+      setActionsOpen(false)
+      setSelectMode(true)
+      setSelectedIds(new Set())
+    },
+    exitSelectMode: () => {
+      setSelectMode(false)
+      setSelectedIds(new Set())
+    },
+    toggleSelect: (itemId: string) => {
+      setSelectedIds((current) => {
+        const next = new Set(current)
+        if (next.has(itemId)) next.delete(itemId)
+        else next.add(itemId)
+        return next
+      })
+    },
+    selectAll: () => setSelectedIds(new Set(selectableIds)),
+    deselectAll: () => setSelectedIds(new Set()),
+    bulkDeleteOpen,
+    askBulkDelete: () => {
+      if (selectedIds.size === 0) return
+      setPendingDeleteIds([...selectedIds])
+      setBulkDeleteOpen(true)
+    },
+    closeBulkDelete: () => {
+      if (deleteItems.isPending) return
+      setBulkDeleteOpen(false)
+      setPendingDeleteIds([])
+    },
+    confirmBulkDelete: () => {
+      if (pendingDeleteIds.length === 0) return
+      deleteItems.mutate(pendingDeleteIds)
+    },
+    deletingBulk: deleteItems.isPending,
+    itemDeleteError: deleteItem.isError
+      ? errorMessage(deleteItem.error)
+      : deleteItems.isError
+        ? errorMessage(deleteItems.error)
+        : '',
     onFileChange: (event: ChangeEvent<HTMLInputElement>) => {
       const file = event.target.files?.[0]
       event.target.value = ''

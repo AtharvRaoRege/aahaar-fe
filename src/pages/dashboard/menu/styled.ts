@@ -85,62 +85,13 @@ export const Header = styled.header`
   }
 `
 
-export const HeaderActions = styled.div`
-  display: none;
-
-  ${({ theme }) => theme.media.sm} {
-    display: none;
-  }
-
-  ${({ theme }) => theme.media.md} {
-    display: flex;
-    flex: 1 1 100%;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: flex-end;
-    gap: ${spacing.sm};
-
-    button {
-      width: auto;
-      min-width: 0;
-      min-height: 40px;
-      padding: 0 14px;
-    }
-
-    svg {
-      stroke-width: 1.75;
-    }
-  }
-
-  ${({ theme }) => theme.media.lg} {
-    flex: 1 1 auto;
-    gap: ${spacing.sm};
-  }
-
-  ${({ theme }) => theme.media.xl} {
-    gap: ${spacing.md};
-  }
-`
-
 export const MobileMore = styled.div`
   display: flex;
   flex-shrink: 0;
+`
 
-  ${({ theme }) => theme.media.sm} {
-    display: flex;
-  }
-
-  ${({ theme }) => theme.media.md} {
-    display: none;
-  }
-
-  ${({ theme }) => theme.media.lg} {
-    display: none;
-  }
-
-  ${({ theme }) => theme.media.xl} {
-    display: none;
-  }
+export const HeaderActions = styled.div`
+  display: none;
 `
 
 export const EmptyActions = styled.div`
@@ -438,14 +389,16 @@ export const SectionTitle = styled.h2`
   }
 `
 
-export const ItemRow = styled.div<{ $alt?: boolean }>`
+export const ItemRow = styled.div<{ $alt?: boolean; $selected?: boolean; $selecting?: boolean }>`
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-columns: ${({ $selecting }) =>
+    $selecting ? 'auto minmax(0, 1fr) auto' : 'minmax(0, 1fr) auto'};
   gap: ${spacing.sm};
   align-items: center;
   padding: ${spacing.sm} ${spacing.md};
   border-bottom: 1px solid ${palette.line};
-  background: ${({ $alt }) => ($alt ? palette.cream : palette.white)};
+  background: ${({ $selected, $alt }) =>
+    $selected ? palette.chutneyWash : $alt ? palette.cream : palette.white};
   transition: background 140ms ease-out;
 
   &:last-child {
@@ -454,7 +407,7 @@ export const ItemRow = styled.div<{ $alt?: boolean }>`
 
   @media (hover: hover) {
     &:hover {
-      background: ${palette.canvas};
+      background: ${({ $selected }) => ($selected ? palette.chutneyWash : palette.canvas)};
     }
   }
 
@@ -479,6 +432,40 @@ export const ItemRow = styled.div<{ $alt?: boolean }>`
   @media (prefers-reduced-motion: reduce) {
     transition: none;
   }
+`
+
+export const ItemCheck = styled.input`
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  accent-color: ${palette.chutney};
+  cursor: pointer;
+`
+
+export const BulkBar = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: ${spacing.sm};
+  flex-shrink: 0;
+  margin-bottom: ${spacing.sm};
+  padding: ${spacing.sm} ${spacing.md};
+  background: ${palette.cream};
+  border: 1.5px solid ${palette.line};
+  border-radius: ${radii.md};
+
+  ${({ theme }) => theme.media.md} {
+    margin-bottom: ${spacing.md};
+    padding: ${spacing.md} ${spacing.lg};
+  }
+`
+
+export const BulkCount = styled.span`
+  flex: 1 1 auto;
+  min-width: 0;
+  font-size: ${fontSizes.label};
+  font-weight: 700;
+  color: ${palette.inkSoft};
 `
 
 export const ItemName = styled.p`
@@ -698,7 +685,11 @@ const pulse = keyframes`
   50% { opacity: 0.55; }
 `
 
-export const GeneratingBanner = styled.p`
+export const GeneratingBanner = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: ${spacing.sm};
   flex-shrink: 0;
   margin-bottom: ${spacing.sm};
   padding: ${spacing.sm} ${spacing.md};
