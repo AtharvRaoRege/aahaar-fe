@@ -18,7 +18,7 @@ export function Marquee({ words, light, reverse }: MarqueeProps) {
     <span>
       {words.map((word) => (
         <span key={word}>
-          {word} <i>✦</i>
+          {word} <i>·</i>
         </span>
       ))}
     </span>
