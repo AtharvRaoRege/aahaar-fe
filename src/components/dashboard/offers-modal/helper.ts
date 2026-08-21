@@ -1,6 +1,8 @@
 import { useMemo, useState } from 'react'
+import type { TFunction } from 'i18next'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 
+import type { ActionMenuItem } from '@/components/global/action-menu/helper'
 import { offersApi } from '@/lib/api/offers'
 import { subscriptionsApi } from '@/lib/api/subscriptions'
 import { queryKeys } from '@/lib/query/keys'
@@ -196,4 +198,29 @@ export function useOffersPage(restaurantId: string) {
       if (pendingDelete) remove.mutate(pendingDelete)
     },
   }
+}
+
+export function offerActions(offer: Offer, t: TFunction): ActionMenuItem[] {
+  return [
+    { id: 'edit', label: t('offers.edit') },
+    {
+      id: 'toggle',
+      label: offer.isActive ? t('publish.takeOffline') : t('publish.goLive'),
+    },
+    { id: 'delete', label: t('common:actions.delete') },
+  ]
+}
+
+export function runOfferAction(
+  id: string,
+  offer: Offer,
+  handlers: {
+    onEdit: (offer: Offer) => void
+    onToggle: (offer: Offer) => void
+    onDelete: (offer: Offer) => void
+  },
+) {
+  if (id === 'edit') handlers.onEdit(offer)
+  if (id === 'toggle') handlers.onToggle(offer)
+  if (id === 'delete') handlers.onDelete(offer)
 }

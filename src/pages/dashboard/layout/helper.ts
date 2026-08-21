@@ -11,6 +11,7 @@ import {
   type LucideIcon,
 } from 'lucide-react'
 
+import { useDocumentBrand } from '@/hooks/theme/use-document-brand/helper'
 import { ordersApi } from '@/lib/api/orders'
 import { restaurantsApi } from '@/lib/api/restaurants'
 import { useAuth } from '@/lib/auth/use-auth'
@@ -81,6 +82,8 @@ export function useDashboardLayout() {
     return restaurants.find((item) => item.id === selectedId) ?? restaurants[0]
   }, [impersonation, viewedQuery.data, restaurants, selectedId])
 
+  const brand = useDocumentBrand(restaurant?.primaryColor)
+
   const countsQuery = useQuery({
     queryKey: queryKeys.orderCounts(restaurant?.id ?? '', {}),
     queryFn: () => ordersApi.counts(restaurant!.id, {}),
@@ -109,6 +112,7 @@ export function useDashboardLayout() {
   return {
     user,
     restaurant,
+    brand,
     impersonation,
     venueLoading,
     venueError,

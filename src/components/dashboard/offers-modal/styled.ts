@@ -1,6 +1,7 @@
 import styled from 'styled-components'
 
 import { fontFamily, fontSizes, fontWeights, palette, radii, shadows, spacing } from '@/styles/theme'
+import { brandVar } from '@/utils/theme/brand-palette'
 
 export const Overlay = styled.div`
   position: fixed;
@@ -107,7 +108,7 @@ export const OfferIcon = styled.span`
   flex-shrink: 0;
   border-radius: ${radii.md};
   background: ${palette.mangoWash};
-  color: ${palette.tomato};
+  color: ${brandVar.accentText};
 `
 
 export const KindRow = styled.div`
@@ -317,9 +318,9 @@ export const Code = styled.p`
   display: inline-flex;
   align-self: start;
   padding: ${spacing.xs} ${spacing.md};
-  border: 1.5px dashed ${palette.tomato};
+  border: 1.5px dashed ${brandVar.primary};
   border-radius: ${radii.sm};
-  color: ${palette.tomato};
+  color: ${brandVar.accentText};
   font-size: ${fontSizes.labelSm};
   font-weight: ${fontWeights.bold};
   letter-spacing: 0.06em;
@@ -337,11 +338,12 @@ export const Code = styled.p`
   }
 `
 
-export const CardActions = styled.div`
+export const HeadTools = styled.div`
   display: flex;
   flex-wrap: wrap;
+  align-items: center;
   gap: ${spacing.sm};
-  margin-top: ${spacing.xs};
+  margin-left: auto;
 `
 
 export const Notice = styled.p<{ $tone: 'ok' | 'bad' }>`

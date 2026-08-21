@@ -1,6 +1,7 @@
 import styled, { css } from 'styled-components'
 
 import { fontSizes, palette, radii, shadows, spacing, transitions } from '@/styles/theme'
+import { brandVar } from '@/utils/theme/brand-palette'
 
 export const Row = styled.div<{ $inline?: boolean }>`
   display: flex;
@@ -50,19 +51,23 @@ export const Chip = styled.button<{ $active: boolean; $tone?: 'veg' | 'nonveg' |
   gap: ${spacing.xs};
   min-height: 36px;
   padding: 0 ${spacing.md};
-  background: ${({ $active, $tone, theme }) => {
+  background: ${({ $active, $tone }) => {
     if (!$active) return palette.white
     if ($tone === 'veg') return palette.chutney
     if ($tone === 'nonveg') return palette.chili
-    return theme.colors.primary
+    return brandVar.primary
   }};
-  color: ${({ $active }) => ($active ? palette.white : palette.ink)};
+  color: ${({ $active, $tone }) => {
+    if (!$active) return palette.ink
+    if ($tone === 'veg' || $tone === 'nonveg') return palette.white
+    return brandVar.onPrimary
+  }};
   border: 1px solid
-    ${({ $active, $tone, theme }) => {
+    ${({ $active, $tone }) => {
       if (!$active) return palette.line
       if ($tone === 'veg') return palette.chutney
       if ($tone === 'nonveg') return palette.chili
-      return theme.colors.primary
+      return brandVar.primary
     }};
   border-radius: ${radii.full};
   box-shadow: ${({ $active }) => ($active ? shadows.sm : 'none')};

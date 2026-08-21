@@ -2,6 +2,7 @@ import styled from 'styled-components'
 
 import { neoPressable } from '@/styles/mixins'
 import { fontSizes, fontWeights, palette, radii, shadows, spacing } from '@/styles/theme'
+import { brandVar } from '@/utils/theme/brand-palette'
 
 export const Wrap = styled.section`
   display: grid;
@@ -18,7 +19,7 @@ export const Label = styled.h2`
   font-weight: ${fontWeights.bold};
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  color: ${palette.tomato};
+  color: ${brandVar.accentText};
 `
 
 export const Rail = styled.div`

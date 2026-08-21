@@ -120,7 +120,8 @@ export const Option = styled.button<{ $active?: boolean }>`
   padding: ${spacing.sm} ${spacing.md};
   text-align: left;
   color: ${({ $active }) => ($active ? palette.white : palette.ink)};
-  background: ${({ $active }) => ($active ? palette.mango : 'transparent')};
+  background: ${({ $active }) => ($active ? brandVar.primary : 'transparent')};
+  color: ${({ $active }) => ($active ? brandVar.onPrimary : palette.ink)};
   border-radius: ${radii.sm};
   font-size: ${fontSizes.body};
   font-weight: ${({ $active }) => ($active ? 700 : 600)};
@@ -152,7 +153,7 @@ export const Option = styled.button<{ $active?: boolean }>`
 
   @media (hover: hover) {
     &:hover {
-      background: ${({ $active }) => ($active ? palette.mango : palette.cream)};
+      background: ${({ $active }) => ($active ? brandVar.primary : palette.cream)};
       color: ${({ $active }) => ($active ? palette.white : palette.ink)};
     }
   }

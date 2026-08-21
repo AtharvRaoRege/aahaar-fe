@@ -1,6 +1,7 @@
 import styled, { keyframes } from 'styled-components'
 
 import { fontSizes, palette, radii, shadows, spacing } from '@/styles/theme'
+import { brandVar } from '@/utils/theme/brand-palette'
 
 export const Page = styled.div`
   flex: 1;
@@ -173,7 +174,7 @@ export const DiscountLine = styled.div`
   justify-content: space-between;
   font-weight: 700;
   font-size: ${fontSizes.label};
-  color: ${palette.tomato};
+  color: ${brandVar.accentText};
 `
 
 const confettiFall = keyframes`
@@ -236,7 +237,7 @@ export const CelebrateKicker = styled.p`
   font-weight: 800;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: ${palette.tomato};
+  color: ${brandVar.accentText};
 `
 
 export const CelebrateTitle = styled.p`
@@ -252,7 +253,7 @@ export const CelebrateSave = styled.p`
   margin: 0;
   font-size: ${fontSizes.h2};
   font-weight: 800;
-  color: ${palette.tomato};
+  color: ${brandVar.accentText};
 `
 
 export const ConfettiBit = styled.span<{
@@ -273,7 +274,7 @@ export const ConfettiBit = styled.span<{
     $tone % 4 === 0
       ? palette.mango
       : $tone % 4 === 1
-        ? palette.tomato
+        ? brandVar.primary
         : $tone % 4 === 2
           ? palette.chili
           : palette.mangoDark};

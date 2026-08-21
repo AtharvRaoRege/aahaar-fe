@@ -2,6 +2,7 @@ import styled, { css } from 'styled-components'
 
 import { punch } from '@/styles/mixins'
 import { fontSizes, palette, radii, shadows, spacing } from '@/styles/theme'
+import { brandVar } from '@/utils/theme/brand-palette'
 
 export const Card = styled.article<{ $fresh?: boolean; $pending?: boolean }>`
   display: flex;
@@ -10,7 +11,7 @@ export const Card = styled.article<{ $fresh?: boolean; $pending?: boolean }>`
   min-width: 0;
   padding: ${spacing.md};
   background: ${palette.white};
-  border: 1px solid ${({ $pending, theme }) => ($pending ? theme.colors.primary : palette.line)};
+  border: 1px solid ${({ $pending }) => ($pending ? brandVar.primary : palette.line)};
   border-radius: ${radii.md};
   box-shadow: ${shadows.card};
   ${({ $pending }) =>
@@ -199,7 +200,7 @@ export const ItemExtras = styled.span`
 export const ItemNotes = styled.span`
   font-size: ${fontSizes.labelSm};
   font-weight: 600;
-  color: ${palette.tomato};
+  color: ${brandVar.accentText};
   overflow-wrap: anywhere;
 `
 

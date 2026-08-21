@@ -2,6 +2,7 @@ import styled, { css, keyframes } from 'styled-components'
 
 import { focusRing, neoPressable } from '@/styles/mixins'
 import { palette, radii, shadows } from '@/styles/theme'
+import { brandVar } from '@/utils/theme/brand-palette'
 
 export type ButtonVariant = 'primary' | 'secondary' | 'outline' | 'danger' | 'ghost'
 export type ButtonSize = 'sm' | 'md' | 'lg'
@@ -36,9 +37,16 @@ export const Spinner = styled.span`
 
 const variantStyles: Record<ButtonVariant, ReturnType<typeof css>> = {
   primary: css`
-    background: ${({ theme }) => theme.colors.primary};
-    color: ${({ theme }) => theme.palette.white};
-    border-color: ${({ theme }) => theme.colors.primary};
+    background: ${brandVar.primary};
+    color: ${brandVar.onPrimary};
+    border-color: ${brandVar.primary};
+
+    @media (hover: hover) {
+      &:hover:not(:disabled) {
+        background: ${brandVar.primaryHover};
+        border-color: ${brandVar.primaryHover};
+      }
+    }
   `,
   secondary: css`
     background: ${palette.mango};

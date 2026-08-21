@@ -2,6 +2,7 @@ import styled from 'styled-components'
 
 import { focusRing, hideScrollbar, neoPressable } from '@/styles/mixins'
 import { fontSizes, fontWeights, palette, radii, shadows, spacing } from '@/styles/theme'
+import { brandVar } from '@/utils/theme/brand-palette'
 
 export const Hero = styled.header`
   position: relative;
@@ -12,7 +13,7 @@ export const Cover = styled.div`
   position: relative;
   height: 132px;
   overflow: hidden;
-  background-color: ${palette.tomatoDark};
+  background-color: ${brandVar.primaryHover};
 
   ${({ theme }) => theme.media.sm} {
     height: 156px;
@@ -99,7 +100,7 @@ export const Medallion = styled.div`
   font-size: ${fontSizes.subheading};
   font-weight: ${fontWeights.black};
   letter-spacing: -0.02em;
-  color: ${palette.tomatoDark};
+  color: ${brandVar.accentText};
 
   img {
     width: 100%;
@@ -183,8 +184,8 @@ export const TablePill = styled.span`
   display: inline-flex;
   align-items: center;
   padding: 3px ${spacing.sm};
-  background: ${palette.mangoWash};
-  border: 1px solid ${palette.mangoDark};
+  background: ${brandVar.surfaceTint};
+  border: 1px solid ${brandVar.border};
   color: ${palette.ink};
   border-radius: ${radii.full};
   font-size: ${fontSizes.labelSm};

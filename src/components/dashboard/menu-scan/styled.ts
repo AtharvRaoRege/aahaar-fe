@@ -1,6 +1,7 @@
 import styled from 'styled-components'
 
 import { fontSizes, fontWeights, palette, radii, shadows, spacing } from '@/styles/theme'
+import { brandVar } from '@/utils/theme/brand-palette'
 
 export const Body = styled.div`
   display: grid;
@@ -28,7 +29,7 @@ export const Drop = styled.label`
   svg {
     width: 28px;
     height: 28px;
-    color: ${palette.tomato};
+    color: ${brandVar.accentText};
   }
 
   input {
@@ -149,7 +150,7 @@ export const Spinner = styled.span`
   height: 30px;
   border-radius: ${radii.full};
   border: 3px solid ${palette.line};
-  border-top-color: ${palette.tomato};
+  border-top-color: ${brandVar.primary};
   animation: spin 780ms linear infinite;
 
   @keyframes spin {

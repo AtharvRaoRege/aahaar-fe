@@ -1,6 +1,7 @@
 import styled from 'styled-components'
 
 import { fontSizes, masks, palette, radii, shadows, spacing, transitions } from '@/styles/theme'
+import { brandVar } from '@/utils/theme/brand-palette'
 
 export const Bar = styled.div`
   padding: ${spacing.sm} ${spacing.lg} ${spacing.sm};
@@ -61,10 +62,9 @@ export const Tab = styled.button<{ $active: boolean }>`
   max-width: min(200px, 70vw);
   min-height: 36px;
   padding: 0 ${spacing.md};
-  background: ${({ $active, theme }) => ($active ? theme.colors.primary : palette.white)};
-  color: ${({ $active }) => ($active ? palette.white : palette.ink)};
-  border: 1px solid
-    ${({ $active, theme }) => ($active ? theme.colors.primary : palette.line)};
+  background: ${({ $active }) => ($active ? brandVar.primary : palette.white)};
+  color: ${({ $active }) => ($active ? brandVar.onPrimary : palette.ink)};
+  border: 1px solid ${({ $active }) => ($active ? brandVar.primary : palette.line)};
   border-radius: ${radii.full};
   box-shadow: ${({ $active }) => ($active ? shadows.sm : 'none')};
   font-weight: 700;

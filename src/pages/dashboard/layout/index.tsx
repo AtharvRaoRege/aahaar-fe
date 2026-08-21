@@ -40,6 +40,7 @@ export function DashboardLayout() {
   const {
     user,
     restaurant,
+    brand,
     impersonation,
     venueLoading,
     venueError,
@@ -66,7 +67,7 @@ export function DashboardLayout() {
   const pendingBadge = formatNavBadge(pendingOrderCount)
 
   return (
-    <Shell>
+    <Shell $brand={brand}>
       <Sidebar>
         <Brand>
           <BrandMark size={32} />

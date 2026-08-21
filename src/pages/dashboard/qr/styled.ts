@@ -65,6 +65,13 @@ export const Card = styled.article`
   box-shadow: ${shadows.sm};
 `
 
+export const CardTop = styled.div`
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+`
+
 export const QrImage = styled.img`
   width: 100%;
   aspect-ratio: 1;
@@ -74,6 +81,8 @@ export const QrImage = styled.img`
 `
 
 export const Label = styled.h3`
+  flex: 1;
+  min-width: 0;
   font-weight: 700;
 `
 

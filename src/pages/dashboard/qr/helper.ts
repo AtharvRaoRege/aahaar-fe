@@ -1,6 +1,8 @@
 import { useState } from 'react'
+import type { TFunction } from 'i18next'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 
+import type { ActionMenuItem } from '@/components/global/action-menu/helper'
 import { qrApi } from '@/lib/api/qr'
 import { freshFor } from '@/lib/query/cache'
 import { queryKeys } from '@/lib/query/keys'
@@ -90,4 +92,26 @@ export function useQrPage(restaurantId: string) {
       }
     },
   }
+}
+
+export function qrActions(qr: QrCode, copiedId: string | null, t: TFunction): ActionMenuItem[] {
+  return [
+    {
+      id: 'copy',
+      label: copiedId === qr.id ? t('qr.copied') : t('qr.copy'),
+    },
+    { id: 'download', label: t('qr.download') },
+  ]
+}
+
+export function runQrAction(
+  id: string,
+  qr: QrCode,
+  handlers: {
+    onCopy: (qr: QrCode) => void
+    onDownload: (qr: QrCode) => void
+  },
+) {
+  if (id === 'copy') void handlers.onCopy(qr)
+  if (id === 'download') handlers.onDownload(qr)
 }

@@ -2,6 +2,7 @@ import styled from 'styled-components'
 
 import { focusRing } from '@/styles/mixins'
 import { palette, radii, transitions } from '@/styles/theme'
+import { brandVar } from '@/utils/theme/brand-palette'
 
 export const Wrap = styled.div<{ $size: 'sm' | 'md' }>`
   display: inline-flex;
@@ -18,14 +19,14 @@ export const QtyButton = styled.button`
   align-items: center;
   justify-content: center;
   width: 36px;
-  background: ${palette.mango};
+  background: ${brandVar.surfaceTint};
   color: ${palette.ink};
   transition: background ${transitions.fast};
   ${focusRing};
 
   &:active {
-    background: ${palette.tomato};
-    color: ${palette.white};
+    background: ${brandVar.primary};
+    color: ${brandVar.onPrimary};
   }
 
   svg {

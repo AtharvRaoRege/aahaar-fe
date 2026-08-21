@@ -3,6 +3,7 @@ import styled, { keyframes } from 'styled-components'
 import { fontSizes, fontWeights, palette, radii, shadows, spacing } from '@/styles/theme'
 
 import { FACT_ROTATE_MS } from './helper'
+import { brandVar } from '@/utils/theme/brand-palette'
 
 const fade = keyframes`
   from { opacity: 0; transform: translateY(4px); }
@@ -48,7 +49,7 @@ export const FactKicker = styled.p`
   font-weight: ${fontWeights.bold};
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: ${palette.tomato};
+  color: ${brandVar.accentText};
 
   ${({ theme }) => theme.media.md} {
     font-size: ${fontSizes.labelSm};
@@ -86,7 +87,7 @@ export const TimerFill = styled.span`
   width: 100%;
   height: 100%;
   transform-origin: left center;
-  background: ${palette.tomato};
+  background: ${brandVar.primary};
   border-radius: inherit;
   animation: ${drain} ${FACT_ROTATE_MS}ms linear forwards;
 

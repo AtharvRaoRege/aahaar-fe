@@ -1,8 +1,10 @@
-import styled from 'styled-components'
+import styled, { css } from 'styled-components'
 
+import type { BrandPalette } from '@/utils/theme/brand-palette'
+import { brandCssVars, brandVar } from '@/utils/theme/brand-palette'
 import { fontSizes, palette, radii, spacing } from '@/styles/theme'
 
-export const Shell = styled.div`
+export const Shell = styled.div<{ $brand?: BrandPalette }>`
   flex: 1;
   display: flex;
   height: 100vh;
@@ -12,6 +14,14 @@ export const Shell = styled.div`
   overflow: hidden;
   background: ${palette.canvas};
   overscroll-behavior: none;
+
+  ${({ $brand }) =>
+    $brand &&
+    css`
+      ${Object.entries(brandCssVars($brand))
+        .map(([key, value]) => `${key}: ${value};`)
+        .join('\n')}
+    `}
 `
 
 export const Sidebar = styled.aside`
@@ -78,14 +88,14 @@ export const NavLinkItem = styled.span<{ $active: boolean }>`
   padding: 0 12px;
   font-weight: 600;
   border-radius: ${radii.md};
-  background: ${({ $active }) => ($active ? palette.mango : 'transparent')};
-  color: ${({ $active }) => ($active ? palette.white : palette.ink)};
+  background: ${({ $active }) => ($active ? brandVar.primary : 'transparent')};
+  color: ${({ $active }) => ($active ? brandVar.onPrimary : palette.ink)};
 
   svg {
     width: 18px;
     height: 18px;
     flex-shrink: 0;
-    color: ${({ $active }) => ($active ? palette.white : palette.ink)};
+    color: ${({ $active }) => ($active ? brandVar.onPrimary : palette.ink)};
     stroke-width: ${({ $active }) => ($active ? 1.75 : 1.5)};
   }
 `
@@ -106,8 +116,8 @@ export const NavBadge = styled.span<{ $onAccent?: boolean }>`
   display: inline-grid;
   place-items: center;
   border-radius: ${radii.full};
-  background: ${({ $onAccent }) => ($onAccent ? palette.white : palette.tomato)};
-  color: ${({ $onAccent }) => ($onAccent ? palette.tomato : palette.white)};
+  background: ${({ $onAccent }) => ($onAccent ? palette.white : brandVar.primary)};
+  color: ${({ $onAccent }) => ($onAccent ? brandVar.accentText : brandVar.onPrimary)};
   font-size: ${fontSizes.micro};
   font-weight: 800;
   line-height: 1;
@@ -134,8 +144,8 @@ export const IconBadge = styled.span`
   display: inline-grid;
   place-items: center;
   border-radius: ${radii.full};
-  background: ${palette.tomato};
-  color: ${palette.white};
+  background: ${brandVar.primary};
+  color: ${brandVar.onPrimary};
   border: 1.5px solid ${palette.cream};
   font-size: 0.625rem;
   font-weight: 800;

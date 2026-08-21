@@ -3,6 +3,7 @@ import styled, { keyframes } from 'styled-components'
 import { dashboardHint, dashboardTitle } from '@/pages/dashboard/shared'
 import { hideScrollbar } from '@/styles/mixins'
 import { fontSizes, masks, palette, radii, shadows, spacing } from '@/styles/theme'
+import { brandVar } from '@/utils/theme/brand-palette'
 
 export const Page = styled.div`
   flex: 1;
@@ -255,11 +256,11 @@ export const CategoryBtn = styled.button<{ $active: boolean }>`
   min-height: 40px;
   padding: ${spacing.sm} ${spacing.md};
   border-radius: ${radii.full};
-  color: ${({ $active }) => ($active ? palette.white : palette.inkSoft)};
-  background: ${({ $active }) => ($active ? palette.mango : palette.white)};
+  color: ${({ $active }) => ($active ? brandVar.onPrimary : palette.inkSoft)};
+  background: ${({ $active }) => ($active ? brandVar.primary : palette.white)};
   font-weight: ${({ $active }) => ($active ? 800 : 600)};
   box-shadow: ${({ $active }) => ($active ? shadows.sm : 'none')};
-  border: 1px solid ${({ $active }) => ($active ? palette.mango : palette.line)};
+  border: 1px solid ${({ $active }) => ($active ? brandVar.primary : palette.line)};
   transition:
     background 140ms ease-out,
     color 140ms ease-out,
@@ -270,7 +271,7 @@ export const CategoryBtn = styled.button<{ $active: boolean }>`
     flex-shrink: 0;
     width: 16px;
     height: 16px;
-    color: ${({ $active }) => ($active ? palette.white : palette.inkSoft)};
+    color: ${({ $active }) => ($active ? brandVar.onPrimary : palette.inkSoft)};
     stroke-width: ${({ $active }) => ($active ? 1.75 : 1.5)};
   }
 
@@ -288,9 +289,9 @@ export const CategoryBtn = styled.button<{ $active: boolean }>`
 
   @media (hover: hover) {
     &:hover {
-      background: ${({ $active }) => ($active ? palette.mango : palette.canvas)};
-      color: ${({ $active }) => ($active ? palette.white : palette.ink)};
-      border-color: ${({ $active }) => ($active ? palette.mango : palette.line)};
+      background: ${({ $active }) => ($active ? brandVar.primary : palette.canvas)};
+      color: ${({ $active }) => ($active ? brandVar.onPrimary : palette.ink)};
+      border-color: ${({ $active }) => ($active ? brandVar.primary : palette.line)};
     }
   }
 

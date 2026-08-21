@@ -2,6 +2,7 @@ import styled from 'styled-components'
 
 import { dashboardHint, dashboardPage, dashboardTitle } from '@/pages/dashboard/shared'
 import { fontSizes, fontWeights, palette, radii, shadows, spacing } from '@/styles/theme'
+import { brandVar } from '@/utils/theme/brand-palette'
 
 export const Page = styled.div`
   ${dashboardPage};
@@ -26,7 +27,7 @@ export const RangeRow = styled.div`
 export const SectionLabel = styled.h2`
   font-size: ${fontSizes.label};
   font-weight: 600;
-  color: ${palette.tomato};
+  color: ${brandVar.accentText};
   margin: ${spacing['2xl']} 0 ${spacing.md};
 
   ${({ theme }) => theme.media.md} {
@@ -216,7 +217,7 @@ export const HourBar = styled.div<{ $ratio: number }>`
   min-width: 12px;
   height: ${({ $ratio }) => Math.max(4, Math.round($ratio * 96))}px;
   border-radius: ${radii.sm} ${radii.sm} 0 0;
-  background: ${palette.tomato};
+  background: ${brandVar.primary};
 `
 
 export const HourLabels = styled.div`

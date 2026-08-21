@@ -1,8 +1,10 @@
-import styled from 'styled-components'
+import styled, { css } from 'styled-components'
 
+import type { BrandPalette } from '@/utils/theme/brand-palette'
+import { brandCssVars } from '@/utils/theme/brand-palette'
 import { palette } from '@/styles/theme'
 
-export const Shell = styled.div`
+export const Shell = styled.div<{ $brand?: BrandPalette }>`
   flex: 1;
   display: flex;
   flex-direction: column;
@@ -12,6 +14,14 @@ export const Shell = styled.div`
   margin: 0 auto;
   background: ${palette.canvas};
   overflow-x: hidden;
+
+  ${({ $brand }) =>
+    $brand &&
+    css`
+      ${Object.entries(brandCssVars($brand))
+        .map(([key, value]) => `${key}: ${value};`)
+        .join('\n')}
+    `}
 `
 
 export const Centered = styled.div`

@@ -1,7 +1,9 @@
 import { useEffect, useState, useSyncExternalStore } from 'react'
+import type { TFunction } from 'i18next'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { useForm, useWatch } from 'react-hook-form'
 
+import type { ActionMenuItem } from '@/components/global/action-menu/helper'
 import { authApi } from '@/lib/api/auth'
 import { restaurantsApi } from '@/lib/api/restaurants'
 import { tokenStore } from '@/lib/auth/token-store'
@@ -182,4 +184,11 @@ export function useSettingsPage(restaurant: Restaurant) {
     adding: addVenue.isPending,
     addError: addVenue.isError ? errorMessage(addVenue.error) : '',
   }
+}
+
+export function linkActions(copied: boolean, t: TFunction): ActionMenuItem[] {
+  return [
+    { id: 'copy', label: copied ? t('settings.copied') : t('settings.copyLink') },
+    { id: 'plan', label: t('settings.openPlan') },
+  ]
 }

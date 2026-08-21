@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { useLocation, useParams, useSearchParams } from 'react-router-dom'
 
+import { useDocumentBrand } from '@/hooks/theme/use-document-brand/helper'
 import { publicApi } from '@/lib/api/public'
 import { guestProfileStore } from '@/lib/customer/guest-profile-store'
 import { sessionStore } from '@/lib/customer/session-store'
@@ -88,6 +89,8 @@ export function useCustomerLayout() {
 
   const restPath = location.pathname.replace(new RegExp(`^/r/${slug}`), '') || '/menu'
 
+  const brand = useDocumentBrand(query.data?.primaryColor)
+
   return {
     slug,
     query,
@@ -100,6 +103,7 @@ export function useCustomerLayout() {
     needsTableInUrl,
     needsIdentity,
     restoringIdentity,
+    brand,
     markIdentified: () => {
       setRestoreFailed(false)
       setIdentityNonce((value) => value + 1)

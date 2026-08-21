@@ -1,6 +1,7 @@
 import styled, { css, keyframes } from 'styled-components'
 
 import { fontSizes, palette, radii, shadows, spacing, transitions } from '@/styles/theme'
+import { brandVar } from '@/utils/theme/brand-palette'
 
 const pulse = keyframes`
   0% {
@@ -29,7 +30,7 @@ export const Wrap = styled.div<{ $listening?: boolean }>`
   min-width: 0;
   padding: 0 ${spacing.sm} 0 ${spacing.md};
   background: ${palette.white};
-  border: 1px solid ${({ $listening, theme }) => ($listening ? theme.colors.primary : palette.line)};
+  border: 1px solid ${({ $listening }) => ($listening ? brandVar.primary : palette.line)};
   border-radius: ${radii.full};
   box-shadow: ${shadows.sm};
   transition:
@@ -37,7 +38,7 @@ export const Wrap = styled.div<{ $listening?: boolean }>`
     box-shadow ${transitions.fast};
 
   &:focus-within {
-    border-color: ${({ theme }) => theme.colors.primary};
+    border-color: ${brandVar.primary};
     box-shadow: ${shadows.mangoRing}, ${shadows.sm};
   }
 
@@ -123,10 +124,10 @@ export const MicButton = styled.button<{ $listening?: boolean }>`
   width: 40px;
   height: 40px;
   padding: 0;
-  background: ${({ $listening, theme }) => ($listening ? theme.colors.primary : 'transparent')};
+  background: ${({ $listening }) => ($listening ? brandVar.primary : 'transparent')};
   border: none;
   border-radius: ${radii.full};
-  color: ${({ $listening }) => ($listening ? palette.white : palette.inkSoft)};
+  color: ${({ $listening }) => ($listening ? brandVar.onPrimary : palette.inkSoft)};
   cursor: pointer;
   pointer-events: auto;
   touch-action: manipulation;

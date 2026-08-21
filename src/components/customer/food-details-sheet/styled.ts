@@ -1,13 +1,14 @@
 import styled from 'styled-components'
 
 import { palette } from '@/styles/theme'
+import { brandVar } from '@/utils/theme/brand-palette'
 
 export const Cover = styled.div`
   width: 100%;
   aspect-ratio: 16 / 10;
   border: 4px solid ${palette.ink};
   overflow: hidden;
-  background: ${palette.mango};
+  background: ${brandVar.primary};
   display: flex;
   align-items: center;
   justify-content: center;
@@ -55,7 +56,8 @@ export const Option = styled.button<{ $selected: boolean }>`
   justify-content: space-between;
   gap: 12px;
   padding: 12px 14px;
-  background: ${({ $selected }) => ($selected ? palette.mango : palette.white)};
+  background: ${({ $selected }) => ($selected ? brandVar.primary : palette.white)};
+  color: ${({ $selected }) => ($selected ? brandVar.onPrimary : palette.ink)};
   border: 3px solid ${palette.ink};
   font-weight: 700;
   text-align: left;

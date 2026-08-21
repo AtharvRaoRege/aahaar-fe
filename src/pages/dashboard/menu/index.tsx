@@ -3,7 +3,6 @@ import {
   Download,
   EllipsisVertical,
   FolderPlus,
-  Pencil,
   Plus,
   ScanLine,
   Trash2,
@@ -16,6 +15,7 @@ import { MenuScanSheet } from '@/components/dashboard/menu-scan'
 import { OffersModal } from '@/components/dashboard/offers-modal'
 import { UpsellPicker } from '@/components/dashboard/upsell-picker'
 import { VenueScreen } from '@/components/dashboard/venue-screen'
+import { ActionMenu } from '@/components/global/action-menu'
 import { Button } from '@/components/global/button'
 import { BottomSheet } from '@/components/global/bottom-sheet'
 import { ConfirmDialog } from '@/components/global/confirm-dialog'
@@ -29,7 +29,15 @@ import { VegMark } from '@/components/global/veg-mark'
 import type { Restaurant } from '@/types/restaurant'
 import { formatMoney } from '@/utils/format'
 
-import { categoryIcon, sectionId, useMenuManager } from './helper'
+import {
+  bulkActions,
+  categoryIcon,
+  itemActions,
+  runBulkAction,
+  sectionActions,
+  sectionId,
+  useMenuManager,
+} from './helper'
 import {
   ActionList,
   BulkBar,
@@ -136,23 +144,17 @@ function MenuBody({ restaurant }: { restaurant: Restaurant }) {
       {page.selectMode && (
         <BulkBar>
           <BulkCount>{t('menu.selectedCount', { count: page.selectedCount })}</BulkCount>
-          <Button size="sm" variant="outline" onClick={page.selectAll}>
-            {t('menu.selectAll')}
-          </Button>
-          <Button size="sm" variant="outline" onClick={page.deselectAll}>
-            {t('menu.deselectAll')}
-          </Button>
-          <Button
-            size="sm"
-            leftIcon={<Trash2 aria-hidden />}
-            disabled={page.selectedCount === 0}
-            onClick={page.askBulkDelete}
-          >
-            {t('menu.deleteSelected')}
-          </Button>
-          <Button size="sm" variant="outline" onClick={page.exitSelectMode}>
-            {t('menu.cancelSelect')}
-          </Button>
+          <ActionMenu
+            items={bulkActions(page.selectedCount, t)}
+            onPick={(id) =>
+              runBulkAction(id, {
+                onSelectAll: page.selectAll,
+                onDeselectAll: page.deselectAll,
+                onDelete: page.askBulkDelete,
+                onCancel: page.exitSelectMode,
+              })
+            }
+          />
         </BulkBar>
       )}
 
@@ -214,22 +216,13 @@ function MenuBody({ restaurant }: { restaurant: Restaurant }) {
                   <span>{group.name}</span>
                   {group.id && (
                     <SectionActions>
-                      <IconButton
-                        type="button"
-                        size="sm"
-                        tone="danger"
-                        label={t('menu.deleteCategory')}
-                        icon={<Trash2 aria-hidden />}
-                        onClick={() => page.askDeleteCategory(group.id!, group.name)}
+                      <ActionMenu
+                        items={sectionActions(t)}
+                        onPick={(id) => {
+                          if (id === 'add') page.openCreate(group.id ?? undefined)
+                          if (id === 'delete') page.askDeleteCategory(group.id!, group.name)
+                        }}
                       />
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        leftIcon={<Plus aria-hidden />}
-                        onClick={() => page.openCreate(group.id ?? undefined)}
-                      >
-                        {t('menu.addItem')}
-                      </Button>
                     </SectionActions>
                   )}
                 </SectionTitle>
@@ -274,20 +267,12 @@ function MenuBody({ restaurant }: { restaurant: Restaurant }) {
                         </ItemPrice>
                         {!page.selectMode && (
                           <ItemActions>
-                            <IconButton
-                              type="button"
-                              size="sm"
-                              label={t('menu.edit')}
-                              icon={<Pencil aria-hidden />}
-                              onClick={() => page.openEdit(item)}
-                            />
-                            <IconButton
-                              type="button"
-                              size="sm"
-                              tone="danger"
-                              label={t('menu.deleteDish')}
-                              icon={<Trash2 aria-hidden />}
-                              onClick={() => page.askDeleteItem(item.id)}
+                            <ActionMenu
+                              items={itemActions(t)}
+                              onPick={(id) => {
+                                if (id === 'edit') page.openEdit(item)
+                                if (id === 'delete') page.askDeleteItem(item.id)
+                              }}
                             />
                           </ItemActions>
                         )}

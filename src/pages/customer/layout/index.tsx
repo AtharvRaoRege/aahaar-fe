@@ -25,11 +25,12 @@ export function CustomerLayout() {
     restoringIdentity,
     markIdentified,
     restPath,
+    brand,
   } = useCustomerLayout()
 
   if (query.isLoading) {
     return (
-      <Shell>
+      <Shell $brand={brand}>
         <Centered>
           <LoadingGrid>
             <Skeleton height="120px" />
@@ -43,7 +44,7 @@ export function CustomerLayout() {
 
   if (query.isError || !query.data) {
     return (
-      <Shell>
+      <Shell $brand={brand}>
         <Centered>
           <EmptyState emoji="🔍" title={t('common:states.error')} hint={t('common:states.notFound')} />
         </Centered>
@@ -53,7 +54,7 @@ export function CustomerLayout() {
 
   if (!query.data.isServing) {
     return (
-      <Shell>
+      <Shell $brand={brand}>
         <Centered>
           <EmptyState
             emoji="🕒"
@@ -75,7 +76,7 @@ export function CustomerLayout() {
 
   if (restoringIdentity && tableNumber) {
     return (
-      <Shell>
+      <Shell $brand={brand}>
         <Centered>
           <LoadingGrid>
             <Skeleton height="120px" />
@@ -89,7 +90,7 @@ export function CustomerLayout() {
 
   if (needsIdentity && tableNumber) {
     return (
-      <Shell>
+      <Shell $brand={brand}>
         <GuestWelcome
           restaurant={query.data}
           tableNumber={tableNumber}
@@ -115,7 +116,7 @@ export function CustomerLayout() {
   }
 
   return (
-    <Shell>
+    <Shell $brand={brand}>
       <CartProvider key={`${query.data.id}:${tableNumber ?? 'none'}`} restaurantId={query.data.id}>
         {canOrder && (
           <GuestOrderWatch

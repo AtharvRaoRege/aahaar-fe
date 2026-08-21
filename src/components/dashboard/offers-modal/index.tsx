@@ -2,6 +2,7 @@ import { BadgePercent, Plus, X } from 'lucide-react'
 import { createPortal } from 'react-dom'
 import { useTranslation } from 'react-i18next'
 
+import { ActionMenu } from '@/components/global/action-menu'
 import { Button } from '@/components/global/button'
 import { ConfirmDialog } from '@/components/global/confirm-dialog'
 import { EmptyState } from '@/components/global/empty-state'
@@ -12,10 +13,9 @@ import { Skeleton } from '@/components/global/skeleton'
 import type { Offer } from '@/types/offer'
 import { renderOfferKindIcon } from '@/utils/offers/kind-icon'
 
-import { useOffersPage } from './helper'
+import { offerActions, runOfferAction, useOffersPage } from './helper'
 import {
   Body,
-  CardActions,
   CardHead,
   Code,
   FormModal,
@@ -23,6 +23,7 @@ import {
   FormRow,
   Head,
   HeadRow,
+  HeadTools,
   Hint,
   KindRow,
   List,
@@ -114,27 +115,24 @@ function OffersModalBody({
                         <OfferIcon>{renderOfferKindIcon(offer.kind, 18)}</OfferIcon>
                         <OfferTitle>{offer.title}</OfferTitle>
                       </KindRow>
-                      <StatePill $state={offer.state}>{t(`offers.states.${offer.state}`)}</StatePill>
+                      <HeadTools>
+                        <StatePill $state={offer.state}>{t(`offers.states.${offer.state}`)}</StatePill>
+                        <ActionMenu
+                          items={offerActions(offer, t)}
+                          loading={page.busy}
+                          onPick={(id) =>
+                            runOfferAction(id, offer, {
+                              onEdit: page.openEdit,
+                              onToggle: page.toggle,
+                              onDelete: page.askDelete,
+                            })
+                          }
+                        />
+                      </HeadTools>
                     </CardHead>
                     <Meta>{t(`offers.kinds.${offer.kind}`)}</Meta>
                     {offer.description && <Meta>{offer.description}</Meta>}
                     {offer.couponCode && <Code>{offer.couponCode}</Code>}
-                    <CardActions>
-                      <Button size="sm" variant="outline" onClick={() => page.openEdit(offer)}>
-                        {t('offers.edit')}
-                      </Button>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        loading={page.busy}
-                        onClick={() => page.toggle(offer)}
-                      >
-                        {offer.isActive ? t('publish.takeOffline') : t('publish.goLive')}
-                      </Button>
-                      <Button size="sm" variant="danger" onClick={() => page.askDelete(offer)}>
-                        {t('common:actions.delete')}
-                      </Button>
-                    </CardActions>
                   </OfferCard>
                 ))}
               </List>

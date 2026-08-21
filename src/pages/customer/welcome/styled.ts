@@ -2,6 +2,7 @@ import styled from 'styled-components'
 
 import { faintHalftone } from '@/styles/mixins'
 import { palette } from '@/styles/theme'
+import { brandVar } from '@/utils/theme/brand-palette'
 
 export const Page = styled.div`
   flex: 1;
@@ -22,7 +23,7 @@ export const Kicker = styled.p`
   font-weight: 900;
   letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: ${palette.tomato};
+  color: ${brandVar.accentText};
 `
 
 export const RestaurantName = styled.h1`

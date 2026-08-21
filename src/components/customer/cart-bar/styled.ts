@@ -1,7 +1,8 @@
 import styled from 'styled-components'
 
 import { fadeIn } from '@/styles/mixins'
-import { fontSizes, palette, radii, shadows, spacing, transitions } from '@/styles/theme'
+import { fontSizes, radii, shadows, spacing, transitions } from '@/styles/theme'
+import { brandVar } from '@/utils/theme/brand-palette'
 
 export const Bar = styled.button`
   position: fixed;
@@ -15,8 +16,8 @@ export const Bar = styled.button`
   gap: ${spacing.md};
   min-width: 0;
   padding: ${spacing.md} ${spacing.lg};
-  background: ${palette.tomato};
-  color: ${palette.white};
+  background: ${brandVar.primary};
+  color: ${brandVar.onPrimary};
   border: none;
   border-radius: ${radii.md};
   box-shadow: ${shadows.lg};
@@ -24,7 +25,7 @@ export const Bar = styled.button`
   transition: transform ${transitions.fast}, background ${transitions.fast};
 
   &:hover {
-    background: ${palette.tomatoDark};
+    background: ${brandVar.primaryHover};
   }
 
   &:active {

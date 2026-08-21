@@ -1,14 +1,28 @@
 import { useTranslation } from 'react-i18next'
 
 import { VenueScreen } from '@/components/dashboard/venue-screen'
+import { ActionMenu } from '@/components/global/action-menu'
 import { Button } from '@/components/global/button'
 import { EmptyState } from '@/components/global/empty-state'
 import { TextField } from '@/components/global/field'
 import { Skeleton } from '@/components/global/skeleton'
+import type { QrCode } from '@/types/qr'
 import type { Restaurant } from '@/types/restaurant'
 
-import { useQrPage } from './helper'
-import { Card, Featured, Form, Grid, Hint, Label, Meta, Page, QrImage, Title } from './styled'
+import { qrActions, runQrAction, useQrPage } from './helper'
+import {
+  Card,
+  CardTop,
+  Featured,
+  Form,
+  Grid,
+  Hint,
+  Label,
+  Meta,
+  Page,
+  QrImage,
+  Title,
+} from './styled'
 
 export function QrPage() {
   return <VenueScreen cards={3}>{(restaurant) => <QrBody restaurant={restaurant} />}</VenueScreen>
@@ -17,6 +31,18 @@ export function QrPage() {
 function QrBody({ restaurant }: { restaurant: Restaurant }) {
   const { t } = useTranslation(['dashboard', 'common'])
   const page = useQrPage(restaurant.id)
+
+  const menuFor = (qr: QrCode) => (
+    <ActionMenu
+      items={qrActions(qr, page.copiedId, t)}
+      onPick={(id) =>
+        runQrAction(id, qr, {
+          onCopy: page.copyLink,
+          onDownload: page.downloadQr,
+        })
+      }
+    />
+  )
 
   return (
     <Page>
@@ -51,26 +77,13 @@ function QrBody({ restaurant }: { restaurant: Restaurant }) {
       {page.reviewQr && (
         <Featured>
           <Card>
+            <CardTop>
+              <Label>{t('qr.reviewTitle')}</Label>
+              {menuFor(page.reviewQr)}
+            </CardTop>
             <QrImage src={page.reviewQr.imageDataUrl} alt={t('qr.reviewLabel')} />
-            <Label>{t('qr.reviewTitle')}</Label>
             <Meta>{t('qr.reviewHint')}</Meta>
             <Meta>{page.reviewQr.targetUrl}</Meta>
-            <Button
-              variant="outline"
-              size="sm"
-              type="button"
-              onClick={() => void page.copyLink(page.reviewQr!)}
-            >
-              {page.copiedId === page.reviewQr.id ? t('qr.copied') : t('qr.copy')}
-            </Button>
-            <Button
-              variant="secondary"
-              size="sm"
-              type="button"
-              onClick={() => page.downloadQr(page.reviewQr!)}
-            >
-              {t('qr.download')}
-            </Button>
           </Card>
         </Featured>
       )}
@@ -82,30 +95,17 @@ function QrBody({ restaurant }: { restaurant: Restaurant }) {
       <Grid>
         {page.tableCodes.map((qr) => (
           <Card key={qr.id}>
+            <CardTop>
+              <Label>{qr.label}</Label>
+              {menuFor(qr)}
+            </CardTop>
             <QrImage src={qr.imageDataUrl} alt={qr.label} />
-            <Label>{qr.label}</Label>
             {qr.tableNumber && (
               <Meta>
                 {t('common:labels.table')} {qr.tableNumber}
               </Meta>
             )}
             <Meta>{qr.targetUrl}</Meta>
-            <Button
-              variant="outline"
-              size="sm"
-              type="button"
-              onClick={() => void page.copyLink(qr)}
-            >
-              {page.copiedId === qr.id ? t('qr.copied') : t('qr.copy')}
-            </Button>
-            <Button
-              variant="secondary"
-              size="sm"
-              type="button"
-              onClick={() => page.downloadQr(qr)}
-            >
-              {t('qr.download')}
-            </Button>
           </Card>
         ))}
       </Grid>

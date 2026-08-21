@@ -1,6 +1,7 @@
 import styled from 'styled-components'
 
 import { fontSizes, fontWeights, palette, radii, spacing } from '@/styles/theme'
+import { brandVar } from '@/utils/theme/brand-palette'
 
 export const Bar = styled.div`
   display: flex;
@@ -57,8 +58,8 @@ export const Name = styled.p`
 export const Pill = styled.span`
   flex-shrink: 0;
   padding: 2px ${spacing.sm};
-  background: ${palette.mangoWash};
-  border: 1px solid ${palette.mangoDark};
+  background: ${brandVar.surfaceTint};
+  border: 1px solid ${brandVar.border};
   color: ${palette.ink};
   border-radius: ${radii.full};
   font-size: 0.6875rem;

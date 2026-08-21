@@ -2,6 +2,7 @@ import styled from 'styled-components'
 
 import { focusRing, neoLiftOnHover } from '@/styles/mixins'
 import { fontSizes, fontWeights, palette, radii, shadows, spacing } from '@/styles/theme'
+import { brandVar } from '@/utils/theme/brand-palette'
 
 export const Tag = styled.span<{ $tone: 'sold' | 'best' }>`
   padding: 2px ${spacing.sm};
@@ -12,7 +13,8 @@ export const Tag = styled.span<{ $tone: 'sold' | 'best' }>`
   text-transform: uppercase;
   white-space: nowrap;
   color: ${({ $tone }) => ($tone === 'sold' ? palette.white : palette.ink)};
-  background: ${({ $tone }) => ($tone === 'sold' ? palette.chili : palette.mango)};
+  background: ${({ $tone }) => ($tone === 'sold' ? palette.chili : brandVar.primary)};
+  color: ${({ $tone }) => ($tone === 'sold' ? palette.white : brandVar.onPrimary)};
 `
 
 export const MetaRow = styled.div`

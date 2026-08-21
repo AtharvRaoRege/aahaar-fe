@@ -1,6 +1,7 @@
 import { css, keyframes } from 'styled-components'
 
 import { palette, radii, shadows, transitions } from '@/styles/theme'
+import { brandVar } from '@/utils/theme/brand-palette'
 
 export const neoSurface = (background: string = palette.white) => css`
   background: ${background};
@@ -54,7 +55,7 @@ export const neoLiftOnHover = css`
 export const focusRing = css`
   outline: none;
   &:focus-visible {
-    outline: 2px solid ${palette.tomato};
+    outline: 2px solid ${brandVar.primary};
     outline-offset: 2px;
   }
 `

@@ -2,6 +2,7 @@ import styled, { keyframes } from 'styled-components'
 
 import { neoPressable } from '@/styles/mixins'
 import { fontSizes, fontWeights, palette, radii, shadows, spacing } from '@/styles/theme'
+import { brandVar } from '@/utils/theme/brand-palette'
 
 const shimmer = keyframes`
   0% { background-position: 0% 50%; }
@@ -30,7 +31,7 @@ export const LabelRow = styled.div`
   display: flex;
   align-items: center;
   gap: ${spacing.sm};
-  color: ${palette.tomato};
+  color: ${brandVar.accentText};
 `
 
 export const Label = styled.h2`
@@ -79,7 +80,7 @@ export const Banner = styled.button`
   box-shadow: ${shadows.md};
   background: linear-gradient(
     125deg,
-    ${palette.tomato} 0%,
+    ${brandVar.primary} 0%,
     ${palette.chili} 45%,
     ${palette.mangoDark} 100%
   );
@@ -190,7 +191,7 @@ export const SheetIcon = styled.span`
   flex-shrink: 0;
   border-radius: ${radii.md};
   background: ${palette.mangoWash};
-  color: ${palette.tomato};
+  color: ${brandVar.accentText};
 `
 
 export const SheetTitle = styled.h3`
@@ -212,9 +213,9 @@ export const CodeBox = styled.p`
   display: grid;
   gap: ${spacing.xs};
   padding: ${spacing.lg};
-  border: 2px dashed ${palette.tomato};
+  border: 2px dashed ${brandVar.primary};
   border-radius: ${radii.md};
-  color: ${palette.tomato};
+  color: ${brandVar.accentText};
   font-size: ${fontSizes.h2};
   font-weight: ${fontWeights.black};
   letter-spacing: 0.1em;

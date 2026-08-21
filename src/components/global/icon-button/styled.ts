@@ -2,6 +2,7 @@ import styled, { css } from 'styled-components'
 
 import { focusRing, neoPressable } from '@/styles/mixins'
 import { palette, shadows } from '@/styles/theme'
+import { brandVar } from '@/utils/theme/brand-palette'
 
 export type IconButtonTone = 'default' | 'primary' | 'secondary' | 'danger'
 export type IconButtonSize = 'sm' | 'md'
@@ -17,12 +18,12 @@ const tones: Record<IconButtonTone, ReturnType<typeof css>> = {
     color: ${palette.ink};
   `,
   primary: css`
-    background: ${({ theme }) => theme.colors.primary};
-    color: ${({ theme }) => theme.palette.white};
+    background: ${brandVar.primary};
+    color: ${brandVar.onPrimary};
   `,
   secondary: css`
-    background: ${palette.mango};
-    color: ${palette.ink};
+    background: ${brandVar.primary};
+    color: ${brandVar.onPrimary};
   `,
   danger: css`
     background: ${palette.chili};

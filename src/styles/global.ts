@@ -1,6 +1,7 @@
 import { createGlobalStyle } from 'styled-components'
 
 import { fontFamily, palette } from '@/styles/theme'
+import { brandVar } from '@/utils/theme/brand-palette'
 
 export const GlobalStyle = createGlobalStyle`
   *, *::before, *::after {
@@ -61,7 +62,7 @@ export const GlobalStyle = createGlobalStyle`
   }
 
   ::selection {
-    background: ${palette.tomato};
+    background: ${brandVar.primary};
     color: ${palette.white};
   }
 

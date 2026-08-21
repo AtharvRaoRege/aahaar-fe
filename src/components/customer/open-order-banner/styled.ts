@@ -1,6 +1,7 @@
 import styled, { keyframes } from 'styled-components'
 
 import { fontSizes, palette, radii, shadows, spacing } from '@/styles/theme'
+import { brandVar } from '@/utils/theme/brand-palette'
 
 const livePulse = keyframes`
   0%, 100% { opacity: 1; transform: scale(1); }
@@ -19,7 +20,7 @@ export const Banner = styled.button`
   margin: 0;
   padding: ${spacing.md} ${spacing.lg};
   background: ${palette.white};
-  border: 1.5px solid ${palette.tomato};
+  border: 1.5px solid ${brandVar.border};
   border-radius: ${radii.md};
   box-shadow: ${shadows.card};
   text-align: left;
@@ -60,14 +61,14 @@ export const Kicker = styled.span`
   font-weight: 700;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: ${palette.tomatoDark};
+  color: ${brandVar.accentText};
 `
 
 export const LiveDot = styled.span`
   width: 7px;
   height: 7px;
   border-radius: ${radii.full};
-  background: ${palette.tomato};
+  background: ${brandVar.primary};
   animation: ${livePulse} 1.8s ease-in-out infinite;
 
   @media (prefers-reduced-motion: reduce) {
@@ -126,7 +127,7 @@ export const Meta = styled.span`
 export const Action = styled.span`
   display: flex;
   flex-shrink: 0;
-  color: ${palette.tomato};
+  color: ${brandVar.accentText};
 
   svg {
     width: 20px;

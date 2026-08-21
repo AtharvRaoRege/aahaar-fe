@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 
 import { faintHalftone } from '@/styles/mixins'
 import { fontSizes, palette, radii, shadows } from '@/styles/theme'
+import { brandVar } from '@/utils/theme/brand-palette'
 
 export const Page = styled.div`
   flex: 1;
@@ -61,7 +62,7 @@ export const Brand = styled.p`
   font-weight: 700;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: ${palette.tomato};
+  color: ${brandVar.accentText};
 
   img {
     width: 36px;

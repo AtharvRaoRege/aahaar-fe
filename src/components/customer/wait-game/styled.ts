@@ -1,6 +1,7 @@
 import styled, { keyframes } from 'styled-components'
 
 import { fontSizes, fontWeights, palette, radii, shadows, spacing } from '@/styles/theme'
+import { brandVar } from '@/utils/theme/brand-palette'
 
 const popIn = keyframes`
   from { transform: translateY(28px) scale(0.96); opacity: 0; }
@@ -91,7 +92,7 @@ export const Kicker = styled.p`
   font-weight: ${fontWeights.bold};
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: ${palette.tomato};
+  color: ${brandVar.accentText};
 `
 
 export const Title = styled.h2`
@@ -129,7 +130,7 @@ export const StatCard = styled.div<{ $accent?: boolean; $flash?: boolean }>`
   padding: ${spacing.sm};
   text-align: center;
   border-radius: ${radii.md};
-  border: 1.5px solid ${({ $accent }) => ($accent ? palette.tomato : palette.ink)};
+  border: 1.5px solid ${({ $accent }) => ($accent ? brandVar.primary : palette.ink)};
   background: ${({ $accent }) => ($accent ? palette.chiliWash : palette.white)};
   box-shadow: ${shadows.sm};
   animation: ${({ $flash }) => ($flash ? pulseCombo : 'none')} 280ms ease-out;
@@ -163,7 +164,7 @@ export const TimerFill = styled.div<{ $progress: number }>`
   height: 100%;
   width: ${({ $progress }) => `${Math.max(0, Math.min(100, $progress * 100))}%`};
   border-radius: inherit;
-  background: linear-gradient(90deg, ${palette.tomato}, ${palette.mango});
+  background: linear-gradient(90deg, ${brandVar.primary}, ${palette.mango});
   transition: width 80ms linear;
 `
 
@@ -254,7 +255,7 @@ export const PopLabel = styled.span<{ $x: number; $y: number }>`
   top: ${({ $y }) => `${$y}%`};
   z-index: 3;
   pointer-events: none;
-  color: ${palette.tomato};
+  color: ${brandVar.accentText};
   font-size: ${fontSizes.bodyLg};
   font-weight: ${fontWeights.black};
   letter-spacing: -0.02em;
@@ -315,7 +316,7 @@ export const ResultScore = styled.p`
   font-size: ${fontSizes.h1};
   font-weight: ${fontWeights.black};
   letter-spacing: -0.04em;
-  color: ${palette.tomato};
+  color: ${brandVar.accentText};
   line-height: 1;
 `
 

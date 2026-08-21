@@ -2,6 +2,7 @@ import styled, { css } from 'styled-components'
 
 import { punch } from '@/styles/mixins'
 import { fontSizes, fontWeights, palette, radii, shadows, spacing } from '@/styles/theme'
+import { brandVar } from '@/utils/theme/brand-palette'
 
 export const Page = styled.div`
   flex: 1;
@@ -44,7 +45,7 @@ export const Kicker = styled.p`
   font-weight: ${fontWeights.black};
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: ${palette.tomato};
+  color: ${brandVar.accentText};
 `
 
 export const TitleRow = styled.div`
@@ -105,9 +106,9 @@ export const Dot = styled.span<{ $state: 'done' | 'current' | 'upcoming' }>`
   border-radius: ${radii.full};
   border: 2px solid
     ${({ $state }) =>
-      $state === 'upcoming' ? palette.line : $state === 'done' ? palette.chutney : palette.tomato};
+      $state === 'upcoming' ? palette.line : $state === 'done' ? palette.chutney : brandVar.primary};
   background: ${({ $state }) =>
-    $state === 'done' ? palette.chutney : $state === 'current' ? palette.tomato : palette.white};
+    $state === 'done' ? palette.chutney : $state === 'current' ? brandVar.primary : palette.white};
   z-index: 1;
 
   ${({ $state }) =>

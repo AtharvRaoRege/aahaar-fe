@@ -1,6 +1,7 @@
 import styled, { keyframes } from 'styled-components'
 
 import { fontSizes, palette, radii, shadows, spacing } from '@/styles/theme'
+import { brandVar } from '@/utils/theme/brand-palette'
 
 const slide = keyframes`
   from {
@@ -78,7 +79,7 @@ export const IconBubble = styled.span<{ $kind: 'order' | 'review' | 'waiter' }>`
   height: 42px;
   border-radius: ${radii.md};
   background: ${({ $kind }) =>
-    $kind === 'order' ? palette.tomato : $kind === 'waiter' ? palette.chutney : palette.mango};
+    $kind === 'order' ? brandVar.primary : $kind === 'waiter' ? palette.chutney : palette.mango};
   color: ${palette.white};
   flex-shrink: 0;
 

@@ -1,6 +1,7 @@
 import styled from 'styled-components'
 
 import { fontSizes, palette, spacing } from '@/styles/theme'
+import { brandVar } from '@/utils/theme/brand-palette'
 
 export const Page = styled.div`
   flex: 1;
@@ -36,7 +37,7 @@ export const Kicker = styled.p`
   font-weight: 800;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: ${palette.tomato};
+  color: ${brandVar.accentText};
 `
 
 export const Title = styled.h1`

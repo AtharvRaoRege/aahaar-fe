@@ -1,6 +1,7 @@
 import styled from 'styled-components'
 
 import { fontSizes, palette, radii, shadows, spacing } from '@/styles/theme'
+import { brandVar } from '@/utils/theme/brand-palette'
 
 export const Card = styled.section`
   display: grid;
@@ -35,7 +36,7 @@ export const Kicker = styled.p`
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: ${palette.tomato};
+  color: ${brandVar.accentText};
 `
 
 export const Title = styled.h2`
@@ -67,9 +68,9 @@ export const TagRow = styled.div`
 export const TagChip = styled.button<{ $active: boolean }>`
   min-height: 36px;
   padding: 0 ${spacing.md};
-  background: ${({ $active }) => ($active ? palette.tomato : palette.white)};
-  color: ${({ $active }) => ($active ? palette.white : palette.ink)};
-  border: 1px solid ${({ $active }) => ($active ? palette.tomato : palette.line)};
+  background: ${({ $active }) => ($active ? brandVar.primary : palette.white)};
+  color: ${({ $active }) => ($active ? brandVar.onPrimary : palette.ink)};
+  border: 1px solid ${({ $active }) => ($active ? brandVar.primary : palette.line)};
   border-radius: ${radii.full};
   font-weight: 700;
   font-size: ${fontSizes.labelSm};

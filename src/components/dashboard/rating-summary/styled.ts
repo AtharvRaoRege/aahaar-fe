@@ -1,6 +1,7 @@
 import styled from 'styled-components'
 
 import { fontSizes, palette, radii, shadows, spacing } from '@/styles/theme'
+import { brandVar } from '@/utils/theme/brand-palette'
 
 export const Grid = styled.div`
   display: grid;
@@ -43,8 +44,8 @@ export const Hero = styled.div`
   display: grid;
   gap: ${spacing.sm};
   padding: ${spacing.xl};
-  background: ${palette.mango};
-  color: ${palette.white};
+  background: ${brandVar.primary};
+  color: ${brandVar.onPrimary};
   border-radius: ${radii.lg};
   box-shadow: ${shadows.md};
 
@@ -108,5 +109,5 @@ export const Fill = styled.span<{ $width: number }>`
   display: block;
   height: 100%;
   width: ${({ $width }) => `${$width}%`};
-  background: ${palette.mango};
+  background: ${brandVar.primary};
 `

@@ -1,20 +1,22 @@
 import { useRef } from 'react'
 import { createPortal } from 'react-dom'
-import { Link } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { Plus } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 
 import { InstallApp } from '@/components/dashboard/install-app'
+import { BrandThemeSettings } from '@/components/dashboard/brand-theme'
 import { LogoutButton } from '@/components/dashboard/logout-confirm'
 import { PublishBar } from '@/components/dashboard/publish-bar'
 import { VenueScreen } from '@/components/dashboard/venue-screen'
 import { VenueSwitcher } from '@/components/dashboard/venue-switcher'
+import { ActionMenu } from '@/components/global/action-menu'
 import { Button } from '@/components/global/button'
 import { FormField, TextArea, TextField } from '@/components/global/field'
 import { Select } from '@/components/global/select'
 import type { Restaurant } from '@/types/restaurant'
 
-import { useSettingsPage } from './helper'
+import { linkActions, useSettingsPage } from './helper'
 import {
   Banner,
   Card,
@@ -51,6 +53,7 @@ export function SettingsPage() {
 
 function SettingsBody({ restaurant }: { restaurant: Restaurant }) {
   const { t } = useTranslation(['dashboard', 'common'])
+  const navigate = useNavigate()
   const page = useSettingsPage(restaurant)
   const logoRef = useRef<HTMLInputElement>(null)
   const venueOptions = page.venues.some((venue) => venue.id === restaurant.id)
@@ -69,6 +72,8 @@ function SettingsBody({ restaurant }: { restaurant: Restaurant }) {
       <PublishBar restaurantId={restaurant.id} slug={restaurant.slug} />
 
       <Stack>
+        <BrandThemeSettings key={restaurant.id} restaurant={restaurant} />
+
         <Form onSubmit={page.onSubmit}>
           {page.saved && <Banner $tone="ok">{t('settings.saved')}</Banner>}
           {page.failed && (
@@ -168,19 +173,13 @@ function SettingsBody({ restaurant }: { restaurant: Restaurant }) {
           <CardHint>{t('settings.linkHint')}</CardHint>
           <Slug>{page.publicUrl}</Slug>
           <LinkRow>
-            <Button
-              variant="outline"
-              size="sm"
-              type="button"
-              onClick={() => void page.copyLink()}
-            >
-              {page.copied ? t('settings.copied') : t('settings.copyLink')}
-            </Button>
-            <Link to="/dashboard/plan">
-              <Button variant="outline" size="sm" type="button">
-                {t('settings.openPlan')}
-              </Button>
-            </Link>
+            <ActionMenu
+              items={linkActions(page.copied, t)}
+              onPick={(id) => {
+                if (id === 'copy') void page.copyLink()
+                if (id === 'plan') navigate('/dashboard/plan')
+              }}
+            />
           </LinkRow>
           {page.copyFailed && <CardHint>{t('settings.copyFailed')}</CardHint>}
         </Card>

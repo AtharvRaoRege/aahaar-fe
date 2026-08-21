@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState, type ChangeEvent } from 'react'
+import type { TFunction } from 'i18next'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useForm, useWatch } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
@@ -15,6 +16,7 @@ import {
   type LucideIcon,
 } from 'lucide-react'
 
+import type { ActionMenuItem } from '@/components/global/action-menu/helper'
 import type { SelectOption } from '@/components/global/select'
 import { menuApi } from '@/lib/api/menu'
 import { subscriptionsApi } from '@/lib/api/subscriptions'
@@ -581,4 +583,46 @@ export function useMenuManager(restaurantId: string, slug?: string) {
         ? importJob.data.error || t('menu.importFailed')
         : ''),
   }
+}
+
+export function itemActions(t: TFunction): ActionMenuItem[] {
+  return [
+    { id: 'edit', label: t('menu.edit') },
+    { id: 'delete', label: t('menu.deleteDish') },
+  ]
+}
+
+export function sectionActions(t: TFunction): ActionMenuItem[] {
+  return [
+    { id: 'add', label: t('menu.addItem') },
+    { id: 'delete', label: t('menu.deleteCategory') },
+  ]
+}
+
+export function bulkActions(selectedCount: number, t: TFunction): ActionMenuItem[] {
+  return [
+    { id: 'selectAll', label: t('menu.selectAll') },
+    { id: 'deselectAll', label: t('menu.deselectAll') },
+    {
+      id: 'delete',
+      label: t('menu.deleteSelected'),
+      disabled: selectedCount === 0,
+    },
+    { id: 'cancel', label: t('menu.cancelSelect') },
+  ]
+}
+
+export function runBulkAction(
+  id: string,
+  handlers: {
+    onSelectAll: () => void
+    onDeselectAll: () => void
+    onDelete: () => void
+    onCancel: () => void
+  },
+) {
+  if (id === 'selectAll') handlers.onSelectAll()
+  if (id === 'deselectAll') handlers.onDeselectAll()
+  if (id === 'delete') handlers.onDelete()
+  if (id === 'cancel') handlers.onCancel()
 }

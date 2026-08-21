@@ -2,6 +2,7 @@ import styled from 'styled-components'
 
 import { focusRing } from '@/styles/mixins'
 import { palette, spacing } from '@/styles/theme'
+import { brandVar } from '@/utils/theme/brand-palette'
 
 export const Row = styled.div<{ $size: 'sm' | 'md' | 'lg' }>`
   display: inline-flex;
@@ -37,7 +38,7 @@ export const StarButton = styled.button<{ $on: boolean; $interactive: boolean; $
   justify-content: center;
   padding: 0;
   color: ${({ $on, $light }) =>
-    $on ? ($light ? palette.white : palette.mango) : $light ? palette.cream : palette.line};
+    $on ? ($light ? brandVar.onPrimary : brandVar.accentText) : $light ? palette.cream : palette.line};
   cursor: ${({ $interactive }) => ($interactive ? 'pointer' : 'default')};
   ${focusRing};
 
@@ -50,10 +51,10 @@ export const StarButton = styled.button<{ $on: boolean; $interactive: boolean; $
     `
       @media (hover: hover) {
         &:hover {
-          color: ${palette.mango};
+          color: ${brandVar.accentText};
         }
         &:hover svg {
-          fill: ${$on ? 'currentColor' : palette.mango};
+          fill: ${$on ? 'currentColor' : brandVar.accentText};
         }
       }
     `}
