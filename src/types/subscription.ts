@@ -49,4 +49,6 @@ export interface Subscription {
     features: PlanFeature[]
     pendingPlan: PlanTier | null
     pendingRequestId: string | null
+    /** True when the API has GEMINI_API_KEY — show AI scan in the menu UI. */
+    menuScanEnabled: boolean
   }

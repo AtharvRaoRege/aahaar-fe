@@ -579,12 +579,13 @@ export const dashboard = {
   scan: {
     title: 'AI Menu Upload',
     intro:
-      'Photograph your printed menu, or upload a PDF, CSV, or Excel file. We read the dishes and prices on our own server — nothing is sent anywhere. Check the rows, then add them.',
+      'Photograph your printed menu, or upload a PDF, CSV, or Excel file. AI reads dishes and prices — the file is not saved on our servers. Check the rows, then add them.',
     pick: 'Choose a file',
     pickHint: 'JPG, PNG, PDF, CSV or Excel · up to 10 MB',
     tooBig: 'That file is over 10 MB. Try a smaller photo.',
-    reading: 'Reading your menu…',
-    readingHint: 'A few seconds for a clear photo. Keep this open.',
+    reading: 'Processing your menu…',
+    readingHint:
+      'AI is reading dishes and prices from your photo or PDF. This can take up to a minute — keep this open.',
     reviewFirst: 'Nothing is added until you press the button below. Fix anything that looks wrong first.',
     poorQuality: 'This image was hard to read. Retake it straight-on in good light for a much better result.',
     truncated: 'This menu was very long — only the first 300 dishes were read.',

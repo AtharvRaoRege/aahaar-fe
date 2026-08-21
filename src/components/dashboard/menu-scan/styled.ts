@@ -136,8 +136,12 @@ export const Working = styled.div`
   display: grid;
   justify-items: center;
   gap: ${spacing.md};
-  padding: ${spacing['4xl']} ${spacing.lg};
+  padding: ${spacing['3xl']} ${spacing.xl};
   text-align: center;
+  background: ${palette.cream};
+  border: 1.5px solid ${palette.line};
+  border-radius: ${radii.lg};
+  box-shadow: ${shadows.sm};
 `
 
 export const Spinner = styled.span`

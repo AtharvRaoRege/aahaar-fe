@@ -1,4 +1,4 @@
-import { useMemo, useState, type ChangeEvent } from 'react'
+import { useEffect, useMemo, useState, type ChangeEvent } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useForm, useWatch } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
@@ -83,6 +83,12 @@ export function useMenuManager(restaurantId: string, slug?: string) {
   const [scanAdded, setScanAdded] = useState(0)
   const [offersOpen, setOffersOpen] = useState(false)
 
+  useEffect(() => {
+    if (!scanAdded) return
+    const timer = window.setTimeout(() => setScanAdded(0), 4000)
+    return () => window.clearTimeout(timer)
+  }, [scanAdded])
+
   const query = useQuery({
     queryKey: queryKeys.dashboardMenu(restaurantId),
     queryFn: () => menuApi.getForRestaurant(restaurantId),
@@ -94,6 +100,7 @@ export function useMenuManager(restaurantId: string, slug?: string) {
     queryFn: () => subscriptionsApi.get(restaurantId),
   })
   const isPro = subscriptionQuery.data?.effectivePlan === 'PRO'
+  const menuScanEnabled = Boolean(subscriptionQuery.data?.menuScanEnabled)
 
   const invalidate = () => {
     void queryClient.invalidateQueries({ queryKey: queryKeys.dashboardMenu(restaurantId) })
@@ -307,6 +314,7 @@ export function useMenuManager(restaurantId: string, slug?: string) {
     sheetOpen,
     editing,
     isPro,
+    menuScanEnabled,
     upsellCandidates,
     scanOpen,
     scanAdded,

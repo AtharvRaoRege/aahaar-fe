@@ -4,20 +4,18 @@ import {
   FolderPlus,
   Pencil,
   Plus,
+  ScanLine,
   Trash2,
   Upload,
 } from 'lucide-react'
 import { useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 
+import { MenuScanSheet } from '@/components/dashboard/menu-scan'
 import { OffersModal } from '@/components/dashboard/offers-modal'
 import { UpsellPicker } from '@/components/dashboard/upsell-picker'
 import { VenueScreen } from '@/components/dashboard/venue-screen'
 import { Button } from '@/components/global/button'
-// Menu scanning (OCR) is switched off. The component still exists at
-// @/components/dashboard/menu-scan — uncomment this import, the two Scan
-// buttons below and the <MenuScanSheet> mount to bring it back.
-// import { MenuScanSheet } from '@/components/dashboard/menu-scan'
 import { BottomSheet } from '@/components/global/bottom-sheet'
 import { ConfirmDialog } from '@/components/global/confirm-dialog'
 import { EmptyState } from '@/components/global/empty-state'
@@ -102,15 +100,17 @@ function MenuBody({ restaurant }: { restaurant: Restaurant }) {
           >
             {t('menu.uploadExcel')}
           </Button>
-          {/* <Button
-            size="sm"
-            variant="outline"
-            leftIcon={<ScanLine aria-hidden />}
-            aria-label={t('scan.action')}
-            onClick={page.openScan}
-          >
-            {t('scan.action')}
-          </Button> */}
+          {page.menuScanEnabled && (
+            <Button
+              size="sm"
+              variant="outline"
+              leftIcon={<ScanLine aria-hidden />}
+              aria-label={t('scan.action')}
+              onClick={page.openScan}
+            >
+              {t('scan.action')}
+            </Button>
+          )}
           <Button size="sm" variant="outline" onClick={page.openOffers}>
             {t('nav.offers')}
           </Button>
@@ -161,6 +161,11 @@ function MenuBody({ restaurant }: { restaurant: Restaurant }) {
 
       {page.generating && (
         <GeneratingBanner role="status">{t('menu.generating')}</GeneratingBanner>
+      )}
+      {page.scanAdded > 0 && (
+        <GeneratingBanner role="status">
+          {t('scan.added', { count: page.scanAdded })}
+        </GeneratingBanner>
       )}
       {page.importError && <ErrorBanner>{page.importError}</ErrorBanner>}
 
@@ -300,14 +305,16 @@ function MenuBody({ restaurant }: { restaurant: Restaurant }) {
           >
             {t('menu.uploadExcel')}
           </Button>
-          {/* <Button
-            variant="outline"
-            fullWidth
-            leftIcon={<ScanLine aria-hidden />}
-            onClick={page.openScan}
-          >
-            {t('scan.action')}
-          </Button> */}
+          {page.menuScanEnabled && (
+            <Button
+              variant="outline"
+              fullWidth
+              leftIcon={<ScanLine aria-hidden />}
+              onClick={page.openScan}
+            >
+              {t('scan.action')}
+            </Button>
+          )}
           <Button variant="outline" fullWidth onClick={page.onActionsOffers}>
             {t('nav.offers')}
           </Button>
@@ -415,12 +422,12 @@ function MenuBody({ restaurant }: { restaurant: Restaurant }) {
         onClose={page.closeDelete}
         onConfirm={page.confirmDelete}
       />
-      {/* <MenuScanSheet
+      <MenuScanSheet
         open={page.scanOpen}
         restaurantId={restaurant.id}
         onClose={page.closeScan}
         onApplied={page.onScanApplied}
-      /> */}
+      />
       <OffersModal
         restaurantId={restaurant.id}
         open={page.offersOpen}
