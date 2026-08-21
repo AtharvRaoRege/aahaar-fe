@@ -13,6 +13,7 @@ import { sessionStore } from '@/lib/customer/session-store'
 import { ensureTableSession } from '@/lib/customer/table-session'
 import { queryKeys } from '@/lib/query/keys'
 import type { MenuItem } from '@/types/menu'
+import type { Order } from '@/types/order'
 
 export function useCartPage(slug: string, restaurantId: string, tableNumber: string | null) {
   const navigate = useNavigate()
@@ -50,29 +51,39 @@ export function useCartPage(slug: string, restaurantId: string, tableNumber: str
   )
 
   const mutation = useMutation({
-    mutationFn: async () => {
-      let current = sessionStore.get(restaurantId)
-      if (!current && table) {
-        current = await ensureTableSession(restaurantId, slug, table)
+    mutationFn: async (): Promise<Order> => {
+      if (!table) throw new Error('NO_SESSION')
+
+      const resolveSession = async () => {
+        let current = sessionStore.get(restaurantId)
+        if (!current || current.tableNumber !== table) {
+          current = await ensureTableSession(restaurantId, slug, table)
+        }
+        return current
       }
-      if (!current) throw new Error('NO_SESSION')
-      try {
-        return await ordersApi.create(
+
+      const place = async (sessionId: string) =>
+        ordersApi.create(
           {
             restaurantId,
-            customerSessionId: current.id,
+            customerSessionId: sessionId,
             items: cart.toOrderItems(),
             notes: cart.orderNotes.trim() || null,
           },
           idempotencyKey.current,
         )
+
+      try {
+        const current = await resolveSession()
+        return await place(current.id)
       } catch (error) {
         const expired =
           error instanceof ApiRequestError &&
           (error.code === 'SESSION_EXPIRED' || error.code === 'INVALID_SESSION')
-        if (!expired || !table) throw error
+        if (!expired) throw error
         sessionStore.clear(restaurantId)
-        throw new Error('NO_SESSION', { cause: error })
+        const refreshed = await ensureTableSession(restaurantId, slug, table)
+        return await place(refreshed.id)
       }
     },
     onSuccess: (order) => {
@@ -80,9 +91,20 @@ export function useCartPage(slug: string, restaurantId: string, tableNumber: str
       idempotencyKey.current = crypto.randomUUID()
       guestOrderStore.set(restaurantId, order.id)
       if (order.customerSessionId) {
-        void queryClient.invalidateQueries({ queryKey: queryKeys.openOrder(order.customerSessionId) })
+        void queryClient.invalidateQueries({
+          queryKey: queryKeys.openOrder(order.customerSessionId),
+        })
       }
       navigate(customerPath(slug, `/track/${order.id}`, table), { replace: true })
+    },
+    onError: (error) => {
+      const needCheckIn =
+        (error instanceof Error && error.message === 'NO_SESSION') ||
+        (error instanceof ApiRequestError &&
+          (error.code === 'INVALID_SESSION' || error.code === 'SESSION_EXPIRED'))
+      if (!needCheckIn || !table) return
+      sessionStore.clear(restaurantId)
+      navigate(customerPath(slug, '/menu', table), { replace: true })
     },
   })
 

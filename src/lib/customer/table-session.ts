@@ -22,15 +22,26 @@ export function hasNamedTableSession(restaurantId: string, table: string | null)
   return Boolean(stored?.named && stored.tableNumber === table.trim())
 }
 
+/**
+ * Reuse the stored table check-in, or silently recreate it from the saved
+ * guest profile so a reopen of the same QR does not feel broken.
+ */
 export async function ensureTableSession(
   restaurantId: string,
-  _slug: string,
+  slug: string,
   table: string,
 ): Promise<StoredCustomerSession> {
   const tableNumber = table.trim()
   const stored = sessionStore.get(restaurantId)
   if (stored?.tableNumber === tableNumber) return stored
-  throw new Error('NO_SESSION')
+
+  const profile = guestProfileStore.get(restaurantId)
+  if (!profile) throw new Error('NO_SESSION')
+
+  return createNamedTableSession(restaurantId, slug, tableNumber, {
+    name: profile.name,
+    contactNumber: profile.contactNumber ?? undefined,
+  })
 }
 
 export async function createNamedTableSession(
@@ -44,7 +55,10 @@ export async function createNamedTableSession(
   const contactNumber = profile.contactNumber?.trim() || null
   const stored = sessionStore.get(restaurantId)
   if (stored?.named && stored.tableNumber === tableNumber) {
-    guestProfileStore.set(restaurantId, { name: stored.name, contactNumber: stored.contactNumber ?? null })
+    guestProfileStore.set(restaurantId, {
+      name: stored.name,
+      contactNumber: stored.contactNumber ?? null,
+    })
     return stored
   }
 

@@ -5,7 +5,6 @@ import { useSocketConnected } from '@/hooks/global/use-live-socket/helper'
 import { publicApi } from '@/lib/api/public'
 import { guestOrderStore } from '@/lib/customer/guest-order-store'
 import { sessionStore } from '@/lib/customer/session-store'
-import { clearTableState } from '@/lib/customer/table-state'
 import { fallbackPoll, freshFor } from '@/lib/query/cache'
 import { queryKeys } from '@/lib/query/keys'
 import { ACTIVE_ORDER_STATUSES } from '@/types/order'
@@ -30,16 +29,8 @@ export function useOpenOrder(restaurantId: string) {
   const order = isOpenOrder(query.data) ? query.data : null
 
   useEffect(() => {
-    if (order) {
-      guestOrderStore.set(restaurantId, order.id)
-      return
-    }
-    // Settled with no open ticket, but we were tracking one: it closed, so the
-    // seating is finished and the stored identity must not carry over.
-    if (query.isSuccess && guestOrderStore.get(restaurantId)) {
-      clearTableState(restaurantId)
-    }
-  }, [order, query.isSuccess, restaurantId])
+    if (order) guestOrderStore.set(restaurantId, order.id)
+  }, [order, restaurantId])
 
   return { ...query, order, sessionId: session?.id ?? null }
 }

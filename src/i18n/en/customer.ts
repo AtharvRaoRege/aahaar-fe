@@ -68,7 +68,8 @@ export const customer = {
     payHint: 'Pay at the counter. No charge on this phone.',
     failed: "ORDER COULDN'T BE PLACED",
     failedHint: 'Please try again.',
-    noSession: 'Start a session before ordering.',
+    noSession: 'Your table check-in expired. Go back, enter your name again, then order.',
+    noSessionHint: 'Scan the table QR and say your name once — then your order goes through.',
   },
   track: {
     title: 'Your order',
