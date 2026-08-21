@@ -28,12 +28,12 @@ export function useQrPage(restaurantId: string) {
   const query = useQuery({
     queryKey: queryKeys.qr(restaurantId),
     queryFn: () => qrApi.list(restaurantId),
-    staleTime: freshFor.slow,
+    staleTime: freshFor.ownAction,
   })
   const reviewQuery = useQuery({
     queryKey: queryKeys.reviewQr(restaurantId),
     queryFn: () => qrApi.review(restaurantId),
-    staleTime: freshFor.slow,
+    staleTime: freshFor.ownAction,
   })
 
   const create = useMutation({
@@ -42,9 +42,14 @@ export function useQrPage(restaurantId: string) {
         label: label.trim(),
         tableNumber: tableNumber.trim(),
       }),
-    onSuccess: () => {
+    onSuccess: (qr) => {
       setLabel('')
       setTableNumber('')
+      queryClient.setQueryData<QrCode[]>(queryKeys.qr(restaurantId), (current) => {
+        const list = current ?? []
+        if (list.some((item) => item.id === qr.id)) return list
+        return [qr, ...list]
+      })
       void queryClient.invalidateQueries({ queryKey: queryKeys.qr(restaurantId) })
     },
   })

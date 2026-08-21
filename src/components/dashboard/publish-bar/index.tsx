@@ -18,11 +18,12 @@ import {
 
 export interface PublishBarProps {
   restaurantId: string
+  slug?: string
 }
 
-export function PublishBar({ restaurantId }: PublishBarProps) {
+export function PublishBar({ restaurantId, slug }: PublishBarProps) {
   const { t } = useTranslation('dashboard')
-  const bar = usePublishBar(restaurantId)
+  const bar = usePublishBar(restaurantId, slug)
 
   if (bar.isLoading || !bar.readiness) return <Skeleton height="72px" />
 

@@ -19,6 +19,7 @@ import type { SelectOption } from '@/components/global/select'
 import { menuApi } from '@/lib/api/menu'
 import { subscriptionsApi } from '@/lib/api/subscriptions'
 import { freshFor } from '@/lib/query/cache'
+import { invalidatePublicVenue } from '@/lib/query/invalidate-public'
 import { queryKeys } from '@/lib/query/keys'
 import type { MenuCategoryGroup, MenuItem } from '@/types/menu'
 import { errorMessage } from '@/utils/error-message'
@@ -66,7 +67,7 @@ export function sectionId(group: MenuCategoryGroup) {
 
 const MAX_IMPORT_BYTES = 5 * 1024 * 1024
 
-export function useMenuManager(restaurantId: string) {
+export function useMenuManager(restaurantId: string, slug?: string) {
   const { t } = useTranslation('dashboard')
   const queryClient = useQueryClient()
   const [sheetOpen, setSheetOpen] = useState(false)
@@ -94,8 +95,10 @@ export function useMenuManager(restaurantId: string) {
   })
   const isPro = subscriptionQuery.data?.effectivePlan === 'PRO'
 
-  const invalidate = () =>
-    queryClient.invalidateQueries({ queryKey: queryKeys.dashboardMenu(restaurantId) })
+  const invalidate = () => {
+    void queryClient.invalidateQueries({ queryKey: queryKeys.dashboardMenu(restaurantId) })
+    invalidatePublicVenue(queryClient, slug)
+  }
 
   const form = useForm<ItemForm>({ defaultValues: EMPTY_FORM })
   const categoryForm = useForm<CategoryForm>({ defaultValues: EMPTY_CATEGORY_FORM })
@@ -194,6 +197,7 @@ export function useMenuManager(restaurantId: string) {
         await queryClient.invalidateQueries({
           queryKey: queryKeys.dashboardMenu(restaurantId),
         })
+        invalidatePublicVenue(queryClient, slug)
       }
       return job
     },
@@ -383,11 +387,14 @@ export function useMenuManager(restaurantId: string) {
     },
     downloadSample: () => downloadSample.mutate(),
     downloadingSample: downloadSample.isPending,
+    /** Import runs in the background — UI stays usable; banner shows progress. */
     generating:
       startImport.isPending ||
       (Boolean(jobId) &&
         importJob.data?.status !== 'done' &&
         importJob.data?.status !== 'failed'),
+    /** Only block a second upload while one is in flight. */
+    importBusy: startImport.isPending,
     importError:
       importError ||
       (importJob.data?.status === 'failed'

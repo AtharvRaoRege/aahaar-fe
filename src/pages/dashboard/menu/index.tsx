@@ -70,7 +70,7 @@ export function MenuManagerPage() {
 
 function MenuBody({ restaurant }: { restaurant: Restaurant }) {
   const { t } = useTranslation(['dashboard', 'common'])
-  const page = useMenuManager(restaurant.id)
+  const page = useMenuManager(restaurant.id, restaurant.slug)
   const fileRef = useRef<HTMLInputElement>(null)
   const searching = Boolean(page.search.trim())
 
@@ -96,7 +96,7 @@ function MenuBody({ restaurant }: { restaurant: Restaurant }) {
             size="sm"
             variant="outline"
             leftIcon={<Upload aria-hidden />}
-            disabled={page.generating}
+            disabled={page.importBusy}
             aria-label={t('menu.uploadExcel')}
             onClick={() => fileRef.current?.click()}
           >
@@ -295,7 +295,7 @@ function MenuBody({ restaurant }: { restaurant: Restaurant }) {
             variant="outline"
             fullWidth
             leftIcon={<Upload aria-hidden />}
-            disabled={page.generating}
+            disabled={page.importBusy}
             onClick={() => page.onActionsUpload(fileRef.current)}
           >
             {t('menu.uploadExcel')}

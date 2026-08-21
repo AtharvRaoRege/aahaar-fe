@@ -8,6 +8,7 @@ import { tokenStore } from '@/lib/auth/token-store'
 import { impersonationStore } from '@/lib/dashboard/impersonation-store'
 import { restaurantStore } from '@/lib/dashboard/restaurant-store'
 import { queryClient } from '@/lib/query/client'
+import { invalidatePublicVenue } from '@/lib/query/invalidate-public'
 import { queryKeys } from '@/lib/query/keys'
 import type { Restaurant } from '@/types/restaurant'
 import { errorMessage } from '@/utils/error-message'
@@ -83,6 +84,7 @@ export function useSettingsPage(restaurant: Restaurant) {
       form.reset(values)
       void queryClient.invalidateQueries({ queryKey: queryKeys.restaurants })
       void queryClient.invalidateQueries({ queryKey: queryKeys.restaurant(restaurant.id) })
+      invalidatePublicVenue(queryClient, restaurant.slug)
     },
   })
 
@@ -113,6 +115,7 @@ export function useSettingsPage(restaurant: Restaurant) {
       queryClient.setQueryData(queryKeys.restaurant(updated.id), updated)
       void queryClient.invalidateQueries({ queryKey: queryKeys.restaurants })
       void queryClient.invalidateQueries({ queryKey: queryKeys.restaurant(updated.id) })
+      invalidatePublicVenue(queryClient, updated.slug)
     },
   })
 

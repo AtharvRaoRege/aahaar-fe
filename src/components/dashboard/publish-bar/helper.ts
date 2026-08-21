@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 
 import { restaurantsApi } from '@/lib/api/restaurants'
+import { invalidatePublicVenue } from '@/lib/query/invalidate-public'
 import { queryKeys } from '@/lib/query/keys'
 import { errorMessage } from '@/utils/error-message'
 import type { PublishReadiness } from '@/types/restaurant'
@@ -23,7 +24,7 @@ export function sortBlockers(readiness: PublishReadiness | null): BlockerKey[] {
   return BLOCKER_ORDER.filter((key) => present.has(key))
 }
 
-export function usePublishBar(restaurantId: string) {
+export function usePublishBar(restaurantId: string, slug?: string) {
   const queryClient = useQueryClient()
 
   const readinessQuery = useQuery({
@@ -40,6 +41,7 @@ export function usePublishBar(restaurantId: string) {
       })
       void queryClient.invalidateQueries({ queryKey: queryKeys.restaurants })
       void queryClient.invalidateQueries({ queryKey: queryKeys.restaurant(restaurantId) })
+      invalidatePublicVenue(queryClient, slug)
     },
   })
 

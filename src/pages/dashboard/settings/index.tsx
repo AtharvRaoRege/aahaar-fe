@@ -66,7 +66,7 @@ function SettingsBody({ restaurant }: { restaurant: Restaurant }) {
       <Title>{t('settings.title')}</Title>
       <Hint>{t('settings.hint')}</Hint>
 
-      <PublishBar restaurantId={restaurant.id} />
+      <PublishBar restaurantId={restaurant.id} slug={restaurant.slug} />
 
       <Stack>
         <Form onSubmit={page.onSubmit}>
