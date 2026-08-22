@@ -8,6 +8,7 @@ export const queryKeys = {
   adminRestaurants: ['admin', 'restaurants'] as const,
   adminPlanRequests: ['admin', 'plan-requests'] as const,
   adminSettings: ['admin', 'settings'] as const,
+  adminAnalytics: (rangeDays: number) => ['admin', 'analytics', rangeDays] as const,
   restaurants: ['restaurants'] as const,
   restaurant: (id: string) => ['restaurants', id] as const,
   dashboardMenu: (restaurantId: string) => ['menu', 'dashboard', restaurantId] as const,

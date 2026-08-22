@@ -11,7 +11,7 @@ import { queryKeys } from '@/lib/query/keys'
 import type { AdminMember, AdminVenue } from '@/types/admin'
 import type { User } from '@/types/auth'
 
-export type AdminTab = 'waitlist' | 'people' | 'venues' | 'plans'
+export type AdminTab = 'pulse' | 'waitlist' | 'people' | 'venues' | 'plans'
 export type VenueView = 'all' | 'live' | 'draft' | 'pro'
 export type PeopleView = 'all' | 'waitlist' | 'blocked'
 
@@ -37,7 +37,13 @@ function paginate<T>(rows: T[], page: number, pageSize: number) {
 }
 
 export function isAdminTab(value: string | null): value is AdminTab {
-  return value === 'waitlist' || value === 'people' || value === 'venues' || value === 'plans'
+  return (
+    value === 'pulse' ||
+    value === 'waitlist' ||
+    value === 'people' ||
+    value === 'venues' ||
+    value === 'plans'
+  )
 }
 
 export function isVenueView(value: string | null): value is VenueView {
@@ -127,7 +133,7 @@ export function useAdminPage() {
   const [confirm, setConfirm] = useState<AdminConfirm | null>(null)
   const tabParam = searchParams.get('tab')
   const viewParam = searchParams.get('view')
-  const tab: AdminTab = isAdminTab(tabParam) ? tabParam : 'waitlist'
+  const tab: AdminTab = isAdminTab(tabParam) ? tabParam : 'pulse'
   const venueView: VenueView = isVenueView(viewParam) ? viewParam : 'all'
   const peopleView: PeopleView = isPeopleView(viewParam) ? viewParam : 'all'
 
@@ -270,7 +276,7 @@ export function useAdminPage() {
 
   const setTab = (next: AdminTab, view?: VenueView | PeopleView) => {
     const params: Record<string, string> = {}
-    if (next !== 'waitlist') params.tab = next
+    if (next !== 'pulse') params.tab = next
     if (view && view !== 'all') params.view = view
     setSearchParams(params, { replace: true })
     setSearch('')

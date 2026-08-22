@@ -4,6 +4,7 @@ import { AdminOverview } from '@/components/admin/overview'
 import { OpenRegistrationToggle } from '@/components/admin/open-registration'
 import { PeoplePanel } from '@/components/admin/people-panel'
 import { PlansPanel } from '@/components/admin/plans-panel'
+import { PlatformPulse } from '@/components/admin/platform-pulse'
 import { VenuesPanel } from '@/components/admin/venues-panel'
 import { WaitlistPanel } from '@/components/admin/waitlist-panel'
 import { Button } from '@/components/global/button'
@@ -42,6 +43,7 @@ export function AdminPage() {
       : page.tab === 'plans'
         ? t('admin.searchPlans')
         : t('admin.searchPeople')
+  const listTab = page.tab !== 'pulse'
 
   return (
     <Page>
@@ -62,15 +64,10 @@ export function AdminPage() {
 
         <OpenRegistrationToggle />
 
-        <AdminOverview
-          counts={page.overview}
-          loading={page.overviewLoading}
-          tab={page.tab}
-          venueView={page.venueView}
-          onJump={page.setTab}
-        />
-
         <Tabs>
+          <Tab type="button" $active={page.tab === 'pulse'} onClick={() => page.setTab('pulse')}>
+            {t('admin.tabPulse')}
+          </Tab>
           <Tab type="button" $active={page.tab === 'waitlist'} onClick={() => page.setTab('waitlist')}>
             {t('admin.tabWaitlist')}
             <TabCount>{page.overview.waiting}</TabCount>
@@ -87,7 +84,19 @@ export function AdminPage() {
           </Tab>
         </Tabs>
 
-        {page.tab === 'people' && (
+        {page.tab === 'pulse' && <PlatformPulse />}
+
+        {listTab && (
+          <AdminOverview
+            counts={page.overview}
+            loading={page.overviewLoading}
+            tab={page.tab}
+            venueView={page.venueView}
+            onJump={page.setTab}
+          />
+        )}
+
+        {listTab && page.tab === 'people' && (
           <FilterRow>
             {(['all', 'waitlist', 'blocked'] as const).map((view) => (
               <FilterChip
@@ -105,7 +114,7 @@ export function AdminPage() {
             ))}
           </FilterRow>
         )}
-        {page.tab === 'venues' && (
+        {listTab && page.tab === 'venues' && (
           <FilterRow>
             {(['all', 'live', 'draft', 'pro'] as const).map((view) => (
               <FilterChip
@@ -126,22 +135,24 @@ export function AdminPage() {
           </FilterRow>
         )}
 
-        <Toolbar>
-          <SearchSlot>
-            <SearchInput
-              value={page.search}
-              onChange={page.setSearch}
-              placeholder={searchPlaceholder}
-            />
-          </SearchSlot>
-          <Count>
-            {t('admin.shownRange', {
-              from: page.pager.total === 0 ? 0 : (page.pager.page - 1) * page.pager.pageSize + 1,
-              to: Math.min(page.pager.page * page.pager.pageSize, page.pager.total),
-              total: page.pager.total,
-            })}
-          </Count>
-        </Toolbar>
+        {listTab && (
+          <Toolbar>
+            <SearchSlot>
+              <SearchInput
+                value={page.search}
+                onChange={page.setSearch}
+                placeholder={searchPlaceholder}
+              />
+            </SearchSlot>
+            <Count>
+              {t('admin.shownRange', {
+                from: page.pager.total === 0 ? 0 : (page.pager.page - 1) * page.pager.pageSize + 1,
+                to: Math.min(page.pager.page * page.pager.pageSize, page.pager.total),
+                total: page.pager.total,
+              })}
+            </Count>
+          </Toolbar>
+        )}
 
         {page.approve.isError && (
           <ErrorText>{errorMessage(page.approve.error) || t('admin.approveFailed')}</ErrorText>
@@ -224,19 +235,21 @@ export function AdminPage() {
             onReject={(id) => page.rejectPlan.mutate(id)}
           />
         )}
-        <PaginationBar
-          page={page.pager.page}
-          pages={page.pager.pages}
-          total={page.pager.total}
-          pageSize={page.pager.pageSize}
-          onPage={page.setPage}
-          rangeLabel={t('admin.pageOf', {
-            page: page.pager.page,
-            pages: page.pager.pages,
-          })}
-          prevLabel={t('admin.prev')}
-          nextLabel={t('admin.next')}
-        />
+        {listTab && (
+          <PaginationBar
+            page={page.pager.page}
+            pages={page.pager.pages}
+            total={page.pager.total}
+            pageSize={page.pager.pageSize}
+            onPage={page.setPage}
+            rangeLabel={t('admin.pageOf', {
+              page: page.pager.page,
+              pages: page.pager.pages,
+            })}
+            prevLabel={t('admin.prev')}
+            nextLabel={t('admin.next')}
+          />
+        )}
       </Shell>
       <ConfirmDialog
         open={Boolean(page.confirm)}
