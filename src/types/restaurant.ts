@@ -23,6 +23,7 @@ export interface Restaurant {
   secondaryColor: string
   mapsUrl: string | null
   googleReviewUrl: string | null
+  instagramUrl: string | null
   upiVpa: string | null
   upiPayeeName: string | null
   openingHours: OpeningHours | null
@@ -47,6 +48,7 @@ export interface PublicRestaurant {
   secondaryColor: string
   mapsUrl: string | null
   googleReviewUrl: string | null
+  instagramUrl: string | null
   upiVpa: string | null
   upiPayeeName: string | null
   openingHours: OpeningHours | null

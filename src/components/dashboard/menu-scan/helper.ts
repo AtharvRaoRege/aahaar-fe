@@ -4,11 +4,12 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { menuApi } from '@/lib/api/menu'
 import { queryKeys } from '@/lib/query/keys'
 import { errorMessage } from '@/utils/error-message'
+import { MAX_SCAN_UPLOAD_BYTES, prepareScanUpload } from '@/utils/menu/prepare-scan-upload'
 import type { MenuScanResult, MenuScanRow, ScanConfidence } from '@/types/menu'
 
 export const ACCEPTED_TYPES =
-  'image/jpeg,image/png,image/webp,application/pdf,text/csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,.csv,.xlsx'
-export const MAX_SCAN_BYTES = 10 * 1024 * 1024
+  'image/jpeg,image/jpg,image/png,image/webp,image/heic,image/heif,application/pdf,text/csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,.csv,.xlsx'
+export const MAX_SCAN_BYTES = MAX_SCAN_UPLOAD_BYTES
 
 /** A scanned row plus the owner's edits and their include decision. */
 export interface DraftRow extends MenuScanRow {
@@ -99,7 +100,17 @@ export function useMenuScan(
         return
       }
       setError('')
-      onQueueFile(file)
+      void prepareScanUpload(file)
+        .then((prepared) => {
+          if (prepared.size > MAX_SCAN_BYTES) {
+            setError('MAX_SIZE')
+            return
+          }
+          onQueueFile(prepared)
+        })
+        .catch(() => {
+          setError(errorMessage(new Error('Could not prepare that image.')))
+        })
     },
     setInclude: (key: string, include: boolean) => patch(key, { include }),
     setName: (key: string, name: string) => patch(key, { name }),

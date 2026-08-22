@@ -8,9 +8,9 @@ const popIn = keyframes`
   to { transform: translateY(0) scale(1); opacity: 1; }
 `
 
-const wobble = keyframes`
-  0%, 100% { transform: rotate(-6deg) scale(1); }
-  50% { transform: rotate(6deg) scale(1.04); }
+const idleBounce = keyframes`
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
 `
 
 const popScore = keyframes`
@@ -25,9 +25,10 @@ const pulseCombo = keyframes`
   100% { transform: scale(1); }
 `
 
-const idleBounce = keyframes`
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-6px); }
+const snapPulse = keyframes`
+  0% { transform: scale(1); }
+  40% { transform: scale(0.94); }
+  100% { transform: scale(1); }
 `
 
 export const Overlay = styled.div`
@@ -168,7 +169,9 @@ export const TimerFill = styled.div<{ $progress: number; $urgent?: boolean }>`
     $urgent
       ? `linear-gradient(90deg, ${palette.chili}, ${palette.mango})`
       : `linear-gradient(90deg, ${brandVar.primary}, ${palette.mango})`};
-  transition: width 80ms linear, background 200ms ease;
+  transition:
+    width 80ms linear,
+    background 200ms ease;
 `
 
 export const Arena = styled.div<{ $chaos?: boolean }>`
@@ -176,16 +179,21 @@ export const Arena = styled.div<{ $chaos?: boolean }>`
   width: 100%;
   height: 300px;
   overflow: hidden;
+  display: grid;
+  align-content: center;
+  justify-items: center;
+  gap: ${spacing.lg};
+  padding: ${spacing.lg};
   border-radius: ${radii.md};
   border: 2px solid ${palette.ink};
   background:
-    radial-gradient(circle at 50% 110%, ${palette.mangoWash} 0%, transparent 55%),
+    radial-gradient(circle at 50% 0%, ${palette.chiliWash} 0%, transparent 55%),
     linear-gradient(
       180deg,
       ${palette.cream} 0%,
       ${({ $chaos }) => ($chaos ? palette.chiliWash : palette.mangoWash)} 100%
     );
-  box-shadow: inset 0 -18px 0 ${palette.mangoWash};
+  box-shadow: inset 0 -18px 0 ${palette.chiliWash};
   transition: background 400ms ease;
 
   ${({ theme }) => theme.media.md} {
@@ -194,13 +202,10 @@ export const Arena = styled.div<{ $chaos?: boolean }>`
 `
 
 export const IdleState = styled.div`
-  position: absolute;
-  inset: 0;
   display: grid;
   place-content: center;
   justify-items: center;
   gap: ${spacing.sm};
-  padding: ${spacing.lg};
   text-align: center;
 `
 
@@ -217,77 +222,88 @@ export const Hint = styled.p`
   font-weight: ${fontWeights.medium};
   color: ${palette.inkSoft};
   line-height: 1.4;
+  text-align: center;
 `
 
-export const Legend = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: ${spacing.xs} ${spacing.sm};
-  margin-top: ${spacing.xs};
+export const Gauge = styled.div`
+  position: relative;
+  width: 100%;
+  max-width: 280px;
+  height: 44px;
+  border-radius: ${radii.full};
+  border: 2px solid ${palette.ink};
+  background: ${palette.white};
+  box-shadow: ${shadows.sm};
+  overflow: hidden;
 `
 
-export const LegendItem = styled.span<{ $tone: 'good' | 'bad' | 'slow' }>`
-  font-size: ${fontSizes.micro};
-  font-weight: ${fontWeights.bold};
-  letter-spacing: 0.02em;
-  color: ${({ $tone }) =>
-    $tone === 'bad' ? palette.chili : $tone === 'slow' ? brandVar.accentText : palette.chutney};
-`
-
-export const DishButton = styled.button<{
-  $left: number
-  $top: number
-  $kind: 'normal' | 'golden' | 'bomb' | 'slow'
-}>`
+export const Zone = styled.div<{ $width: number }>`
   position: absolute;
+  top: 0;
+  bottom: 0;
+  left: ${({ $width }) => `${50 - $width / 2}%`};
+  width: ${({ $width }) => `${$width}%`};
+  background: ${palette.chutneyWash};
+  border-left: 1.5px dashed ${palette.chutney};
+  border-right: 1.5px dashed ${palette.chutney};
+`
+
+export const ZoneCore = styled.div<{ $width: number }>`
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: ${({ $width }) => `${50 - ($width * 0.35) / 2}%`};
+  width: ${({ $width }) => `${$width * 0.35}%`};
+  background: ${palette.chutney};
+  opacity: 0.35;
+`
+
+export const Needle = styled.div<{ $left: number }>`
+  position: absolute;
+  top: 2px;
+  bottom: 2px;
   left: ${({ $left }) => `${$left}%`};
-  top: ${({ $top }) => `${$top}%`};
-  width: ${({ $kind }) => ($kind === 'golden' ? '62px' : '56px')};
-  height: ${({ $kind }) => ($kind === 'golden' ? '62px' : '56px')};
-  margin-left: ${({ $kind }) => ($kind === 'golden' ? '-31px' : '-28px')};
+  width: 28px;
+  margin-left: -14px;
   display: grid;
   place-items: center;
+  border-radius: ${radii.full};
+  border: 2px solid ${palette.ink};
+  background: ${palette.mango};
+  box-shadow: ${shadows.md};
+  font-size: 1.1rem;
+  line-height: 1;
+  z-index: 2;
+  will-change: left;
+`
+
+export const SnapButton = styled.button<{ $busy?: boolean }>`
+  width: min(100%, 200px);
+  min-height: 56px;
   border: 2px solid ${palette.ink};
   border-radius: ${radii.full};
-  background: ${({ $kind }) =>
-    $kind === 'golden'
-      ? palette.mango
-      : $kind === 'bomb'
-        ? palette.chiliWash
-        : $kind === 'slow'
-          ? palette.chutneyWash
-          : palette.white};
-  box-shadow: ${shadows.md};
-  font-size: ${({ $kind }) => ($kind === 'golden' ? '1.85rem' : '1.65rem')};
-  line-height: 1;
+  background: ${brandVar.primary};
+  color: ${palette.white};
+  font-size: ${fontSizes.bodyLg};
+  font-weight: ${fontWeights.black};
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
   cursor: pointer;
   touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
-  animation: ${wobble} ${({ $kind }) => ($kind === 'bomb' ? '0.55s' : '0.9s')} ease-in-out infinite;
-  will-change: transform, left, top;
-  z-index: ${({ $kind }) => ($kind === 'golden' ? 3 : 2)};
+  box-shadow: ${shadows.md};
+  opacity: ${({ $busy }) => ($busy ? 0.75 : 1)};
+  animation: ${({ $busy }) => ($busy ? snapPulse : 'none')} 280ms ease-out;
 
   &:active {
-    transform: scale(0.88);
-  }
-
-  ${({ theme }) => theme.media.md} {
-    width: ${({ $kind }) => ($kind === 'golden' ? '66px' : '60px')};
-    height: ${({ $kind }) => ($kind === 'golden' ? '66px' : '60px')};
-    margin-left: ${({ $kind }) => ($kind === 'golden' ? '-33px' : '-30px')};
-    font-size: ${({ $kind }) => ($kind === 'golden' ? '1.95rem' : '1.75rem')};
+    transform: scale(0.96);
   }
 `
 
-export const PopLabel = styled.span<{
-  $x: number
-  $y: number
-  $tone: 'good' | 'bad' | 'bonus'
-}>`
+export const PopLabel = styled.span<{ $tone: 'good' | 'bad' | 'bonus' }>`
   position: absolute;
-  left: ${({ $x }) => `${$x}%`};
-  top: ${({ $y }) => `${$y}%`};
+  left: 50%;
+  top: 18%;
   z-index: 4;
   pointer-events: none;
   color: ${({ $tone }) =>

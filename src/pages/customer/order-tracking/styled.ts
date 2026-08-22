@@ -1,7 +1,7 @@
 import styled, { css } from 'styled-components'
 
 import { punch } from '@/styles/mixins'
-import { fontSizes, fontWeights, palette, radii, shadows, spacing } from '@/styles/theme'
+import { fontSizes, fontWeights, palette, radii, spacing } from '@/styles/theme'
 import { brandVar } from '@/utils/theme/brand-palette'
 
 export const Page = styled.div`
@@ -152,109 +152,6 @@ export const StepLabel = styled.span`
   ${({ theme }) => theme.media.xl} {
     font-size: ${fontSizes.label};
   }
-`
-
-export const Ticket = styled.section`
-  position: relative;
-  display: grid;
-  gap: ${spacing.xs};
-  margin: 0 0 ${spacing.lg};
-  padding: ${spacing.lg} ${spacing.md} ${spacing.xl};
-  background: ${palette.cream};
-  color: ${palette.ink};
-  border: 1.5px solid ${palette.ink};
-  box-shadow: ${shadows.md};
-  clip-path: polygon(
-    0% 0%,
-    100% 0%,
-    100% 96%,
-    95% 100%,
-    90% 96%,
-    85% 100%,
-    80% 96%,
-    75% 100%,
-    70% 96%,
-    65% 100%,
-    60% 96%,
-    55% 100%,
-    50% 96%,
-    45% 100%,
-    40% 96%,
-    35% 100%,
-    30% 96%,
-    25% 100%,
-    20% 96%,
-    15% 100%,
-    10% 96%,
-    5% 100%,
-    0% 96%
-  );
-
-  ${({ theme }) => theme.media.sm} {
-    padding: ${spacing.lg} ${spacing.lg} ${spacing['2xl']};
-  }
-
-  ${({ theme }) => theme.media.md} {
-    padding: ${spacing.xl} ${spacing.xl} ${spacing['2xl']};
-  }
-`
-
-export const TicketHead = styled.p`
-  margin: 0 0 ${spacing.sm};
-  padding-bottom: ${spacing.sm};
-  border-bottom: 1px dashed ${palette.line};
-  text-align: center;
-  font-size: ${fontSizes.labelSm};
-  font-weight: ${fontWeights.bold};
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-`
-
-export const TicketRow = styled.div`
-  display: flex;
-  justify-content: space-between;
-  gap: ${spacing.md};
-  font-size: ${fontSizes.label};
-  font-weight: ${fontWeights.medium};
-  line-height: 1.35;
-
-  ${({ theme }) => theme.media.md} {
-    font-size: ${fontSizes.body};
-  }
-`
-
-export const TicketNote = styled.p`
-  margin: ${spacing.xs} 0 0;
-  font-size: ${fontSizes.labelSm};
-  font-weight: ${fontWeights.medium};
-  color: ${palette.inkSoft};
-  line-height: 1.4;
-`
-
-export const TicketTotal = styled.div`
-  display: flex;
-  justify-content: space-between;
-  gap: ${spacing.md};
-  margin-top: ${spacing.sm};
-  padding-top: ${spacing.sm};
-  border-top: 1px dashed ${palette.line};
-  font-size: ${fontSizes.body};
-  font-weight: ${fontWeights.black};
-`
-
-export const TicketStamp = styled.span`
-  margin: ${spacing.md} auto 0;
-  display: block;
-  width: fit-content;
-  padding: 3px ${spacing.md};
-  border: 2px solid ${palette.chutney};
-  border-radius: ${radii.sm};
-  color: ${palette.chutney};
-  font-size: ${fontSizes.labelSm};
-  font-weight: ${fontWeights.black};
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  transform: rotate(-6deg);
 `
 
 export const Actions = styled.div`

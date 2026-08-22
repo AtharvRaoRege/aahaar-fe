@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next'
 
 import { ReviewForm } from '@/components/customer/review-form'
+import { VenueFollow } from '@/components/customer/venue-follow'
 import { Button } from '@/components/global/button'
 import { useCustomerContext } from '@/hooks/customer/context'
 
@@ -25,6 +26,7 @@ export function ReviewPage() {
         error={page.error}
         onSubmit={page.submit}
       />
+      <VenueFollow restaurant={restaurant} />
       {tableNumber && (
         <Button variant="outline" fullWidth onClick={page.goMenu}>
           {t('track.reorder')}

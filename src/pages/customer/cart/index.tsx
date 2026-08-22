@@ -6,6 +6,9 @@ import { useTranslation } from 'react-i18next'
 import { CartLineItem } from '@/components/customer/cart-line-item'
 import { UpsellRow } from '@/components/customer/upsell-row'
 import { WaitGame } from '@/components/customer/wait-game'
+import { WaitGamesRow } from '@/components/customer/wait-games-row'
+import type { WaitGameId } from '@/components/customer/wait-games-row/helper'
+import { WaitSpiceSnap } from '@/components/customer/wait-spice-snap'
 import { Button } from '@/components/global/button'
 import { EmptyState } from '@/components/global/empty-state'
 import { TextField } from '@/components/global/field'
@@ -58,7 +61,7 @@ export function CartPage() {
   const { restaurant, slug, tableNumber, canOrder } = useCustomerContext()
   const page = useCartPage(slug, restaurant.id, tableNumber)
   const adding = Boolean(page.openOrder)
-  const [gameOpen, setGameOpen] = useState(false)
+  const [activeGame, setActiveGame] = useState<WaitGameId | null>(null)
 
   if (!canOrder) {
     return (
@@ -102,17 +105,24 @@ export function CartPage() {
             action={
               <>
                 <Button onClick={page.goMenu}>{t('cart.browse')}</Button>
-                {adding && (
-                  <Button variant="outline" onClick={() => setGameOpen(true)}>
-                    {t('game.playWhileWait')}
-                  </Button>
-                )}
+                {adding && <WaitGamesRow onPick={setActiveGame} />}
               </>
             }
           />
         </EmptyWrap>
         {adding && (
-          <WaitGame open={gameOpen} onOpenChange={setGameOpen} onExit={() => setGameOpen(false)} />
+          <>
+            <WaitGame
+              open={activeGame === 'catch'}
+              onOpenChange={(open) => !open && setActiveGame(null)}
+              onExit={() => setActiveGame(null)}
+            />
+            <WaitSpiceSnap
+              open={activeGame === 'spice'}
+              onOpenChange={(open) => !open && setActiveGame(null)}
+              onExit={() => setActiveGame(null)}
+            />
+          </>
         )}
       </Page>
     )
@@ -145,11 +155,18 @@ export function CartPage() {
       {adding && (
         <>
           <NotesWrap>
-            <Button variant="outline" fullWidth onClick={() => setGameOpen(true)}>
-              {t('game.playWhileWait')}
-            </Button>
+            <WaitGamesRow onPick={setActiveGame} />
           </NotesWrap>
-          <WaitGame open={gameOpen} onOpenChange={setGameOpen} onExit={() => setGameOpen(false)} />
+          <WaitGame
+            open={activeGame === 'catch'}
+            onOpenChange={(open) => !open && setActiveGame(null)}
+            onExit={() => setActiveGame(null)}
+          />
+          <WaitSpiceSnap
+            open={activeGame === 'spice'}
+            onOpenChange={(open) => !open && setActiveGame(null)}
+            onExit={() => setActiveGame(null)}
+          />
         </>
       )}
 

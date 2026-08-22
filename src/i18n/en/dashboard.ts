@@ -321,7 +321,8 @@ export const dashboard = {
     detailsTitle: 'Your venue',
     detailsHint: 'Name, logo, address, and what guests see on the menu.',
     findUsTitle: 'Help guests find you',
-    findUsHint: 'Adds Directions on the menu, and points happy guests at your Google reviews.',
+    findUsHint:
+      'Directions on the menu, Instagram follow, and a Google review link for happy guests.',
     paymentsTitle: 'Pay at the table',
     paymentsHint: 'Optional. Guests pay from their UPI app. Leave blank for counter payment.',
     venuesTitle: 'Venues',
@@ -331,6 +332,7 @@ export const dashboard = {
     copied: 'Copied',
     copyFailed: 'Could not copy. Select the link and copy it yourself.',
     mapsUrl: 'Google Maps link',
+    instagramUrl: 'Instagram profile link',
     googleReviewUrl: 'Google review link',
     upiVpa: 'UPI ID',
     upiPayeeName: 'Name on UPI',
@@ -643,8 +645,8 @@ export const dashboard = {
     intro:
       'Photograph your printed menu, or upload a PDF, CSV, or Excel file. AI reads dishes and prices — the file is not saved on our servers. Check the rows, then add them.',
     pick: 'Choose a file',
-    pickHint: 'JPG, PNG, PDF, CSV or Excel · up to 10 MB',
-    tooBig: 'That file is over 10 MB. Try a smaller photo.',
+    pickHint: 'JPG, PNG, WebP, PDF, CSV or Excel · large photos are compressed automatically',
+    tooBig: 'That file is over 20 MB. Try a clearer close-up of one page.',
     unavailable:
       'AI menu scan is not available on this server yet. Ask your admin to enable it.',
     reading: 'Processing your menu…',

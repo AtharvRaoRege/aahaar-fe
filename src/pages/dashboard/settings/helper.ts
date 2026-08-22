@@ -21,6 +21,7 @@ export interface SettingsForm {
   address: string
   mapsUrl: string
   googleReviewUrl: string
+  instagramUrl: string
   upiVpa: string
   upiPayeeName: string
   venueKind: Restaurant['venueKind']
@@ -34,6 +35,7 @@ function formValues(restaurant: Restaurant): SettingsForm {
     address: restaurant.address ?? '',
     mapsUrl: restaurant.mapsUrl ?? '',
     googleReviewUrl: restaurant.googleReviewUrl ?? '',
+    instagramUrl: restaurant.instagramUrl ?? '',
     upiVpa: restaurant.upiVpa ?? '',
     upiPayeeName: restaurant.upiPayeeName ?? '',
     venueKind: restaurant.venueKind,
@@ -77,6 +79,7 @@ export function useSettingsPage(restaurant: Restaurant) {
         address: values.address.trim() || null,
         mapsUrl: values.mapsUrl.trim() || null,
         googleReviewUrl: values.googleReviewUrl.trim() || null,
+        instagramUrl: values.instagramUrl.trim() || null,
         upiVpa: values.upiVpa.trim() || null,
         upiPayeeName: values.upiPayeeName.trim() || null,
         venueKind: values.venueKind,

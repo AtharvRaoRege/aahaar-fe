@@ -26,6 +26,12 @@ import { invalidatePublicVenue } from '@/lib/query/invalidate-public'
 import { queryKeys } from '@/lib/query/keys'
 import type { MenuCategoryGroup, MenuItem, MenuScanResult } from '@/types/menu'
 import { errorMessage } from '@/utils/error-message'
+import {
+  readImportJobId,
+  readScanJobId,
+  writeImportJobId,
+  writeScanJobId,
+} from '@/utils/menu/job-persistence'
 
 export interface CategoryForm {
   name: string
@@ -80,10 +86,10 @@ export function useMenuManager(restaurantId: string, slug?: string) {
   const [actionsOpen, setActionsOpen] = useState(false)
   const [activeId, setActiveId] = useState<string | null>(null)
   const [search, setSearch] = useState('')
-  const [jobId, setJobId] = useState<string | null>(null)
+  const [jobId, setJobId] = useState<string | null>(() => readImportJobId(restaurantId))
   const [importError, setImportError] = useState('')
   const [scanOpen, setScanOpen] = useState(false)
-  const [scanJobId, setScanJobId] = useState<string | null>(null)
+  const [scanJobId, setScanJobId] = useState<string | null>(() => readScanJobId(restaurantId))
   const [scanResult, setScanResult] = useState<MenuScanResult | null>(null)
   const [scanError, setScanError] = useState('')
   const [scanAdded, setScanAdded] = useState(0)
@@ -239,17 +245,27 @@ export function useMenuManager(restaurantId: string, slug?: string) {
   const importJob = useQuery({
     queryKey: queryKeys.menuImport(restaurantId, jobId ?? ''),
     queryFn: async () => {
-      const job = await menuApi.getImportJob(restaurantId, jobId!)
-      if (job.status === 'done') {
-        await queryClient.invalidateQueries({
-          queryKey: queryKeys.dashboardMenu(restaurantId),
-        })
-        invalidatePublicVenue(queryClient, slug)
+      try {
+        const job = await menuApi.getImportJob(restaurantId, jobId!)
+        if (job.status === 'done') {
+          writeImportJobId(restaurantId, null)
+          await queryClient.invalidateQueries({
+            queryKey: queryKeys.dashboardMenu(restaurantId),
+          })
+          invalidatePublicVenue(queryClient, slug)
+        }
+        if (job.status === 'failed') {
+          writeImportJobId(restaurantId, null)
+        }
+        return job
+      } catch (error) {
+        writeImportJobId(restaurantId, null)
+        setJobId(null)
+        throw error
       }
-      return job
     },
     enabled: Boolean(jobId),
-    refetchOnWindowFocus: false,
+    refetchOnWindowFocus: true,
     refetchInterval: (result) => {
       const status = result.state.data?.status
       if (status === 'done' || status === 'failed') return false
@@ -260,20 +276,28 @@ export function useMenuManager(restaurantId: string, slug?: string) {
   const scanJob = useQuery({
     queryKey: queryKeys.menuScan(restaurantId, scanJobId ?? ''),
     queryFn: async () => {
-      const job = await menuApi.getScanJob(restaurantId, scanJobId!)
-      if (job.status === 'done' && job.result) {
-        setScanResult(job.result)
+      try {
+        const job = await menuApi.getScanJob(restaurantId, scanJobId!)
+        if (job.status === 'done' && job.result) {
+          setScanResult(job.result)
+          setScanError('')
+          // Keep job id until review/dismiss so leaving the page can restore banners.
+        }
+        if (job.status === 'failed') {
+          setScanError(job.error || t('scan.failed'))
+          writeScanJobId(restaurantId, null)
+          setScanJobId(null)
+        }
+        return job
+      } catch (error) {
+        writeScanJobId(restaurantId, null)
         setScanJobId(null)
-        setScanError('')
+        setScanError(t('scan.failed'))
+        throw error
       }
-      if (job.status === 'failed') {
-        setScanError(job.error || t('scan.failed'))
-        setScanJobId(null)
-      }
-      return job
     },
     enabled: Boolean(scanJobId),
-    refetchOnWindowFocus: false,
+    refetchOnWindowFocus: true,
     refetchInterval: (result) => {
       const status = result.state.data?.status
       if (status === 'done' || status === 'failed') return false
@@ -286,6 +310,7 @@ export function useMenuManager(restaurantId: string, slug?: string) {
     onSuccess: (job) => {
       setScanError('')
       setScanResult(null)
+      writeScanJobId(restaurantId, job.jobId)
       setScanJobId(job.jobId)
     },
     onError: (error) => {
@@ -297,6 +322,7 @@ export function useMenuManager(restaurantId: string, slug?: string) {
     mutationFn: (file: File) => menuApi.importMenu(restaurantId, file),
     onSuccess: (job) => {
       setImportError('')
+      writeImportJobId(restaurantId, job.jobId)
       setJobId(job.jobId)
     },
     onError: (error) => {
@@ -399,6 +425,7 @@ export function useMenuManager(restaurantId: string, slug?: string) {
     scanBusy:
       startScan.isPending ||
       (Boolean(scanJobId) &&
+        !scanResult &&
         scanJob.data?.status !== 'done' &&
         scanJob.data?.status !== 'failed'),
     scanReady: Boolean(scanResult),
@@ -412,15 +439,23 @@ export function useMenuManager(restaurantId: string, slug?: string) {
       startScan.mutate(file)
     },
     clearScanResult: () => {
+      writeScanJobId(restaurantId, null)
+      setScanJobId(null)
       setScanResult(null)
       setScanError('')
     },
-    dismissScanError: () => setScanError(''),
+    dismissScanError: () => {
+      writeScanJobId(restaurantId, null)
+      setScanJobId(null)
+      setScanError('')
+    },
     offersOpen,
     openOffers: () => setOffersOpen(true),
     closeOffers: () => setOffersOpen(false),
     onActionsOffers: () => runFromActions(() => setOffersOpen(true)),
     onScanApplied: (created: number) => {
+      writeScanJobId(restaurantId, null)
+      setScanJobId(null)
       setScanResult(null)
       setScanAdded(created)
     },

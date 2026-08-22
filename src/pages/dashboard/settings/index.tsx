@@ -135,6 +135,11 @@ function SettingsBody({ restaurant }: { restaurant: Restaurant }) {
               {...page.form.register('mapsUrl')}
             />
             <TextField
+              label={t('settings.instagramUrl')}
+              placeholder="https://instagram.com/yourvenue"
+              {...page.form.register('instagramUrl')}
+            />
+            <TextField
               label={t('settings.googleReviewUrl')}
               placeholder="https://g.page/r/…/review"
               {...page.form.register('googleReviewUrl')}

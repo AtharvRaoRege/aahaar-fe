@@ -280,7 +280,7 @@ export const CategoryBtn = styled.button<{ $active: boolean }>`
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    font-size: ${fontSizes.labelSm};
+    font-size: ${fontSizes.label};
     font-weight: inherit;
     letter-spacing: 0.01em;
     text-align: left;
@@ -296,19 +296,19 @@ export const CategoryBtn = styled.button<{ $active: boolean }>`
   }
 
   ${({ theme }) => theme.media.sm} {
-    min-height: 42px;
+    min-height: 44px;
     padding: ${spacing.sm} ${spacing.md};
-    max-width: min(220px, 60vw);
+    max-width: min(240px, 60vw);
 
     span {
-      font-size: ${fontSizes.label};
+      font-size: ${fontSizes.body};
     }
   }
 
   ${({ theme }) => theme.media.md} {
     width: 100%;
     max-width: none;
-    min-height: 40px;
+    min-height: 44px;
     padding: ${spacing.sm} ${spacing.md};
     border-radius: ${radii.md};
     justify-content: flex-start;
@@ -319,26 +319,30 @@ export const CategoryBtn = styled.button<{ $active: boolean }>`
     }
 
     span {
-      font-size: ${fontSizes.labelSm};
+      font-size: ${fontSizes.body};
     }
   }
 
   ${({ theme }) => theme.media.lg} {
-    min-height: 42px;
+    min-height: 46px;
     padding: ${spacing.sm} ${spacing.md};
 
     svg {
-      width: 18px;
-      height: 18px;
+      width: 20px;
+      height: 20px;
     }
 
     span {
-      font-size: ${fontSizes.label};
+      font-size: ${fontSizes.body};
     }
   }
 
   ${({ theme }) => theme.media.xl} {
-    min-height: 44px;
+    min-height: 48px;
+
+    span {
+      font-size: ${fontSizes.bodyLg};
+    }
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -379,9 +383,9 @@ export const SectionTitle = styled.h2`
   align-items: center;
   justify-content: space-between;
   gap: ${spacing.sm};
-  min-height: 44px;
+  min-height: 48px;
   padding: ${spacing.sm} ${spacing.md};
-  font-size: ${fontSizes.label};
+  font-size: ${fontSizes.body};
   font-weight: 800;
   letter-spacing: -0.02em;
   border-bottom: 1px solid ${palette.line};
@@ -396,12 +400,13 @@ export const SectionTitle = styled.h2`
 
   ${({ theme }) => theme.media.sm} {
     padding: ${spacing.sm} ${spacing.lg};
+    font-size: ${fontSizes.body};
   }
 
   ${({ theme }) => theme.media.md} {
-    min-height: 48px;
+    min-height: 52px;
     padding: ${spacing.sm} ${spacing.xl};
-    font-size: ${fontSizes.body};
+    font-size: ${fontSizes.bodyLg};
   }
 
   ${({ theme }) => theme.media.lg} {
@@ -411,6 +416,7 @@ export const SectionTitle = styled.h2`
 
   ${({ theme }) => theme.media.xl} {
     padding: ${spacing.sm} ${spacing['2xl']};
+    font-size: ${fontSizes.h3};
   }
 `
 

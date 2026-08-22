@@ -3,18 +3,17 @@ import { useTranslation } from 'react-i18next'
 
 import { Button } from '@/components/global/button'
 
-import { dishLeftPercent, dishTopPercent, useWaitGame } from './helper'
+import { useSpiceSnap } from './helper'
 import {
   Actions,
   Arena,
-  DishButton,
+  Gauge,
   Header,
   Hint,
   IdleEmoji,
   IdleState,
   Kicker,
-  Legend,
-  LegendItem,
+  Needle,
   Overlay,
   PopLabel,
   ResultActions,
@@ -23,6 +22,7 @@ import {
   ResultModal,
   ResultScore,
   Sheet,
+  SnapButton,
   StatCard,
   StatLabel,
   Stats,
@@ -32,18 +32,19 @@ import {
   TimerTrack,
   Title,
   WaveBanner,
+  Zone,
+  ZoneCore,
 } from './styled'
 
-export interface WaitGameProps {
+export interface WaitSpiceSnapProps {
   open: boolean
   onOpenChange?: (open: boolean) => void
-  /** Called when the guest exits — usually navigate to cart. */
   onExit: () => void
 }
 
-export function WaitGame({ open, onOpenChange, onExit }: WaitGameProps) {
+export function WaitSpiceSnap({ open, onOpenChange, onExit }: WaitSpiceSnapProps) {
   const { t } = useTranslation('customer')
-  const game = useWaitGame()
+  const game = useSpiceSnap()
 
   if (!open) return null
 
@@ -58,13 +59,13 @@ export function WaitGame({ open, onOpenChange, onExit }: WaitGameProps) {
       <Sheet
         role="dialog"
         aria-modal="true"
-        aria-labelledby="wait-game-title"
+        aria-labelledby="spice-snap-title"
         onClick={(event) => event.stopPropagation()}
       >
         <Header>
-          <Kicker>{t('game.title')}</Kicker>
-          <Title id="wait-game-title">{t('game.catchName')}</Title>
-          <Subtitle>{t('game.subtitle')}</Subtitle>
+          <Kicker>{t('game.spice.kicker')}</Kicker>
+          <Title id="spice-snap-title">{t('game.spice.name')}</Title>
+          <Subtitle>{t('game.spice.subtitle')}</Subtitle>
         </Header>
 
         <Stats>
@@ -91,57 +92,42 @@ export function WaitGame({ open, onOpenChange, onExit }: WaitGameProps) {
         <Arena $chaos={game.playing && game.wave >= 3}>
           {game.phase === 'idle' && (
             <IdleState>
-              <IdleEmoji aria-hidden>🍽️</IdleEmoji>
-              <Hint>{t('game.tapHint')}</Hint>
-              <Legend>
-                <LegendItem $tone="good">⭐ {t('game.legendGolden')}</LegendItem>
-                <LegendItem $tone="slow">🧊 {t('game.legendSlow')}</LegendItem>
-                <LegendItem $tone="bad">💣 {t('game.legendBomb')}</LegendItem>
-              </Legend>
+              <IdleEmoji aria-hidden>🌶️</IdleEmoji>
+              <Hint>{t('game.spice.tapHint')}</Hint>
             </IdleState>
           )}
 
-          {game.dishes.map((dish) => {
-            const top = dishTopPercent(dish, game.now)
-            const left = dishLeftPercent(dish, game.now)
-            return (
-              <DishButton
-                key={dish.id}
+          {game.playing && (
+            <>
+              <Gauge aria-hidden>
+                <Zone $width={game.zoneWidth} />
+                <ZoneCore $width={game.zoneWidth} />
+                <Needle $left={game.needle}>🌶️</Needle>
+              </Gauge>
+              <SnapButton
                 type="button"
-                $left={left}
-                $top={top}
-                $kind={dish.kind}
+                $busy={game.cooldown}
                 onPointerDown={(event) => {
                   event.preventDefault()
-                  event.stopPropagation()
-                  const arena = event.currentTarget.parentElement
-                  if (!arena) {
-                    game.tap(dish.id, left, top)
-                    return
-                  }
-                  const rect = arena.getBoundingClientRect()
-                  const x = ((event.clientX - rect.left) / rect.width) * 100
-                  const y = ((event.clientY - rect.top) / rect.height) * 100
-                  game.tap(dish.id, x, y)
+                  game.snap()
                 }}
-                aria-label={dish.emoji}
               >
-                {dish.emoji}
-              </DishButton>
-            )
-          })}
+                {t('game.spice.snap')}
+              </SnapButton>
+            </>
+          )}
 
           {game.pops.map((pop) => (
-            <PopLabel key={pop.id} $x={pop.x} $y={pop.y} $tone={pop.tone}>
+            <PopLabel key={pop.id} $tone={pop.tone}>
               {pop.label}
             </PopLabel>
           ))}
 
           {game.playing && game.waveFlash && (
-            <WaveBanner>{t('game.waveUp', { wave: game.wave })}</WaveBanner>
+            <WaveBanner>{t('game.spice.waveUp', { wave: game.wave })}</WaveBanner>
           )}
 
-          {game.playing && game.streak >= 4 && (
+          {game.playing && game.streak >= 3 && (
             <ResultBanner>{t('game.combo', { streak: game.streak })}</ResultBanner>
           )}
 
@@ -150,12 +136,12 @@ export function WaitGame({ open, onOpenChange, onExit }: WaitGameProps) {
               <ResultCard>
                 <Kicker>{t('game.roundOver')}</Kicker>
                 <ResultScore>{game.score}</ResultScore>
-                <Hint>{t(`game.rank.${game.rank}`)}</Hint>
+                <Hint>{t(`game.spice.rank.${game.rank}`)}</Hint>
                 <Hint>
-                  {t('game.result', {
+                  {t('game.spice.result', {
                     score: game.score,
                     best: game.best,
-                    caught: game.caught,
+                    hits: game.hits,
                   })}
                 </Hint>
                 <ResultActions>

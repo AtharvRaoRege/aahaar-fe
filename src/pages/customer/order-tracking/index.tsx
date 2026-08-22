@@ -2,11 +2,15 @@ import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { CallWaiterButton } from '@/components/customer/call-waiter'
+import { OrderTicket } from '@/components/customer/order-ticket'
 import { ReviewForm } from '@/components/customer/review-form'
 import { UpiPay } from '@/components/customer/upi-pay'
+import { VenueFollow } from '@/components/customer/venue-follow'
 import { WaitFacts } from '@/components/customer/wait-facts'
 import { WaitGame } from '@/components/customer/wait-game'
-import { shouldAutoOpenWaitGame } from '@/components/customer/wait-game/helper'
+import { WaitGamesRow } from '@/components/customer/wait-games-row'
+import type { WaitGameId } from '@/components/customer/wait-games-row/helper'
+import { WaitSpiceSnap } from '@/components/customer/wait-spice-snap'
 import { Button } from '@/components/global/button'
 import { EmptyState } from '@/components/global/empty-state'
 import { Skeleton } from '@/components/global/skeleton'
@@ -27,12 +31,6 @@ import {
   RateSlot,
   Step,
   StepLabel,
-  Ticket,
-  TicketHead,
-  TicketNote,
-  TicketRow,
-  TicketStamp,
-  TicketTotal,
   Timeline,
   Title,
   TitleRow,
@@ -43,7 +41,6 @@ export function OrderTrackingPage() {
   const { restaurant, slug, tableNumber } = useCustomerContext()
   const {
     query,
-    orderId,
     goMenu,
     submitReview,
     reviewSubmitted,
@@ -52,9 +49,7 @@ export function OrderTrackingPage() {
     canAddMore,
   } = useOrderTracking(slug, tableNumber)
   const order = query.data
-  const [gameOpen, setGameOpen] = useState(() =>
-    orderId ? shouldAutoOpenWaitGame(orderId) : false,
-  )
+  const [activeGame, setActiveGame] = useState<WaitGameId | null>(null)
 
   if (query.isLoading) {
     return (
@@ -131,44 +126,48 @@ export function OrderTrackingPage() {
 
       <WaitFacts enabled={waiting} />
 
-      <Ticket>
-        <TicketHead>
-          {tableLabel
+      <OrderTicket
+        head={
+          tableLabel
             ? t('track.ticketHeadTable', { table: tableLabel })
-            : t('track.ticketHead')}
-        </TicketHead>
-        {order.items.map((item) => (
-          <TicketRow key={item.id}>
-            <span>
-              {item.quantity} × {item.nameSnapshot}
-            </span>
-            <span>{formatMoney(item.subtotal, restaurant.currency)}</span>
-          </TicketRow>
-        ))}
-        {order.notes && (
-          <TicketNote>
-            {t('track.ticketNote', { note: order.notes })}
-          </TicketNote>
-        )}
-        {order.discount > 0 && (
-          <TicketRow>
-            <span>{t('cart.discount')}</span>
-            <span>-{formatMoney(order.discount, restaurant.currency)}</span>
-          </TicketRow>
-        )}
-        <TicketTotal>
-          <span>{t('common:labels.total')}</span>
-          <span>{formatMoney(order.total, restaurant.currency)}</span>
-        </TicketTotal>
-        <TicketStamp>{t(`common:status.${order.status}`)}</TicketStamp>
-      </Ticket>
+            : t('track.ticketHead')
+        }
+        lines={order.items.map((item) => ({
+          id: item.id,
+          label: `${item.quantity} × ${item.nameSnapshot}`,
+          amount: formatMoney(item.subtotal, restaurant.currency),
+        }))}
+        note={order.notes ? t('track.ticketNote', { note: order.notes }) : null}
+        discountLabel={order.discount > 0 ? t('cart.discount') : null}
+        discountAmount={
+          order.discount > 0
+            ? `-${formatMoney(order.discount, restaurant.currency)}`
+            : null
+        }
+        totalLabel={t('common:labels.total')}
+        totalAmount={formatMoney(order.total, restaurant.currency)}
+        stamp={t(`common:status.${order.status}`)}
+      />
+
+      <Actions>
+        <Button variant={canAddMore ? 'primary' : 'outline'} fullWidth onClick={goMenu}>
+          {canAddMore ? t('track.addMore') : t('track.reorder')}
+        </Button>
+      </Actions>
 
       {waiting && (
-        <WaitGame
-          open={gameOpen}
-          onOpenChange={setGameOpen}
-          onExit={() => setGameOpen(false)}
-        />
+        <>
+          <WaitGame
+            open={activeGame === 'catch'}
+            onOpenChange={(open) => !open && setActiveGame(null)}
+            onExit={() => setActiveGame(null)}
+          />
+          <WaitSpiceSnap
+            open={activeGame === 'spice'}
+            onOpenChange={(open) => !open && setActiveGame(null)}
+            onExit={() => setActiveGame(null)}
+          />
+        </>
       )}
 
       {restaurant.upiVpa && order.status !== 'PENDING' && (
@@ -182,16 +181,13 @@ export function OrderTrackingPage() {
         </RateSlot>
       )}
 
-      <Actions>
-        {waiting && (
-          <Button variant="outline" fullWidth onClick={() => setGameOpen(true)}>
-            {t('game.playWhileWait')}
-          </Button>
-        )}
-        <Button variant={canAddMore ? 'primary' : 'outline'} fullWidth onClick={goMenu}>
-          {canAddMore ? t('track.addMore') : t('track.reorder')}
-        </Button>
-      </Actions>
+      <VenueFollow restaurant={restaurant} />
+
+      {waiting && (
+        <Actions>
+          <WaitGamesRow onPick={setActiveGame} />
+        </Actions>
+      )}
       {order.status === 'COMPLETED' && (
         <RateSlot>
           <ReviewForm

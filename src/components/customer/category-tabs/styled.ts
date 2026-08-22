@@ -59,8 +59,8 @@ export const Scroller = styled.div`
 
 export const Tab = styled.button<{ $active: boolean }>`
   flex-shrink: 0;
-  max-width: min(200px, 70vw);
-  min-height: 36px;
+  max-width: min(220px, 70vw);
+  min-height: 40px;
   padding: 0 ${spacing.md};
   background: ${({ $active }) => ($active ? brandVar.primary : palette.white)};
   color: ${({ $active }) => ($active ? brandVar.onPrimary : palette.ink)};
@@ -68,7 +68,7 @@ export const Tab = styled.button<{ $active: boolean }>`
   border-radius: ${radii.full};
   box-shadow: ${({ $active }) => ($active ? shadows.sm : 'none')};
   font-weight: 700;
-  font-size: ${fontSizes.labelSm};
+  font-size: ${fontSizes.label};
   letter-spacing: 0.01em;
   white-space: nowrap;
   overflow: hidden;
@@ -80,29 +80,31 @@ export const Tab = styled.button<{ $active: boolean }>`
   }
 
   ${({ theme }) => theme.media.sm} {
-    min-height: 38px;
+    min-height: 42px;
     padding: 0 ${spacing.md};
-    font-size: ${fontSizes.label};
-    max-width: min(220px, 55vw);
+    font-size: ${fontSizes.body};
+    max-width: min(240px, 55vw);
   }
 
   ${({ theme }) => theme.media.md} {
-    min-height: 40px;
+    min-height: 44px;
     padding: 0 ${spacing.lg};
-    font-size: ${fontSizes.label};
-    max-width: 240px;
-  }
-
-  ${({ theme }) => theme.media.lg} {
-    min-height: 40px;
-    padding: 0 ${spacing.lg};
+    font-size: ${fontSizes.body};
     max-width: 260px;
   }
 
-  ${({ theme }) => theme.media.xl} {
-    min-height: 42px;
+  ${({ theme }) => theme.media.lg} {
+    min-height: 44px;
     padding: 0 ${spacing.lg};
+    font-size: ${fontSizes.bodyLg};
     max-width: 280px;
+  }
+
+  ${({ theme }) => theme.media.xl} {
+    min-height: 46px;
+    padding: 0 ${spacing.lg};
+    font-size: ${fontSizes.bodyLg};
+    max-width: 300px;
   }
 
   @media (prefers-reduced-motion: reduce) {

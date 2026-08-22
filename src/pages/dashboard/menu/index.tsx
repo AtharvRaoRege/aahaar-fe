@@ -75,7 +75,9 @@ import {
 
 export function MenuManagerPage() {
   return (
-    <VenueScreen cards={3}>{(restaurant) => <MenuBody restaurant={restaurant} />}</VenueScreen>
+    <VenueScreen cards={3}>
+      {(restaurant) => <MenuBody key={restaurant.id} restaurant={restaurant} />}
+    </VenueScreen>
   )
 }
 
