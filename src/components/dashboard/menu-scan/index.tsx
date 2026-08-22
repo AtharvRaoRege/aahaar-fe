@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { BottomSheet } from '@/components/global/bottom-sheet'
 import { Button } from '@/components/global/button'
 import { TextField } from '@/components/global/field'
+import { ProBadge } from '@/components/global/pro-badge'
 import type { MenuScanResult } from '@/types/menu'
 
 import { ACCEPTED_TYPES, CONFIDENCE_TONE, useMenuScan } from './helper'
@@ -70,7 +71,15 @@ export function MenuScanSheet({
   }
 
   return (
-    <BottomSheet open={open} onClose={close} title={t('scan.title')}>
+    <BottomSheet
+      open={open}
+      onClose={close}
+      title={
+        <>
+          {t('scan.title')} <ProBadge />
+        </>
+      }
+    >
       <Body>
         {scan.error && (
           <Notice $tone="bad">

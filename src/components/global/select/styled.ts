@@ -2,6 +2,7 @@ import styled from 'styled-components'
 
 import { focusRing } from '@/styles/mixins'
 import { fontSizes, palette, radii, shadows, spacing } from '@/styles/theme'
+import { brandVar } from '@/utils/theme/brand-palette'
 
 export const Wrap = styled.div`
   position: relative;
@@ -119,18 +120,17 @@ export const Option = styled.button<{ $active?: boolean }>`
   min-height: 44px;
   padding: ${spacing.sm} ${spacing.md};
   text-align: left;
-  color: ${({ $active }) => ($active ? palette.white : palette.ink)};
-  background: ${({ $active }) => ($active ? brandVar.primary : 'transparent')};
   color: ${({ $active }) => ($active ? brandVar.onPrimary : palette.ink)};
+  background: ${({ $active }) => ($active ? brandVar.primary : 'transparent')};
   border-radius: ${radii.sm};
   font-size: ${fontSizes.body};
   font-weight: ${({ $active }) => ($active ? 700 : 600)};
 
-  svg {
+    svg {
     width: 16px;
     height: 16px;
     flex-shrink: 0;
-    color: ${({ $active }) => ($active ? palette.white : palette.ink)};
+    color: ${({ $active }) => ($active ? brandVar.onPrimary : palette.ink)};
     stroke-width: 1.75;
   }
 
@@ -154,7 +154,7 @@ export const Option = styled.button<{ $active?: boolean }>`
   @media (hover: hover) {
     &:hover {
       background: ${({ $active }) => ($active ? brandVar.primary : palette.cream)};
-      color: ${({ $active }) => ($active ? palette.white : palette.ink)};
+      color: ${({ $active }) => ($active ? brandVar.onPrimary : palette.ink)};
     }
   }
 `

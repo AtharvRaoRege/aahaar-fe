@@ -9,6 +9,7 @@ export type SubscriptionStatus =
 
 export type PlanFeature =
   | 'MENU_SCAN'
+  | 'BRAND_THEME'
   | 'ADVANCED_ANALYTICS'
   | 'DISH_PERFORMANCE'
   | 'UPSELL_ENGINE'

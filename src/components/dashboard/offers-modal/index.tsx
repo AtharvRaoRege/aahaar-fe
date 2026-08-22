@@ -8,6 +8,7 @@ import { ConfirmDialog } from '@/components/global/confirm-dialog'
 import { EmptyState } from '@/components/global/empty-state'
 import { FormField, TextArea, TextField } from '@/components/global/field'
 import { IconButton } from '@/components/global/icon-button'
+import { ProBadge } from '@/components/global/pro-badge'
 import { Select } from '@/components/global/select'
 import { Skeleton } from '@/components/global/skeleton'
 import type { Offer } from '@/types/offer'
@@ -168,7 +169,16 @@ function OffersModalBody({
                   onChange={(value) => page.setField('kind', value as Offer['kind'])}
                 />
               </FormField>
-              {!page.isPro && <Meta>{t('offers.proKindHint')}</Meta>}
+              {!page.isPro && (
+                <Meta>
+                  {t('offers.proKindHint')} <ProBadge />
+                </Meta>
+              )}
+              {page.isPro && (
+                <Meta>
+                  <ProBadge /> {t('offers.proKinds')}
+                </Meta>
+              )}
               <TextField
                 label={t('offers.offerTitle')}
                 value={page.form.title}

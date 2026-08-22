@@ -1,6 +1,8 @@
 import { useTranslation } from 'react-i18next'
 
 import { Button } from '@/components/global/button'
+import { ProTitle } from '@/components/global/pro-badge'
+import { showProUpgrade } from '@/lib/dashboard/pro-upgrade-store'
 import { palette } from '@/styles/theme'
 import type { Restaurant } from '@/types/restaurant'
 
@@ -37,54 +39,69 @@ export function BrandThemeSettings({ restaurant }: { restaurant: Restaurant }) {
   return (
     <Card>
       <div>
-        <CardTitle>{t('settings.brandTitle')}</CardTitle>
+        <CardTitle>
+          <ProTitle>{t('settings.brandTitle')}</ProTitle>
+        </CardTitle>
         <CardHint>{t('settings.brandHint')}</CardHint>
       </div>
 
-      <Controls>
-        <PickerField>
-          {t('settings.brandPrimary')}
-          <PickerRow>
-            <ColorInput
-              type="color"
-              value={theme.draft}
-              aria-label={t('settings.brandPrimary')}
-              onChange={(event) => theme.onPickerChange(event.target.value)}
-            />
-            <HexField
-              value={theme.hexInput}
-              $invalid={!theme.hexValid}
-              spellCheck={false}
-              autoCapitalize="characters"
-              aria-label={t('settings.brandHex')}
-              onChange={(event) => theme.onHexChange(event.target.value)}
-            />
-          </PickerRow>
-        </PickerField>
+      {theme.locked ? (
+        <>
+          <Notice $tone="bad">{t('settings.brandProOnly')}</Notice>
+          <Actions>
+            <Button type="button" size="sm" onClick={showProUpgrade}>
+              {t('settings.brandSeePro')}
+            </Button>
+          </Actions>
+        </>
+      ) : (
+        <Controls>
+          <PickerField>
+            {t('settings.brandPrimary')}
+            <PickerRow>
+              <ColorInput
+                type="color"
+                value={theme.draft}
+                aria-label={t('settings.brandPrimary')}
+                onChange={(event) => theme.onPickerChange(event.target.value)}
+              />
+              <HexField
+                value={theme.hexInput}
+                $invalid={!theme.hexValid}
+                spellCheck={false}
+                autoCapitalize="characters"
+                aria-label={t('settings.brandHex')}
+                onChange={(event) => theme.onHexChange(event.target.value)}
+              />
+            </PickerRow>
+          </PickerField>
 
-        <Actions>
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            disabled={theme.isDefault && !theme.dirty}
-            onClick={theme.resetDefault}
-          >
-            {t('settings.brandReset')}
-          </Button>
-          <Button
-            type="button"
-            size="sm"
-            loading={theme.busy}
-            disabled={!theme.dirty || !theme.hexValid}
-            onClick={theme.save}
-          >
-            {t('settings.brandSave')}
-          </Button>
-        </Actions>
-      </Controls>
+          <Actions>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              disabled={theme.isDefault && !theme.dirty}
+              onClick={theme.resetDefault}
+            >
+              {t('settings.brandReset')}
+            </Button>
+            <Button
+              type="button"
+              size="sm"
+              loading={theme.busy}
+              disabled={!theme.dirty || !theme.hexValid}
+              onClick={theme.save}
+            >
+              {t('settings.brandSave')}
+            </Button>
+          </Actions>
+        </Controls>
+      )}
 
-      {!theme.hexValid && <Notice $tone="bad">{t('settings.brandInvalid')}</Notice>}
+      {!theme.locked && !theme.hexValid && (
+        <Notice $tone="bad">{t('settings.brandInvalid')}</Notice>
+      )}
       {theme.error && <Notice $tone="bad">{theme.error}</Notice>}
       {theme.savedOk && <Notice $tone="ok">{t('settings.brandSaved')}</Notice>}
 

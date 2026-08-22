@@ -12,7 +12,7 @@ import { Body, Grabber, Header, Overlay, Sheet, Title } from './styled'
 export interface BottomSheetProps {
   open: boolean
   onClose: () => void
-  title?: string
+  title?: ReactNode
   children: ReactNode
 }
 
@@ -38,8 +38,12 @@ export function BottomSheet({ open, onClose, title, children }: BottomSheetProps
   const stop = (event: MouseEvent) => event.stopPropagation()
 
   return createPortal(
-    <Overlay onClick={dismiss} role="dialog" aria-modal="true" aria-label={title}>
-      <Sheet
+    <Overlay
+      onClick={dismiss}
+      role="dialog"
+      aria-modal="true"
+      aria-label={typeof title === 'string' ? title : undefined}
+    >      <Sheet
         ref={sheetRef}
         onClick={stop}
         $offset={offset}

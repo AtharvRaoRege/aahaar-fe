@@ -53,4 +53,14 @@ export const adminApi = {
   async assignPlan(restaurantId: string, plan: 'BASIC' | 'PRO'): Promise<void> {
     await api.post(`/admin/restaurants/${restaurantId}/plan`, { plan })
   },
+  async settings(): Promise<{ openRegistration: boolean }> {
+    const { data } = await api.get<{ openRegistration: boolean }>('/admin/settings')
+    return data
+  },
+  async updateSettings(payload: {
+    openRegistration: boolean
+  }): Promise<{ openRegistration: boolean }> {
+    const { data } = await api.patch<{ openRegistration: boolean }>('/admin/settings', payload)
+    return data
+  },
 }

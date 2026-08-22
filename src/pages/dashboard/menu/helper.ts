@@ -20,6 +20,7 @@ import type { ActionMenuItem } from '@/components/global/action-menu/helper'
 import type { SelectOption } from '@/components/global/select'
 import { menuApi } from '@/lib/api/menu'
 import { subscriptionsApi } from '@/lib/api/subscriptions'
+import { showProUpgrade } from '@/lib/dashboard/pro-upgrade-store'
 import { freshFor } from '@/lib/query/cache'
 import { invalidatePublicVenue } from '@/lib/query/invalidate-public'
 import { queryKeys } from '@/lib/query/keys'
@@ -463,6 +464,10 @@ export function useMenuManager(restaurantId: string, slug?: string) {
     },
     onActionsScan: () => {
       setActionsOpen(false)
+      if (!isPro) {
+        showProUpgrade()
+        return
+      }
       setScanOpen(true)
     },
     categoryForm,

@@ -12,9 +12,8 @@ export const Tag = styled.span<{ $tone: 'sold' | 'best' }>`
   letter-spacing: 0.04em;
   text-transform: uppercase;
   white-space: nowrap;
-  color: ${({ $tone }) => ($tone === 'sold' ? palette.white : palette.ink)};
-  background: ${({ $tone }) => ($tone === 'sold' ? palette.chili : brandVar.primary)};
   color: ${({ $tone }) => ($tone === 'sold' ? palette.white : brandVar.onPrimary)};
+  background: ${({ $tone }) => ($tone === 'sold' ? palette.chili : brandVar.primary)};
 `
 
 export const MetaRow = styled.div`

@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next'
 
 import { AdminOverview } from '@/components/admin/overview'
+import { OpenRegistrationToggle } from '@/components/admin/open-registration'
 import { PeoplePanel } from '@/components/admin/people-panel'
 import { PlansPanel } from '@/components/admin/plans-panel'
 import { VenuesPanel } from '@/components/admin/venues-panel'
@@ -58,6 +59,8 @@ export function AdminPage() {
             </Actions>
           )}
         </Header>
+
+        <OpenRegistrationToggle />
 
         <AdminOverview
           counts={page.overview}

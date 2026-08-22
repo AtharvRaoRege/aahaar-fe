@@ -22,6 +22,7 @@ import { ConfirmDialog } from '@/components/global/confirm-dialog'
 import { EmptyState } from '@/components/global/empty-state'
 import { FormField, TextField } from '@/components/global/field'
 import { IconButton } from '@/components/global/icon-button'
+import { ProBadge } from '@/components/global/pro-badge'
 import { Select } from '@/components/global/select'
 import { SearchInput } from '@/components/global/search-input'
 import { Skeleton } from '@/components/global/skeleton'
@@ -318,7 +319,7 @@ function MenuBody({ restaurant }: { restaurant: Restaurant }) {
               disabled={page.scanBusy}
               onClick={page.onActionsScan}
             >
-              {t('scan.action')}
+              {t('scan.action')} <ProBadge />
             </Button>
           )}
           <Button
@@ -391,10 +392,11 @@ function MenuBody({ restaurant }: { restaurant: Restaurant }) {
             <input type="checkbox" {...page.form.register('isVegetarian')} />
             {t('menu.veg')}
           </CheckRow>
-          {page.editing && page.isPro && (
+          {page.editing && (
             <UpsellPicker
               menuItemId={page.editing.id}
               candidates={page.upsellCandidates}
+              locked={!page.isPro}
             />
           )}
           <Button type="submit" fullWidth loading={page.saving}>

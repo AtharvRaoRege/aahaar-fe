@@ -7,6 +7,7 @@ import { LogoutButton } from '@/components/dashboard/logout-confirm'
 import { VenueSwitcher } from '@/components/dashboard/venue-switcher'
 import { BrandMark } from '@/components/global/brand-mark'
 import { Button } from '@/components/global/button'
+import { ProUpgradeModal } from '@/components/global/pro-upgrade-modal'
 import type { DashboardOutlet } from '@/hooks/dashboard/context'
 
 import { ADMIN_NAV, formatNavBadge, MOBILE_NAV_KEYS, NAV_ITEMS, useDashboardLayout } from './helper'
@@ -199,6 +200,7 @@ export function DashboardLayout() {
           </NavLink>
         )}
       </BottomNav>
+      <ProUpgradeModal />
     </Shell>
   )
 }

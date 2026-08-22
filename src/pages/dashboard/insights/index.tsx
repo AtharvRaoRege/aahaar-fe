@@ -1,11 +1,12 @@
-import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 
 import { ReviewsPanel } from '@/components/dashboard/reviews-panel'
 import { VenueScreen } from '@/components/dashboard/venue-screen'
 import { Button } from '@/components/global/button'
 import { EmptyState } from '@/components/global/empty-state'
+import { ProBadge } from '@/components/global/pro-badge'
 import { Skeleton } from '@/components/global/skeleton'
+import { showProUpgrade } from '@/lib/dashboard/pro-upgrade-store'
 import type { DishRow, NamedCount } from '@/types/analytics'
 import type { Restaurant } from '@/types/restaurant'
 
@@ -204,14 +205,16 @@ function InsightsBody({ restaurant }: { restaurant: Restaurant }) {
 
       {summary && !summary.isPro && (
         <>
-          <SectionLabel>{t('insights.proTitle')}</SectionLabel>
+          <SectionLabel>
+            {t('insights.proTitle')} <ProBadge />
+          </SectionLabel>
           <ProCard>
             <ProTitle>{t('insights.proTitle')}</ProTitle>
             <ProBody>{t('insights.proBody')}</ProBody>
             <ProActions>
-              <Link to="/dashboard/plan">
-                <Button>{t('insights.proCta')}</Button>
-              </Link>
+              <Button type="button" onClick={showProUpgrade}>
+                {t('insights.proCta')}
+              </Button>
             </ProActions>
           </ProCard>
         </>
@@ -269,7 +272,9 @@ function Dishes({ page }: { page: ReturnType<typeof useInsightsPage> }) {
 
   return (
     <>
-      <SectionLabel>{t('dishes.title')}</SectionLabel>
+      <SectionLabel>
+        {t('dishes.title')} <ProBadge />
+      </SectionLabel>
       <Hint>{t('dishes.hint')}</Hint>
 
       {top.length === 0 ? (

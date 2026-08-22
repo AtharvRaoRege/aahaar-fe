@@ -104,10 +104,10 @@ api.interceptors.response.use(
       window.dispatchEvent(new CustomEvent('aahaar:unauthorized'))
     }
 
-    // The account is still on the waitlist. Keep the session and send them to
-    // the waitlist screen instead of surfacing a permission error per request.
-    if (status === 403 && payload?.code === 'WAITLISTED') {
-      window.dispatchEvent(new CustomEvent('aahaar:waitlisted'))
+    // Plan gates are UI-mirrored; if a Basic kitchen still hits a Pro endpoint,
+    // surface the upgrade modal instead of a raw permission error.
+    if (status === 403 && payload?.code === 'PLAN_UPGRADE_REQUIRED') {
+      window.dispatchEvent(new CustomEvent('aahaar:pro-upgrade'))
     }
 
     throw new ApiRequestError(

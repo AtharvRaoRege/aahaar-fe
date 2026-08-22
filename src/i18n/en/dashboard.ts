@@ -138,6 +138,12 @@ export const dashboard = {
     overviewLive: 'Live',
     overviewDraft: 'Not live',
     overviewPro: 'Pro',
+    openRegistration: 'Open signup',
+    openRegistrationHint:
+      'When on, new kitchens skip the waitlist and can use the app right away. When off, everyone waits for approval.',
+    openRegistrationOn: 'Anyone can join',
+    openRegistrationOff: 'Waitlist required',
+    openRegistrationFailed: 'Could not update open signup. Try again.',
     filterAll: 'All',
     filterLive: 'Live',
     filterDraft: 'Not live',
@@ -336,6 +342,8 @@ export const dashboard = {
     brandTitle: 'Brand colour',
     brandHint:
       'Guests see this on buttons, tabs, and highlights in your menu. We pick safe text and tints automatically.',
+    brandProOnly: 'Brand colour is part of Pro.',
+    brandSeePro: 'See Pro',
     brandPrimary: 'Primary colour',
     brandHex: 'Hex code',
     brandReset: 'Reset to default',
@@ -485,6 +493,7 @@ export const dashboard = {
       BASIC_INSIGHTS: 'Scans, menu views and order counts',
       INSTALLABLE_APP: 'Installs on your phone like an app',
       MENU_SCAN: 'Scan a printed menu into your dish list',
+      BRAND_THEME: 'Brand colour for buttons, tabs, and guest menu chrome',
       UNLIMITED_TABLES: 'Unlimited tables',
       ADVANCED_INSIGHTS: 'Unique and returning guests, revenue, busiest hours',
       SAVINGS_COUNTER: 'Table QR highlight — revenue, guests, and completed tickets',
@@ -495,6 +504,11 @@ export const dashboard = {
     },
     basicIncludes: 'Everything in Basic, plus:',
     proOnly: 'Pro',
+    upgradeModalTitle: 'This is a Pro feature',
+    upgradeModalBody:
+      'Please buy our Pro plan to enjoy every feature — AI menu scan, brand colour, AI insights, and more.',
+    upgradeModalHint: 'One upgrade unlocks the full kitchen toolkit.',
+    upgradeModalCta: 'See Pro plans',
   },
   publish: {
     title: 'Go live',
@@ -553,6 +567,7 @@ export const dashboard = {
     deleteBody: 'Guests will stop seeing it right away.',
     saveFailed: 'Could not save the offer.',
     proKindHint: 'This offer type is part of Pro.',
+    proKinds: 'All offer types included',
   },
   insights: {
     title: 'Insights',
@@ -613,6 +628,7 @@ export const dashboard = {
   upsell: {
     title: 'Goes well with',
     hint: 'Pick up to 4 dishes to suggest at the cart. This is where extra revenue comes from.',
+    proOnly: 'Goes well with is part of Pro.',
     none: 'No suggestions yet',
     save: 'Save suggestions',
     saved: 'Suggestions saved',

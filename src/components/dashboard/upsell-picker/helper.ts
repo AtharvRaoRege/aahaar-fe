@@ -7,7 +7,7 @@ import { errorMessage } from '@/utils/error-message'
 
 export const MAX_UPSELLS = 4
 
-export function useUpsellPicker(menuItemId: string) {
+export function useUpsellPicker(menuItemId: string, enabled = true) {
   const queryClient = useQueryClient()
   // ``null`` means "no local edits yet" — the saved list is shown as-is. Keeping
   // the draft separate avoids syncing server data into state via an effect.
@@ -17,7 +17,7 @@ export function useUpsellPicker(menuItemId: string) {
   const query = useQuery({
     queryKey: queryKeys.upsells(menuItemId),
     queryFn: () => menuApi.getUpsells(menuItemId),
-    enabled: Boolean(menuItemId),
+    enabled: Boolean(menuItemId) && enabled,
   })
 
   const serverIds = query.data?.suggestions.map((suggestion) => suggestion.menuItemId) ?? []
