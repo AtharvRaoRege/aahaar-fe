@@ -311,17 +311,15 @@ function MenuBody({ restaurant }: { restaurant: Restaurant }) {
           >
             {t('menu.uploadExcel')}
           </Button>
-          {page.menuScanEnabled && (
-            <Button
-              variant="outline"
-              fullWidth
-              leftIcon={<ScanLine aria-hidden />}
-              disabled={page.scanBusy}
-              onClick={page.onActionsScan}
-            >
-              {t('scan.action')} <ProBadge />
-            </Button>
-          )}
+          <Button
+            variant="outline"
+            fullWidth
+            leftIcon={<ScanLine aria-hidden />}
+            disabled={page.scanBusy}
+            onClick={page.onActionsScan}
+          >
+            {t('scan.action')} <ProBadge />
+          </Button>
           <Button
             variant="outline"
             fullWidth

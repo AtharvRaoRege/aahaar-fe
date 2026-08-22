@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next'
 import { VenueScreen } from '@/components/dashboard/venue-screen'
 import { Button } from '@/components/global/button'
 import { TextArea } from '@/components/global/field'
+import { ProBadge } from '@/components/global/pro-badge'
 import { Skeleton } from '@/components/global/skeleton'
 import type { PlanSpec, Subscription } from '@/types/subscription'
 import type { Restaurant } from '@/types/restaurant'
@@ -146,7 +147,15 @@ function PlanCardView({
   return (
     <PlanCard $current={isCurrent} $featured={isPro}>
       <PlanHead>
-        <PlanTitle>{spec.tier}</PlanTitle>
+        <PlanTitle>
+          {spec.tier}
+          {isPro && (
+            <>
+              {' '}
+              <ProBadge />
+            </>
+          )}
+        </PlanTitle>
         {isCurrent && (
           <SelectedMark aria-label={t('plan.currentBadge')}>
             <Check aria-hidden />
@@ -162,6 +171,12 @@ function PlanCardView({
         {spec.tableLimit === null
           ? t('plan.tablesUnlimited')
           : t('plan.tablesUpTo', { count: spec.tableLimit })}
+        {spec.tableLimit === null && (
+          <>
+            {' '}
+            <ProBadge />
+          </>
+        )}
       </Meta>
       <FeatureList>
         {isPro && (

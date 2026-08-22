@@ -17,6 +17,10 @@ export const Hint = styled.p`
 `
 
 export const Meta = styled.p`
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: ${spacing.xs};
   font-size: ${fontSizes.labelSm};
   font-weight: ${fontWeights.medium};
   color: ${palette.inkSoft};
@@ -91,6 +95,10 @@ export const PlanHead = styled.div`
 `
 
 export const PlanTitle = styled.h3`
+  display: inline-flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: ${spacing.sm};
   font-size: ${fontSizes.body};
   font-weight: ${fontWeights.black};
   letter-spacing: -0.02em;

@@ -23,9 +23,9 @@ export function useBrandThemeSettings(restaurant: Restaurant) {
     queryKey: queryKeys.subscription(restaurant.id),
     queryFn: () => subscriptionsApi.get(restaurant.id),
   })
-  const isPro =
-    subscriptionQuery.data?.effectivePlan === 'PRO' ||
-    Boolean(subscriptionQuery.data?.features?.includes('BRAND_THEME'))
+  const isPro = subscriptionQuery.data?.effectivePlan === 'PRO'
+  // Lock until we know they have Pro — never flash editable controls to Basic.
+  const locked = !isPro
 
   const draft = override ?? saved
   const hexInput = hexOverride ?? saved
@@ -52,7 +52,7 @@ export function useBrandThemeSettings(restaurant: Restaurant) {
 
   return {
     isPro,
-    locked: subscriptionQuery.isSuccess && !isPro,
+    locked,
     draft,
     hexInput,
     palette,

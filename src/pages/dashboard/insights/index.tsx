@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { ReviewsPanel } from '@/components/dashboard/reviews-panel'
@@ -113,45 +114,52 @@ function InsightsBody({ restaurant }: { restaurant: Restaurant }) {
           </TileGrid>
 
           {summary.isPro && (
-            <TileGrid>
-              <Tile>
-                <TileValue>{summary.uniqueVisitors ?? 0}</TileValue>
-                <TileLabel>{t('insights.uniqueVisitors')}</TileLabel>
-              </Tile>
-              <Tile>
-                <TileValue>{summary.repeatVisitors ?? 0}</TileValue>
-                <TileLabel>{t('insights.repeatVisitors')}</TileLabel>
-              </Tile>
-              <Tile>
-                <TileValue>{formatMoney(summary.totalRevenue)}</TileValue>
-                <TileLabel>{t('insights.revenue')}</TileLabel>
-              </Tile>
-              <Tile>
-                <TileValue>{formatMoney(summary.averageOrderValue)}</TileValue>
-                <TileLabel>{t('insights.avgOrder')}</TileLabel>
-              </Tile>
-              {page.busiestHour && (
+            <>
+              <SectionLabel>
+                {t('insights.advancedTitle')} <ProBadge />
+              </SectionLabel>
+              <TileGrid>
                 <Tile>
-                  <TileValue>{formatHour(page.busiestHour.hour)}</TileValue>
-                  <TileLabel>{t('insights.busiest')}</TileLabel>
+                  <TileValue>{summary.uniqueVisitors ?? 0}</TileValue>
+                  <TileLabel>{t('insights.uniqueVisitors')}</TileLabel>
                 </Tile>
-              )}
-              {summary.upsellImpact && summary.upsellImpact.acceptedCount > 0 && (
                 <Tile>
-                  <TileValue>{formatMoney(summary.upsellImpact.attributedRevenue)}</TileValue>
-                  <TileLabel>
-                    {t('insights.upsellBody', {
-                      count: summary.upsellImpact.acceptedCount,
-                    })}
-                  </TileLabel>
+                  <TileValue>{summary.repeatVisitors ?? 0}</TileValue>
+                  <TileLabel>{t('insights.repeatVisitors')}</TileLabel>
                 </Tile>
-              )}
-            </TileGrid>
+                <Tile>
+                  <TileValue>{formatMoney(summary.totalRevenue)}</TileValue>
+                  <TileLabel>{t('insights.revenue')}</TileLabel>
+                </Tile>
+                <Tile>
+                  <TileValue>{formatMoney(summary.averageOrderValue)}</TileValue>
+                  <TileLabel>{t('insights.avgOrder')}</TileLabel>
+                </Tile>
+                {page.busiestHour && (
+                  <Tile>
+                    <TileValue>{formatHour(page.busiestHour.hour)}</TileValue>
+                    <TileLabel>{t('insights.busiest')}</TileLabel>
+                  </Tile>
+                )}
+                {summary.upsellImpact && summary.upsellImpact.acceptedCount > 0 && (
+                  <Tile>
+                    <TileValue>{formatMoney(summary.upsellImpact.attributedRevenue)}</TileValue>
+                    <TileLabel>
+                      {t('insights.upsellBody', {
+                        count: summary.upsellImpact.acceptedCount,
+                      })}
+                    </TileLabel>
+                  </Tile>
+                )}
+              </TileGrid>
+            </>
           )}
 
-          {summary.tableHighlight && summary.tableHighlight.orderCount > 0 && (
+          {summary.isPro && summary.tableHighlight && summary.tableHighlight.orderCount > 0 && (
             <>
-              <SectionLabel>{t('insights.savingsTitle')}</SectionLabel>
+              <SectionLabel>
+                {t('insights.savingsTitle')} <ProBadge />
+              </SectionLabel>
               <SavingsCard>
                 <SavingsTitle>{t('insights.savingsCommission')}</SavingsTitle>
                 <SavingsHeadline>
@@ -197,7 +205,14 @@ function InsightsBody({ restaurant }: { restaurant: Restaurant }) {
               rows={summary.popularCategories}
             />
             {summary.isPro && (
-              <CountList title={t('insights.tableScans')} rows={summary.tableScans} />
+              <CountList
+                title={
+                  <>
+                    {t('insights.tableScans')} <ProBadge />
+                  </>
+                }
+                rows={summary.tableScans}
+              />
             )}
           </CardGrid>
         </>
@@ -239,7 +254,7 @@ function InsightsBody({ restaurant }: { restaurant: Restaurant }) {
   )
 }
 
-function CountList({ title, rows }: { title: string; rows: NamedCount[] }) {
+function CountList({ title, rows }: { title: ReactNode; rows: NamedCount[] }) {
   const { t } = useTranslation('dashboard')
   return (
     <ListCard>

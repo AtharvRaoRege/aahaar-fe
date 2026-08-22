@@ -25,6 +25,10 @@ export const RangeRow = styled.div`
 `
 
 export const SectionLabel = styled.h2`
+  display: inline-flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: ${spacing.sm};
   font-size: ${fontSizes.label};
   font-weight: 600;
   color: ${brandVar.accentText};
@@ -161,6 +165,10 @@ export const ListCard = styled.section`
 `
 
 export const ListTitle = styled.h3`
+  display: inline-flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: ${spacing.sm};
   font-size: ${fontSizes.label};
   font-weight: ${fontWeights.bold};
   color: ${palette.inkSoft};

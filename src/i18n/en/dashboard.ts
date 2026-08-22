@@ -300,6 +300,8 @@ export const dashboard = {
     emptyHint: 'Name a table, tap Make QR, then print the image and put it on the table.',
     needLabel: 'Give this table a name, such as Table 5.',
     needTable: 'Add the table number so the QR opens that table.',
+    tablesPro: 'Unlimited tables',
+    tablesBasicLimit: 'Basic includes up to {{count}} tables. Unlimited is Pro.',
     reviewTitle: 'Review QR',
     reviewHint: 'Guests scan this to rate the venue. Print one and keep it at the counter or on tables.',
     reviewLabel: 'Rate us',
@@ -604,6 +606,7 @@ export const dashboard = {
     offersTitle: 'Offers',
     offersHint: 'Which deals guests opened on the menu.',
     offerViews: 'Opens',
+    advancedTitle: 'Pro insights',
     proTitle: 'See more with Pro',
     proBody:
       'Pro shows unique and returning guests, revenue per order, your busiest hours, which dishes sell and which do not, and a clear read on table QR performance.',
@@ -642,6 +645,8 @@ export const dashboard = {
     pick: 'Choose a file',
     pickHint: 'JPG, PNG, PDF, CSV or Excel · up to 10 MB',
     tooBig: 'That file is over 10 MB. Try a smaller photo.',
+    unavailable:
+      'AI menu scan is not available on this server yet. Ask your admin to enable it.',
     reading: 'Processing your menu…',
     readingHint:
       'AI is reading dishes and prices from your photo or PDF. This can take up to a minute — keep this open.',

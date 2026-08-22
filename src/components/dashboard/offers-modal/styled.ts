@@ -126,6 +126,10 @@ export const Title = styled.h2`
 `
 
 export const Hint = styled.p`
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: ${spacing.xs};
   font-size: ${fontSizes.labelSm};
   font-weight: ${fontWeights.medium};
   color: ${palette.inkSoft};

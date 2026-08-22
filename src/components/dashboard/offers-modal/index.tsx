@@ -90,7 +90,21 @@ function OffersModalBody({
                 onClick={onClose}
               />
             </HeadRow>
-            <Hint>{t('offers.hint')}</Hint>
+            <Hint>
+              {t('offers.hint')}
+              {!page.isPro && (
+                <>
+                  {' '}
+                  · {t('offers.proKindHint')} <ProBadge />
+                </>
+              )}
+              {page.isPro && (
+                <>
+                  {' '}
+                  · {t('offers.proKinds')} <ProBadge />
+                </>
+              )}
+            </Hint>
             <Toolbar>
               <Button leftIcon={<Plus aria-hidden />} onClick={page.openCreate}>
                 {t('offers.create')}

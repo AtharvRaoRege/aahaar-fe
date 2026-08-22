@@ -115,13 +115,19 @@ export const Notice = styled.p<{ $tone: 'ok' | 'bad' }>`
   color: ${({ $tone }) => ($tone === 'ok' ? palette.chutney : palette.chili)};
 `
 
-export const Preview = styled.div<{ $brand: BrandPalette }>`
+export const Preview = styled.div<{ $brand: BrandPalette; $dimmed?: boolean }>`
   display: grid;
   gap: ${spacing.md};
   padding: ${spacing.lg};
   border-radius: ${radii.md};
   border: 1.5px solid ${palette.line};
   background: ${palette.cream};
+  ${({ $dimmed }) =>
+    $dimmed &&
+    css`
+      opacity: 0.72;
+      pointer-events: none;
+    `}
   ${({ $brand }) => css`
     ${Object.entries(brandCssVars($brand))
       .map(([key, value]) => `${key}: ${value};`)

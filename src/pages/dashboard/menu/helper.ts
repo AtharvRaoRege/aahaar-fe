@@ -468,6 +468,10 @@ export function useMenuManager(restaurantId: string, slug?: string) {
         showProUpgrade()
         return
       }
+      if (!menuScanEnabled) {
+        setScanError(t('scan.unavailable'))
+        return
+      }
       setScanOpen(true)
     },
     categoryForm,

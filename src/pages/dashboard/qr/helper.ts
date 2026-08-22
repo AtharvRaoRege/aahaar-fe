@@ -4,6 +4,8 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 
 import type { ActionMenuItem } from '@/components/global/action-menu/helper'
 import { qrApi } from '@/lib/api/qr'
+import { subscriptionsApi } from '@/lib/api/subscriptions'
+import { showProUpgrade } from '@/lib/dashboard/pro-upgrade-store'
 import { freshFor } from '@/lib/query/cache'
 import { queryKeys } from '@/lib/query/keys'
 import type { QrCode } from '@/types/qr'
@@ -37,6 +39,15 @@ export function useQrPage(restaurantId: string) {
     queryFn: () => qrApi.review(restaurantId),
     staleTime: freshFor.ownAction,
   })
+  const subscriptionQuery = useQuery({
+    queryKey: queryKeys.subscription(restaurantId),
+    queryFn: () => subscriptionsApi.get(restaurantId),
+  })
+
+  const isPro = subscriptionQuery.data?.effectivePlan === 'PRO'
+  const tableLimit = subscriptionQuery.data?.tableLimit ?? 10
+  const tableCodes = (query.data ?? []).filter((qr) => qr.kind !== 'REVIEW')
+  const atTableLimit = !isPro && tableLimit !== null && tableCodes.length >= tableLimit
 
   const create = useMutation({
     mutationFn: () =>
@@ -60,12 +71,19 @@ export function useQrPage(restaurantId: string) {
     query,
     reviewQr: reviewQuery.data,
     reviewLoading: reviewQuery.isLoading,
-    tableCodes: (query.data ?? []).filter((qr) => qr.kind !== 'REVIEW'),
+    tableCodes,
+    isPro,
+    tableLimit,
+    atTableLimit,
     label,
     setLabel,
     tableNumber,
     setTableNumber,
     create: () => {
+      if (atTableLimit) {
+        showProUpgrade()
+        return
+      }
       if (!label.trim()) {
         setHint('qr.needLabel')
         return

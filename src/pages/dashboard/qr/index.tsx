@@ -5,6 +5,7 @@ import { ActionMenu } from '@/components/global/action-menu'
 import { Button } from '@/components/global/button'
 import { EmptyState } from '@/components/global/empty-state'
 import { TextField } from '@/components/global/field'
+import { ProBadge } from '@/components/global/pro-badge'
 import { Skeleton } from '@/components/global/skeleton'
 import type { QrCode } from '@/types/qr'
 import type { Restaurant } from '@/types/restaurant'
@@ -48,6 +49,16 @@ function QrBody({ restaurant }: { restaurant: Restaurant }) {
     <Page>
       <Title>{t('qr.title')}</Title>
       <Hint>{t('qr.hint')}</Hint>
+      {!page.isPro && page.tableLimit != null && (
+        <Hint>
+          {t('qr.tablesBasicLimit', { count: page.tableLimit })} <ProBadge />
+        </Hint>
+      )}
+      {page.isPro && (
+        <Hint>
+          {t('qr.tablesPro')} <ProBadge />
+        </Hint>
+      )}
       <Form
         onSubmit={(event) => {
           event.preventDefault()
